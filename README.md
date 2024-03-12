@@ -1,18 +1,18 @@
-# [Nome do projeto]
-
+# Cresça Conosco
 [Escreva um ou dois  parágrafo resumindo o objetivo do seu projeto.]
 
 ## Alunos integrantes da equipe
 
-* [Nome completo do aluno 1]
-* [Nome completo do aluno 2]
-* [Nome completo do aluno 3]
-* [Nome completo do aluno 4]
+* Ana Carolina Caldas de Mello
+* Gabriel Alejandro Figueiro Galindo
+* Gustavo Menezes Barbosa
+* João Pedro Queiroz Rocha
+* Pedro Henrique Dias Camara
 
 ## Professores responsáveis
 
-* [Nome completo do professor 1]
-* [Nome completo do professor 2]
+* Eveline Alonso Veloso
+* Juliana Amaral Baroni de Carvalho
 
 ## Instruções de utilização
 
