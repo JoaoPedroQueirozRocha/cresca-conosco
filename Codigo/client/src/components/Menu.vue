@@ -49,7 +49,7 @@ function handleResize() {
 
 .menu {
     width: fit-content;
-    box-shadow: 1.25px 1.25px 4px rgba(0, 0, 0, 0.25);
+    box-shadow: $shadow-menu;
     background: $green-light;
 }
 
