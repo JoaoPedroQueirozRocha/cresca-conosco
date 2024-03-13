@@ -25,7 +25,7 @@ export default {
                 },
                 {
                     text: 'Finanças',
-                    value: '/financa',
+                    value: '/financas',
                     icon: 'payments',
                 },
                 {
@@ -46,12 +46,22 @@ export default {
         handleResize() {
             this.isPhone = window.innerWidth <= 768;
         },
+        teste() {
+            console.log('teste')
+            this.$alert({
+                message: 'teste',
+                title: 'teste',
+                top: true,
+                right: true,
+                // timeout: 3500,
+            })
+        }
     }
 }
 </script>
 
 <template>
-    <div>
+    <div @click="teste">
         <span class="material-symbols-rounded menu-expand-icon" @click="isExpanded = !isExpanded" v-if="isPhone">
             {{ isExpanded ? 'close' : 'menu' }}
         </span>

@@ -6,21 +6,22 @@ export default {
     name: 'Alert',
     setup() {
         return {
-            show: ref(false)
+            show: ref(false),
+            type: ref('error')
         }
     },
-    mount() {
-        event.on('show-alert', showAlert);
-        event.on('close-alert', closeAlert);
+    mounted() {
+        event.on('show-alert', this.showAlert);
+        event.on('close-alert', this.closeAlert);
     },
     beforeUnmount() {
-        event.off('show-alert', showAlert);
-        event.off('close-alert', closeAlert);
+        event.off('show-alert', this.showAlert);
+        event.off('close-alert', this.closeAlert);
     },
     computed: {
         icon() {
             switch (this.type) {
-                case 'error' | 'warning':
+                case 'error' || 'warning':
                     return 'error';
                     break;
             }
@@ -32,7 +33,7 @@ export default {
                 this[key] = options[key];
             });
             this.show = true;
-        }
+        },
 
         closeAlert() {
             this.show = false;
@@ -42,18 +43,40 @@ export default {
 </script>
 
 <template>
-    <div
-        class="fixed z-100"
+    <div   
+        v-if="show"
+        class="alert"
         :class="[type, {'top-3': top, 'bottom-3': bottom, 'left-3': left, 'right-3': right,}]"
     >
-        <span class="material-symbols-rounded">
-            {{ icon }}
+        <div class="flex gap-2 items-center">
+            <span class="material-symbols-rounded">
+                {{ icon }}
+            </span>
+            <div>
+                <h6 v-if="title" class="font-bold text-lg">{{ title }}</h6>
+                <p class="text-base">{{ message }}</p>
+            </div>
+        </div>
+        <span class="material-symbols-rounded cursor-pointer" @click="closeAlert">
+            close
         </span>
     </div>
 </template>
 
 <style scoped lang="scss">
 @import "../style/var.scss";
+
+.alert {
+    z-index: 100;
+    position: fixed;
+    display: flex;
+    gap: 0.5em;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em 0.7em;
+    border-radius: 16px;
+    min-width: 300px;
+}
 
 .error {
     color: $red-strong;

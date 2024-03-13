@@ -13,7 +13,7 @@ const routes = [
         path: '/perfil',
         name: 'Perfil',
         props: true,
-        // component: () => import('@/App.vue'),
+        component: () => import('@/view/perfil/Index.vue'),
         beforeEnter: () => {
             //função do auth0
         }
