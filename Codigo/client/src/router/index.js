@@ -3,9 +3,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 const routes = [
     {
         path: '/',
-        name: 'HelloWorld',
+        name: 'App',
         props: true,
-        component: () => import('@/components/HelloWorld.vue'),
+        // component: () => import('@/App.vue'),
         beforeEnter: () => {
             //função do auth0
         }
