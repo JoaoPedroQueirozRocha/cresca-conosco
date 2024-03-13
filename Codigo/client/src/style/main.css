@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css?family=Inter&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind typography;
+
+@layer utilities {
+    .text-xxs {
+        font-size: 0.625rem;
+    }
+}
