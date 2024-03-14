@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import { createAuth0 } from "@auth0/auth0-vue"
 import App from './App.vue';
 import router from './router';
 
@@ -17,7 +18,14 @@ const vuetify = createVuetify({
 
 const app = createApp(App)
     .use(vuetify)
-    .use(router);
+    .use(router)
+    .use(createAuth0({
+        domain: import.meta.env.VITE_DOMAIN,
+        clientId: import.meta.env.VITE_CLIENT_ID,
+        authorizationParams: {
+            redirect_uri: `${import.meta.env.VITE_DEFAULT_URL}`
+        }
+    }));
 
 const alert = (options) => {
     event.emit('show-alert', options);
