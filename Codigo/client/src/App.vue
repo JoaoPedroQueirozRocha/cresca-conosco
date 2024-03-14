@@ -3,36 +3,32 @@
   <div class="flex w-full h-screen">
     <Menu />
     <router-view />
-    <button @click="login">login</button>
+    <button @click="logout">logout</button>
   </div>
 </template>
 
 <script>
-import Menu from './components/Menu.vue';
-import Alert from './components/Alert.vue';
-import {useAuth0} from '@auth0/auth0-vue';
+import Menu from "./components/Menu.vue";
+import Alert from "./components/Alert.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: { Menu, Alert },
-  setup(){
-
-    const { loginWithRedirect } = useAuth0();
-
-    return{
-      login: () => {
-        loginWithRedirect();
-      }
-    }
-  }
-}
+  inject: ["Auth"],
+  methods: {
+    logout() {
+      console.log("logout");
+      this.Auth.logout();
+    },
+  },
+};
 </script>
 
 <style lang="scss">
 @import "style/var.scss";
 
 #app {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   padding: 0;
   background: $gray-100;
 }

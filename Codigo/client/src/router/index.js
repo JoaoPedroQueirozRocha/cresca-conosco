@@ -1,18 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAuth0 } from '@auth0/auth0-vue';
+import Auth0 from '../auth/index.js'
 const routes = [
     {
         path: '/',
         name: 'App',
         // component: () => import('@/App.vue'),
-        beforeEnter: (to, from, next) => {
-            const { isAuthenticated, loginWithRedirect } = useAuth0();
-                if(isAuthenticated){
-                    next();
-                }else{
-                    loginWithRedirect();
-                }
-            
+        beforeEnter: () => {
+            Auth0.routeGuard
         }
     },
     {

@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
-import { createAuth0 } from "@auth0/auth0-vue"
 import App from './App.vue';
 import router from './router';
+import Auth0 from "./auth/index"
 
 import 'vuetify/styles';
 import { createVuetify } from 'vuetify';
@@ -16,29 +16,28 @@ const vuetify = createVuetify({
     directives
 });
 
-const app = createApp(App)
-    .use(vuetify)
-    .use(router)
-    .use(createAuth0({
-        domain: import.meta.env.VITE_DOMAIN,
-        clientId: import.meta.env.VITE_CLIENT_ID,
-        authorizationParams: {
-            redirect_uri: `${import.meta.env.VITE_DEFAULT_URL}`
-        }
-    }));
+async function init() {
+    const AuthPlugin = await Auth0.init();
 
-const alert = (options) => {
-    event.emit('show-alert', options);
-    if (options.timeout) {
-        setTimeout(() => 
-            {
+
+    const app = createApp(App)
+        .use(vuetify)
+        .use(router)
+        .use(AuthPlugin)
+
+    const alert = (options) => {
+        event.emit('show-alert', options);
+        if (options.timeout) {
+            setTimeout(() => {
                 event.emit('close-alert', options);
-            }, 
-            options.timeout
-        );
-    }
-};
-app.config.globalProperties.$alert = alert;
-app.provide('alert', alert);
+            },
+                options.timeout
+            );
+        }
+    };
+    app.config.globalProperties.$alert = alert;
+    app.provide('alert', alert);
 
-app.mount('#app');
+    app.mount('#app');
+}
+init()
