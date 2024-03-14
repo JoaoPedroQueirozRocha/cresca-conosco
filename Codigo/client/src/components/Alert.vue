@@ -49,7 +49,7 @@ export default {
         :class="[type, {'top-3': top, 'bottom-3': bottom, 'left-3': left, 'right-3': right,}]"
     >
         <div class="flex gap-2 items-center">
-            <span class="material-symbols-rounded">
+            <span class="material-symbols-rounded text-2xl">
                 {{ icon }}
             </span>
             <div>
@@ -57,7 +57,7 @@ export default {
                 <p class="text-base">{{ message }}</p>
             </div>
         </div>
-        <span class="material-symbols-rounded cursor-pointer" @click="closeAlert">
+        <span class="material-symbols-rounded cursor-pointer text-2xl" @click="closeAlert">
             close
         </span>
     </div>
@@ -76,17 +76,22 @@ export default {
     padding: 0.5em 0.7em;
     border-radius: 16px;
     min-width: 300px;
+    border-width: 0.1em;
+}
+
+.icon {
+    font-size: 40px;
 }
 
 .error {
     color: $red-strong;
-    border: 0.1em $red-strong solid;
+    border-color: $red-strong;
     background: $red-light;
 }
 
 .warning {
     color: $yellow-strong;
-    border: 0.1em $yellow-strong solid;
+    border-color: $yellow-strong;
     background: $yellow-light;
 }
 </style>
