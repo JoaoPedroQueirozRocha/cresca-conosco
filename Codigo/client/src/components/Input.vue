@@ -39,6 +39,15 @@ export default {
     methods: {
         isEmail() {
             this.error = !(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(this.model));
+        },
+        resetModel() {
+            this.model = '';
+            this.$emit('update:modelValue', this.model);
+        },
+        focusout() {
+            setTimeout(() => {
+                this.onFocus = false;
+            }, 100);
         }
     }
 }
@@ -47,7 +56,14 @@ export default {
 <template>
     <div class="holder">
         <label v-if="label" class="label">{{ label }}</label>
-        <div class="input-holder" v-if="!textArea">
+        <div tabindex="0"  class="input-holder" v-if="!textArea">
+            <span
+                v-if="type === 'search'"
+                class="material-symbols-rounded search-icon icon"
+                :class="{'on-focus': onFocus}"
+            >
+                search
+            </span>
             <input
                 class="input"
                 :class="[type, {'disabled': disabled, 'error': isError || error}]"
@@ -55,26 +71,31 @@ export default {
                 :placeholder="placeholder"
                 :disabled="disabled"
                 :type="(type === 'password' && !hidePass) || type === 'email' ? 'text': type"
-                @focus="onFocus = true"
                 :value="model"
+                @focusin="onFocus = true"
+                @focusout="focusout"
                 @input="() => {
                     if (type === 'email') {
                         isEmail();
                     }
                     $emit('update:modelValue', this.model);
                 }"
-                @blur="() => {
-                    onFocus = false;
-                    $emit('blur');
-                }"
+                @blur="$emit('blur')"
             />
             <span
                 v-if="type === 'password'"
-                class="material-symbols-rounded eye"
+                class="material-symbols-rounded eye icon"
                 :class="{'on-focus': onFocus}"
                 @click="hidePass = !hidePass"
             >
                 {{ hidePass ? 'visibility_off' : 'visibility' }}
+            </span>
+            <span
+                v-if="type === 'search' && onFocus"
+                class="material-symbols-rounded eye icon on-focus"
+                @click="resetModel"
+            >
+                close
             </span>
         </div>
         <textarea 
@@ -90,7 +111,6 @@ export default {
         <div v-if="isError || error" class="error-message">
             {{ errorMessage }}
         </div>
-        {{ this.model }}
     </div>
 </template>
 
@@ -138,6 +158,11 @@ export default {
     padding-right: 2.3em;
 }
 
+.search {
+    padding-left: 2.3em;
+    padding-right: 2.3em;
+}
+
 .input.disabled {
     @apply pointer-events-none;
     color: $gray-300;
@@ -155,17 +180,24 @@ export default {
     }
 }
 
-.eye {
+.icon {
     position: absolute;
     top: 50%;
-    right: 0.5em;
-    cursor: pointer;
     color: $gray-500;
     transform: translateY(-50%);
 }
 
-.eye.on-focus {
+.icon.on-focus {
     color: $blue-light;
+}
+
+.search-icon {
+    left: 0.5em;
+}
+
+.eye {
+    right: 0.5em;
+    cursor: pointer;
 }
 
 .error-message {

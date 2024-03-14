@@ -1,7 +1,19 @@
+<script>
+import Menu from "./components/Menu.vue";
+import Alert from "./components/Alert.vue";
+import Input from "./components/Input.vue";
+
+export default {
+  name: "App",
+  components: { Menu, Alert, Input },
+};
+</script>
+
 <template>
   <Alert />
   <div class="flex w-full h-screen">
     <Menu />
+    <Input type="search" />
     <router-view />
     <button @click="logout">logout</button>
   </div>
