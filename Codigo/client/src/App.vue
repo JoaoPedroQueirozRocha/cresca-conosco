@@ -1,8 +1,15 @@
-<script setup>
-import Menu from './components/Menu.vue'
+<script>
+import Menu from './components/Menu.vue';
+import Alert from './components/Alert.vue';
+
+export default {
+  name: 'App',
+  components: { Menu, Alert },
+}
 </script>
 
 <template>
+  <Alert />
   <div class="flex w-full h-screen">
     <Menu />
     <router-view />
