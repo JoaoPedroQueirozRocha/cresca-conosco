@@ -136,7 +136,7 @@ export default {
             </tbody>
         </table>
         <div class="empty" v-if="!items.length && !isLoading">
-            <slot name="empty-table" />
+            <slot name="empty-state" />
         </div>
     </div>
 </template>
