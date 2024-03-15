@@ -1,11 +1,12 @@
 <script>
-import Menu from './components/Menu.vue';
-import Alert from './components/Alert.vue';
+import Menu from "./components/Menu.vue";
+import Alert from "./components/Alert.vue";
 
 export default {
-  name: 'App',
+  name: "App",
+  inject: ["Auth"],
   components: { Menu, Alert },
-}
+};
 </script>
 
 <template>
@@ -20,7 +21,7 @@ export default {
 @import "style/var.scss";
 
 #app {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   padding: 0;
   background: $gray-100;
 }
