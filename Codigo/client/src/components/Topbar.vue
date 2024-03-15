@@ -10,6 +10,7 @@ export default {
         return {
             notificationActive: ref(false),
             userActive: ref(false),
+            notification: ref(),
         }
     },
 
@@ -26,7 +27,7 @@ export default {
 </script>
 
 <template>
-    <div class=" fixed right-6 top-4">
+    <div class="fixed right-6 top-4">
         <div class="relative flex gap-2">
             <div>
                 <span class="material-symbols-rounded" :class="{'active': notificationActive}" @click="activate(true, false)">
@@ -39,7 +40,7 @@ export default {
                 </span>
             </div>
             <div class="absolute right-0 top-14">
-                <Notification v-if="notificationActive">
+                <Notification v-if="notificationActive" ref="notification">
                     <template #empty-state>
                         <div class="empty-state">
                             <span class="material-symbols-rounded">
