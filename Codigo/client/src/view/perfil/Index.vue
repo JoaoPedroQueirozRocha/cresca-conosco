@@ -1,3 +1,14 @@
-<script></script>
+<template>
+  <button @click="logout">Sair</button>
+</template>
 
-<template></template>
+<script>
+export default {
+  inject: ["Auth"],
+  methods: {
+    logout() {
+      this.Auth.logout();
+    },
+  },
+};
+</script>

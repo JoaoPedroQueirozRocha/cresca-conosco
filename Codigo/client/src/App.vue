@@ -4,8 +4,23 @@ import Alert from "./components/Alert.vue";
 
 export default {
   name: "App",
-  inject: ["Auth"],
   components: { Menu, Alert },
+  inject: ["Auth"],
+  setup() {},
+
+  async created() {
+    if (!this.$route.meta.unprotected) {
+      if (await this.Auth.getTokenSilently()) {
+        this.$router.push({ name: "Perfil" });
+      }
+    }
+  },
+
+  methods: {
+    logout() {
+      this.Auth.logout();
+    },
+  },
 };
 </script>
 
@@ -14,6 +29,7 @@ export default {
   <div class="flex w-full h-screen">
     <Menu />
     <router-view />
+    <button @click="logout">logout</button>
   </div>
 </template>
 
