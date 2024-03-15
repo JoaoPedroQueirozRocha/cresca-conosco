@@ -4,6 +4,7 @@ import Alert from "./components/Alert.vue";
 
 export default {
   name: "App",
+  inject: ["Auth"],
   components: { Menu, Alert },
 };
 </script>
@@ -13,26 +14,8 @@ export default {
   <div class="flex w-full h-screen">
     <Menu />
     <router-view />
-    <button @click="logout">logout</button>
   </div>
 </template>
-
-<script>
-import Menu from "./components/Menu.vue";
-import Alert from "./components/Alert.vue";
-
-export default {
-  name: "App",
-  components: { Menu, Alert },
-  inject: ["Auth"],
-  methods: {
-    logout() {
-      console.log("logout");
-      this.Auth.logout();
-    },
-  },
-};
-</script>
 
 <style lang="scss">
 @import "style/var.scss";
