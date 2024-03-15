@@ -95,6 +95,7 @@ export default {
     padding: 1em;
     height: 100vh;
     overflow: hidden;
+    user-select: none;
     transition: min-width 0.5s ease, width 0.5s ease, max-width 0.5s ease;
 }
 
@@ -137,6 +138,7 @@ export default {
     font-weight: 600;
     font-size: 24px;
     cursor: pointer;
+    user-select: none;
 
     &:hover {
         color: $orange-strong;

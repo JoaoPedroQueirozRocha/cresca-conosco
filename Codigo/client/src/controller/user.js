@@ -17,7 +17,7 @@ function deleteUser(id) {
     return axios.delete(`${APIURL}/${id}`);
 }
 
-export {
+export default {
     getUser,
     updateUser,
     createUser,
