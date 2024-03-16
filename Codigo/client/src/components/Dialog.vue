@@ -24,7 +24,7 @@ export default {
     },
     watch: {
         modelValue() {
-            this.model = this.modelValue
+            this.model = this.modelValue;
         }
     },
     beforeMount() {
@@ -64,6 +64,8 @@ export default {
 .dialog-bg {
     z-index: 1000;
     position: fixed;
+    top: 0;
+    left: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -76,6 +78,9 @@ export default {
     background: white;
     border-radius: 16px;
     padding: 1em;
+    margin: 2em;
+    max-height: 90vh;
+    overflow: auto;
 }
 
 .bounce-enter-active {

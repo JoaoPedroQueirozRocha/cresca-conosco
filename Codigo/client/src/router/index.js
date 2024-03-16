@@ -6,7 +6,7 @@ const routes = [
         name: 'App',
         // component: () => import('@/App.vue'),
         beforeEnter: () => {
-            Auth0.routeGuard
+            // Auth0.routeGuard
         }
     },
     {

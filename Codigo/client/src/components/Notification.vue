@@ -1,6 +1,9 @@
 <script>
+import Card from './Card.vue';
+
 export default {
     name: 'Notification',
+    components: { Card },
     props: {
         items: {
             type: Array,
@@ -11,7 +14,7 @@ export default {
 </script>
 
 <template>
-    <div class="notification-holder">
+    <Card class="notification-holder">
         <header>
             <h5>Notificação</h5>
             <div class="notification-circle">
@@ -26,7 +29,7 @@ export default {
                 <slot name="item" :item="item" :index="index" />
             </div>
         </main>
-    </div>
+    </Card>
 </template>
 
 <style scoped lang="scss">
@@ -34,11 +37,6 @@ export default {
 
 .notification-holder {
     position: relative;
-    padding: 1em;
-    border-radius: 16px;
-    background: white;
-    box-shadow: $shadow-base;
-    height: fit-content;
     width: 387px;
 }
 
@@ -51,8 +49,8 @@ header {
     padding-bottom: 0.4em;
 
     h5 {
-            font-weight: 600;
-            font-size: 20px;
+        font-weight: 600;
+        font-size: 25px;
     }
 }
 
