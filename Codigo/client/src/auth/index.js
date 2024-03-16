@@ -19,11 +19,9 @@ async function handleRedirectCallback() {
     } catch (e) {
         state.error = e;
     } finally {
-        error
         state.loading = false;
     }
 
-    window.history.replaceState({}, document.title, window.location.pathname);
 }
 
 function loginWithRedirect() {
@@ -49,23 +47,28 @@ const authPlugin = {
 
 const routeGuard = (to, from, next) => {
     const { isAuthenticated, loginWithRedirect } = authPlugin;
-    console.log("route guard");
+    console.log("route guard", state);
 
     const verify = () => {
         if (to.meta.unprotected) {
-            console.log("unpro")
+            console.log("unpro",isAuthenticated.value)
             return next();
         }
 
         if (isAuthenticated.value) {
-            console.log("isAuth");
+            console.log("isAuth", isAuthenticated.value);
             return next(VITE_DEFAULT_URL)
+        }else{
+            // loginWithRedirect()
         }
 
-        loginWithRedirect();
+        if(state.isAuthenticated == false){
+            console.log("false", isAuthenticated.value);
+            loginWithRedirect();
+        }
     }
 
-    if (!loading.value) {
+    if (!state.loading) {
         return verify();
     }
 
@@ -77,32 +80,26 @@ const routeGuard = (to, from, next) => {
 }
 
 async function init() {
+    console.log(state)
+    // debugger
     client = await createAuth0Client({
         domain: import.meta.env.VITE_DOMAIN,
         clientId: import.meta.env.VITE_CLIENT_ID,
         authorizationParams: {
-            redirect_uri: import.meta.env.VITE_DEFAULT_URL
+            redirect_uri: import.meta.env.VITE_REDIRECT_URI
         }
     });
-
-    try {
-        // If the user is returning to the app after authentication
-        if (window.location.search.includes("code=") && window.location.search.includes("state=")) {
+    debugger
+        if (window.location.search.includes("code=") || window.location.search.includes("state=")) {
             const { appState } = await client.handleRedirectCallback();
-
+            window.history.replaceState({}, document.title, window.location.pathname),
+            redirectUri = window.location.origin,
             console.log("logged in", appState)
-        } else {
-            await client.loginWithRedirect()
         }
-    } catch (e) {
-        state.error = e;
-    } finally {
-        // window.history.replaceState({}, document.title, import.meta.env.VITE_DEFAULT_URL);
-        // window.location.replace(import.meta.env.VITE_DEFAULT_URL)
         state.isAuthenticated = await client.isAuthenticated();
+        console.log("isAuth client",client.isAuthenticated())
         state.user = await client.getUser();
         state.loading = false;
-    }
 
 
     return {
