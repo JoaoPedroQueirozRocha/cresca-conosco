@@ -4,6 +4,7 @@ import cow from '../assets/cow-face.svg';
 
 export default {
     name: 'Menu',
+    emits: ['update:isMenuOpened'],
     setup() {
         const isPhone = ref(window.innerWidth <= 768);
         const isExpanded = ref(!isPhone);
@@ -51,8 +52,8 @@ export default {
 </script>
 
 <template>
-    <div>
-        <span class="material-symbols-rounded menu-expand-icon" @click="isExpanded = !isExpanded" v-if="isPhone">
+    <div class="menu-holder" :class="{'closed': !isExpanded, 'mobile': isPhone}">
+        <span class="material-symbols-rounded menu-expand-icon top-3 left-4 fixed" @click="isExpanded = !isExpanded" v-if="isPhone">
             {{ isExpanded ? 'close' : 'menu' }}
         </span>
         <div class="menu" ref="menu" :class="{'closed': !isExpanded, 'mobile': isPhone}">
@@ -87,7 +88,26 @@ export default {
 <style scoped lang="scss">
 @import "../style/var.scss";
 
+.menu-holder {
+    min-width: 260px;
+    max-width: 260px;
+    transition: min-width 0.5s ease, width 0.5s ease, max-width 0.5s ease;
+}
+
+.menu-holder.closed {
+    min-width: 100px;
+    max-width: 100px;
+}
+
+.menu-holder.mobile {
+    min-width: 0px !important;
+    max-width: 0px !important;
+}
+
 .menu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
     min-width: 260px;
     max-width: 260px;
     box-shadow: $shadow-menu;
@@ -181,6 +201,7 @@ export default {
 }
 
 .menu-expand-icon {
+    z-index: 90;
     color: $green-dark;
 }
 </style>

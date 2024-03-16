@@ -41,7 +41,6 @@ export default {
     padding: 0.4em 1em;
     font-weight: 600;
     height: fit-content;
-    width: fit-content;
 }
 
 .small {

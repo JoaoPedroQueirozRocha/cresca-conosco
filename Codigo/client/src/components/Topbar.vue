@@ -2,40 +2,61 @@
 import { ref } from 'vue';
 import Card from './Card.vue';
 import Notification from './Notification.vue';
+import Button from './Button.vue';
 
 export default {
     name: 'Topbar',
-    components: { Card, Notification },
+    components: { Card, Notification, Button },
     setup() {
         return {
             notificationActive: ref(false),
-            userActive: ref(false),
+            perfilDropdownActive: ref(false),
             notification: ref(),
+            notificationIcon: ref(),
+            perfilDropdown: ref(),
+            perfilIcon: ref(),
         }
     },
 
-    watch: {
+    beforeMount() {
+        document.addEventListener('click', (event) => {
+            this.closeDropdown(event, this.notification?.$el, this.notificationIcon, 'notificationActive');
+            this.closeDropdown(event, this.perfilDropdown?.$el, this.perfilIcon, 'perfilDropdownActive');
+        });
+    },
+
+    beforeUnmount() {
+        document.removeEventListener('click', (event) => {
+            this.closeDropdown(event, this.notification?.$el, this.notificationIcon, 'notificationActive');
+            this.closeDropdown(event, this.perfilDropdown?.$el, this.perfilIcon, 'perfilDropdownActive');
+        });
     },
 
     methods: {
         activate(activateNotication, activateUser) {
             this.notificationActive = activateNotication;
-            this.userActive = activateUser;
+            this.perfilDropdownActive = activateUser;
+        },
+
+        closeDropdown(event, dropdown, icon, key) {
+            if (!dropdown || !icon) return;
+            if (!dropdown.contains(event.target) && !icon.contains(event.target)) 
+                this[key] = false
         }
     }
 }
 </script>
 
 <template>
-    <div class="fixed right-6 top-4">
+    <div class="top-holder">
         <div class="relative flex gap-2">
             <div>
-                <span class="material-symbols-rounded" :class="{'active': notificationActive}" @click="activate(true, false)">
+                <span class="material-symbols-rounded" ref="notificationIcon" :class="{'active': notificationActive}" @click="activate(!notificationActive, false)">
                     circle_notifications
                 </span>
             </div>
             <div>
-                <span class="material-symbols-rounded" :class="{'active': userActive}" @click="activate(false, true)">
+                <span class="material-symbols-rounded" ref="perfilIcon" :class="{'active': perfilDropdownActive}" @click="activate(false, !perfilDropdownActive)">
                     account_circle
                 </span>
             </div>
@@ -50,7 +71,13 @@ export default {
                         </div>
                     </template>
                 </Notification>
-                <Card v-else-if="userActive"></Card>
+                <Card v-else-if="perfilDropdownActive" ref="perfilDropdown" class="flex flex-col items-center gap-4 w-fit">
+                    <h3 class="user-name">Teste</h3>
+                    <div class="flex flex-col gap-2">
+                        <Button class="whitespace-nowrap">Editar Perfil</Button>
+                        <Button only-border class="w-full">Logout</Button>
+                    </div>
+                </Card>
             </div>
         </div>
     </div>
@@ -81,4 +108,19 @@ export default {
     }
 }
 
+.user-name {
+    @apply font-bold text-2xl;
+    color: $green-dark;
+}
+
+.top-holder {
+    @apply fixed px-4 py-2 md:px-6 md:py-4 w-full h-fit flex justify-end;
+    z-index: 80;
+}
+
+@media screen and (max-width: 768px) {
+    .top-holder {
+      background: $gray-200;
+    }
+}
 </style>

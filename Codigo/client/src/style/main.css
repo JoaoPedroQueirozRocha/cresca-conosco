@@ -30,3 +30,7 @@
   background: #A6A6A6;
   border-radius: 2.4em;
 }
+
+* {
+  overflow: unset;
+}
