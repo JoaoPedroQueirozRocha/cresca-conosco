@@ -44,15 +44,15 @@ export default {
 }
 
 .small {
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .medium {
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .large {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .primary {

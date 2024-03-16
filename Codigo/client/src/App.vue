@@ -1,21 +1,23 @@
 <script>
 import Menu from "./components/Menu.vue";
 import Alert from "./components/Alert.vue";
-import Topbar from "./components/Topbar.vue"
+import Confirm from "./components/Confirm.vue";
+import Topbar from "./components/Topbar.vue";
 
 export default {
   name: "App",
   inject: ["Auth"],
-  components: { Menu, Alert, Topbar },
+  components: { Menu, Alert, Topbar, Confirm },
 };
 </script>
 
 <template>
   <Alert />
+  <Confirm />
   <div class="flex w-full h-screen">
     <Menu />
     <Topbar />
-    <div class="md:mt-14 mt-20 w-full h-full md:px-8 content">
+    <div class="md:mt-14 mt-20 w-full h-fit md:px-8 content pb-4">
       <router-view />
     </div>
   </div>
@@ -28,6 +30,7 @@ body {
   font-family: "Inter", sans-serif;
   padding: 0;
   background: $gray-200;
+  overflow: auto;
 }
 
 .title {

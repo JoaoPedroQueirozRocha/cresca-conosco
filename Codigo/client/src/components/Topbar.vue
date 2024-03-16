@@ -11,6 +11,7 @@ export default {
         return {
             notificationActive: ref(false),
             perfilDropdownActive: ref(false),
+            notifications: ref([]),
             notification: ref(),
             notificationIcon: ref(),
             perfilDropdown: ref(),
@@ -42,7 +43,9 @@ export default {
             if (!dropdown || !icon) return;
             if (!dropdown.contains(event.target) && !icon.contains(event.target)) 
                 this[key] = false
-        }
+        },
+
+        async deleteNotification(item) {},
     }
 }
 </script>
@@ -61,7 +64,7 @@ export default {
                 </span>
             </div>
             <div class="absolute right-0 top-14">
-                <Notification v-if="notificationActive" ref="notification">
+                <Notification v-if="notificationActive" ref="notification" :items="notifications">
                     <template #empty-state>
                         <div class="empty-state">
                             <span class="material-symbols-rounded">
@@ -70,11 +73,24 @@ export default {
                             Sem notificações
                         </div>
                     </template>
+                    <template #item="{ item }">
+                        <div class="flex justify-between items-start gap-2 px-2 py-1">
+                            <div class="flex flex-col gap-2">
+                                <h5 class="text-xl font-bold">{{ item.title }}</h5>
+                                <p class="description">{{ item.description }}</p>
+                            </div>
+                            <span class="material-symbols-rounded delete-icon" @click="deleteNotification(item)">
+                                delete
+                            </span>
+                        </div>
+                    </template>
                 </Notification>
                 <Card v-else-if="perfilDropdownActive" ref="perfilDropdown" class="flex flex-col items-center gap-4 w-fit">
                     <h3 class="user-name">Teste</h3>
                     <div class="flex flex-col gap-2">
-                        <Button class="whitespace-nowrap">Editar Perfil</Button>
+                        <router-link to="/perfil" @click="activate(false, false)">
+                            <Button class="whitespace-nowrap">Editar Perfil</Button>
+                        </router-link>
                         <Button only-border class="w-full">Logout</Button>
                     </div>
                 </Card>
@@ -86,10 +102,22 @@ export default {
 <style scoped lang="scss">
 @import "../style/var.scss";
 
+.delete-icon.material-symbols-rounded {
+    font-size: 25px;
+
+    &:hover {
+        color: $red-strong;
+    }
+}
+
 .material-symbols-rounded {
     font-size: 50px;
     color: $gray-500;
     cursor: pointer;
+
+    &:hover {
+        color: $green-dark;
+    }
 }
 
 .material-symbols-rounded.active {
@@ -116,6 +144,15 @@ export default {
 .top-holder {
     @apply fixed px-4 py-2 md:px-6 md:py-4 w-full h-fit flex justify-end;
     z-index: 80;
+}
+
+h5 {
+    color: $green-dark;
+}
+
+.description {
+    @apply text-sm;
+    color: $gray-500;
 }
 
 @media screen and (max-width: 768px) {

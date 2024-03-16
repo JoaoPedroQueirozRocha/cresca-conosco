@@ -25,6 +25,29 @@ async function init() {
         .use(router)
         // .use(AuthPlugin)
 
+    const confirm = (options) => {
+        return new Promise((resolve) => {
+            event.emit('open-confirm', options);
+        
+            const onConfirm = () => {
+                event.off('confirm', onConfirm);
+                event.off('cancel', onCancel);
+                resolve(true);
+            };
+        
+            const onCancel = () => {
+                event.off('confirm', onConfirm);
+                event.off('cancel', onCancel);
+                resolve(false);
+            };
+        
+            event.on('confirm', onConfirm);
+            event.on('cancel', onCancel);
+        });
+    };
+    app.config.globalProperties.$confirm = confirm;
+    app.provide('confirm', confirm);
+
     const alert = (options) => {
         event.emit('show-alert', options);
         if (options.timeout) {

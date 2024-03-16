@@ -49,8 +49,8 @@ header {
     padding-bottom: 0.4em;
 
     h5 {
-            font-weight: 600;
-            font-size: 20px;
+        font-weight: 600;
+        font-size: 25px;
     }
 }
 
