@@ -1,13 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
-
+import Auth0 from '../auth/index.js'
 const routes = [
     {
         path: '/',
         name: 'App',
         // component: () => import('@/App.vue'),
-        beforeEnter: () => {
-            //função do auth0
-        }
+        beforeEnter: Auth0.routeGuard
+
     },
     {
         path: '/perfil',
