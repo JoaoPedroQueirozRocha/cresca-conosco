@@ -13,6 +13,7 @@ export default {
             default: 'medium'
         },
         onlyBorder: Boolean,
+        disabled: Boolean,
     },
     emits: ['click'],
 }
@@ -21,7 +22,7 @@ export default {
 <template>
     <button
         class="button"
-        :class="[variant, size, { 'only-border': onlyBorder }]"
+        :class="[variant, size, { 'only-border': onlyBorder , 'disabled': disabled}]"
         @click="$emit('click')"
     >
         <slot />
@@ -41,19 +42,30 @@ export default {
     padding: 0.4em 1em;
     font-weight: 600;
     height: fit-content;
-    width: fit-content;
+}
+
+.button.disabled {
+    @apply pointer-events-none;
+    background: $gray-300;
+    border-color: $gray-300;
+}
+
+.button.disabled.only-border {
+    color: $gray-300;
+    border-color: $gray-300;
+    background: transparent;
 }
 
 .small {
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .medium {
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .large {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .primary {
