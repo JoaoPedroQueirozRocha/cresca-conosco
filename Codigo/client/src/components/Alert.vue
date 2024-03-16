@@ -23,7 +23,10 @@ export default {
             switch (this.type) {
                 case 'error' || 'warning':
                     return 'error';
-                    break;
+                case 'success':
+                    return 'check_circle';
+                case 'info':
+                    return 'info';
             }
         }
     },
@@ -67,7 +70,7 @@ export default {
 @import "../style/var.scss";
 
 .alert {
-    z-index: 100;
+    z-index: 1001;
     position: fixed;
     display: flex;
     gap: 0.5em;
@@ -93,5 +96,17 @@ export default {
     color: $yellow-strong;
     border-color: $yellow-strong;
     background: $yellow-light;
+}
+
+.success {
+    color: $green-strong;
+    border-color: $green-strong;
+    background: $green-light;
+}
+
+.info {
+    color: $blue-strong;
+    border-color: $blue-strong;
+    background: $blue-100;
 }
 </style>
