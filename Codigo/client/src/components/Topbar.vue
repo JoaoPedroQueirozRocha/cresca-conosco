@@ -142,7 +142,7 @@ export default {
 }
 
 .top-holder {
-    @apply fixed px-4 py-2 md:px-6 md:py-4 w-full h-fit flex justify-end;
+    @apply fixed md:right-0 px-4 py-2 md:px-6 md:py-4 md:w-fit w-full h-fit flex justify-end;
     z-index: 80;
 }
 

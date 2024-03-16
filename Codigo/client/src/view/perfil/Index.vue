@@ -153,7 +153,7 @@ export default {
                 <span class="material-symbols-rounded">
                     account_circle
                 </span>
-                <input v-model="userData.name" />
+                <input v-model="userData.name" class="name-input" :disabled="!editing" :class="{'active': editing}" />
             </div>
             <div class="flex flex-col gap-4">
                 <Input v-model="userData.description" label="Descrição" :disabled="!editing" text-area />
@@ -215,17 +215,28 @@ export default {
 }
 
 .photo-name {
-    @apply flex gap-4 md:flex-row flex-col items-center;
+    @apply flex gap-2 md:flex-row flex-col items-center;
 
     .material-symbols-rounded {
         font-size: 9em;
         color: $green-dark;
     }
 
-    h3 {
+    .name-input {
         font-size: 2em;
         font-weight: 600;
         color: $green-dark;
+        padding: 0.2em 0.5em;
+        border-radius: 16px;
+        border: 0.1em transparent solid;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .name-input.active {
+        border-color: $gray-300;
     }
 }
 
