@@ -5,8 +5,24 @@ let client;
 const state = reactive({
     loading: true,
     isAuthenticated: false,
-    user: {}
+    user: {},
+    error: null
 })
+
+async function handleRedirectCallback() {
+    state.loading = true;
+
+    try {
+        await client.handleRedirectCallback();
+        state.user = await client.getUser();
+        state.isAuthenticated = true
+    } catch (e) {
+        state.error = e;
+    } finally {
+        state.loading = false;
+    }
+
+}
 
 function loginWithRedirect() {
     return client.loginWithRedirect()
@@ -26,27 +42,33 @@ const authPlugin = {
     getTokenSilently,
     loginWithRedirect,
     logout,
+    handleRedirectCallback,
 }
 
 const routeGuard = (to, from, next) => {
     const { isAuthenticated, loginWithRedirect } = authPlugin;
-    console.log("route guard");
+    console.log("route guard", state);
 
     const verify = () => {
         if (to.meta.unprotected) {
-            console.log("unpro")
+            console.log("unpro",isAuthenticated.value)
             return next();
         }
 
         if (isAuthenticated.value) {
-            console.log("isAuth");
-            return next()
+            console.log("isAuth", isAuthenticated.value);
+            return next(VITE_DEFAULT_URL)
+        }else{
+            // loginWithRedirect()
         }
 
-        loginWithRedirect();
+        if(state.isAuthenticated == false){
+            console.log("false", isAuthenticated.value);
+            loginWithRedirect();
+        }
     }
 
-    if (!loading.value) {
+    if (!state.loading) {
         return verify();
     }
 
@@ -58,19 +80,27 @@ const routeGuard = (to, from, next) => {
 }
 
 async function init() {
+    console.log(state)
+    // debugger
     client = await createAuth0Client({
         domain: import.meta.env.VITE_DOMAIN,
         clientId: import.meta.env.VITE_CLIENT_ID,
         authorizationParams: {
-            redirect_uri: import.meta.env.VITE_DEFAULT_URL
+            redirect_uri: import.meta.env.VITE_REDIRECT_URI
         }
     });
+    debugger
+        if (window.location.search.includes("code=") || window.location.search.includes("state=")) {
+            const { appState } = await client.handleRedirectCallback();
+            window.history.replaceState({}, document.title, window.location.pathname),
+            redirectUri = window.location.origin,
+            console.log("logged in", appState)
+        }
+        state.isAuthenticated = await client.isAuthenticated();
+        console.log("isAuth client",client.isAuthenticated())
+        state.user = await client.getUser();
+        state.loading = false;
 
-    if (window.location.search.includes("code=") && window.location.search.includes("state=")) {
-        console.log('log');
-    } else {
-        return client.loginWithRedirect();
-    }
 
     return {
         install: app => {
