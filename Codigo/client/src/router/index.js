@@ -5,9 +5,8 @@ const routes = [
         path: '/',
         name: 'App',
         // component: () => import('@/App.vue'),
-        beforeEnter: () => {
-            // Auth0.routeGuard
-        }
+        beforeEnter: Auth0.routeGuard
+
     },
     {
         path: '/perfil',
