@@ -33,7 +33,9 @@ function getTokenSilently() {
 }
 
 function logout() {
-    return client.logout();
+    return client.logout({
+        returnTo: window.location.origin
+    });
 }
 
 const authPlugin = {
