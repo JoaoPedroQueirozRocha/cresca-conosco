@@ -77,13 +77,12 @@ async function init() {
         domain: import.meta.env.VITE_DOMAIN,
         clientId: import.meta.env.VITE_CLIENT_ID,
         authorizationParams: {
-            redirect_uri: import.meta.env.VITE_PROD_URL_REDIRECT
+            redirect_uri: window.location.origin
         }
     });
         if (window.location.search.includes("code=") || window.location.search.includes("state=")) {
             const { appState } = await client.handleRedirectCallback();
-            window.history.replaceState({}, document.title, window.location.pathname),
-            redirectUri = window.location.origin
+            window.history.replaceState({}, document.title, window.location.pathname)
         }
         state.isAuthenticated = await client.isAuthenticated();
         state.user = await client.getUser();
