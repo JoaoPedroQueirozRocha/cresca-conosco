@@ -229,6 +229,7 @@ export default {
         padding: 0.2em 0.5em;
         border-radius: 16px;
         border: 0.1em transparent solid;
+        max-width: 100%;
 
         &:focus {
             outline: none;
@@ -246,5 +247,11 @@ h1 {
 
 .input-pass {
     min-width: 60vw;
+}
+
+@media screen and (max-width: 768px) {
+    .photo-name .name-input {
+        font-size: 1.5em;
+    }
 }
 </style>
