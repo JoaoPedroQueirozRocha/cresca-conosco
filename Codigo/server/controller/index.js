@@ -1,4 +1,5 @@
-import { Pool } from 'pg'
+import pkg from 'pg';
+const { Pool } =  pkg;
 import 'dotenv/config'  
 
 const pool = new Pool({
@@ -17,19 +18,5 @@ pool.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
 });
-
-pool.query('Select * from users', (err, res)=>{
-  if(!err){
-    console.log(res.rows)
-  }
-  else{
-    console.log(err.message)
-  }
-  pool.end;
-})
-
-module.exports = {
-  query: (text, params) => pool.query(text,params)
-}
 
 export default pool
