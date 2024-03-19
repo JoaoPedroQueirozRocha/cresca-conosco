@@ -7,17 +7,7 @@ import Topbar from "./components/Topbar.vue";
 export default {
   name: "App",
   components: { Menu, Alert, Topbar, Confirm },
-  inject: ["Auth"],
   setup() {},
-
-  async created() {
-    if (!this.$route.meta.unprotected) {
-      if (await this.Auth.getTokenSilently()) {
-        this.$router.push({ name: "Perfil" });
-      }
-    }
-  },
-
   methods: {},
 };
 </script>
