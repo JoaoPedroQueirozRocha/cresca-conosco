@@ -46,7 +46,7 @@ export default {
         closeDropdown(event, dropdown, icon, key) {
             if (!dropdown || !icon) return;
             if (!dropdown.contains(event.target) && !icon.contains(event.target)) 
-                this[key] = false
+                this[key] = false;
         },
 
         async deleteNotification(item) {},
