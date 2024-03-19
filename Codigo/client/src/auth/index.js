@@ -24,22 +24,22 @@ async function handleRedirectCallback() {
 
 }
 
-function loginWithRedirect() {
-    return client.loginWithRedirect()
+function loginWithRedirect(o) {
+    return client.loginWithRedirect(o)
 }
 
-function getTokenSilently() {
-    return client.getTokenSilently();
+function getTokenSilently(o) {
+    return client.getTokenSilently(o);
 }
 
-function logout() {
-    return client.logout({
-        returnTo: window.location.origin
-    });
+function logout(o) {
+    return client.logout(o);
 }
 
 const authPlugin = {
     isAuthenticated: computed(() => state.isAuthenticated),
+    loading: computed(() => state.loading),
+    user: computed(() => state.user),
     getTokenSilently,
     loginWithRedirect,
     logout,
@@ -47,23 +47,30 @@ const authPlugin = {
 }
 
 const routeGuard = (to, from, next) => {
-    const { isAuthenticated, loginWithRedirect } = authPlugin;
+    const { isAuthenticated, loading, loginWithRedirect } = authPlugin;
 
     const verify = () => {
-        if (to.meta.unprotected) {
-            return next();
-        }
+        if (to.meta.unprotected) return next();
 
         if (isAuthenticated.value) {
-            return next(VITE_PROD_URL)
+            const redirect_uri = localStorage.getItem("post_login_redirect_uri");
+            if (redirect_uri) {
+                localStorage.removeItem("post_login_redirect_uri");
+                return next(redirect_uri);
+            }
+            return next()
         }
 
-        if(state.isAuthenticated == false){
-            loginWithRedirect();
-        }
+        localStorage.setItem("post_login_redirect_uri", to.fullPath);
+
+        loginWithRedirect({ appState: { targetUrl: to.fullPath } });
+        // if (state.isAuthenticated == false) {
+        //     console.log("false", isAuthenticated.value);
+        //     loginWithRedirect();
+        //     isAuthenticated.value = true;
     }
 
-    if (!state.loading) {
+    if (!loading.value) {
         return verify();
     }
 
@@ -74,22 +81,32 @@ const routeGuard = (to, from, next) => {
     });
 }
 
-async function init() {
+
+
+async function init(options) {
+    console.log(state)
     client = await createAuth0Client({
-        domain: import.meta.env.VITE_DOMAIN,
-        clientId: import.meta.env.VITE_CLIENT_ID,
+        domain: options.domain,
+        clientId: options.clientId,
         authorizationParams: {
-            redirect_uri: window.location.origin
+            redirect_uri: options.redirectUri
         }
     });
+
+    try {
         if (window.location.search.includes("code=") || window.location.search.includes("state=")) {
             const { appState } = await client.handleRedirectCallback();
-            window.history.replaceState({}, document.title, window.location.pathname)
+            options.onRedirectCallback(appState);
         }
+
+    } catch (error) {
+        state.error = error;
+    } finally {
+        window.history.replaceState({}, document.title, window.location.pathname)
         state.isAuthenticated = await client.isAuthenticated();
         state.user = await client.getUser();
         state.loading = false;
-
+    }
 
     return {
         install: app => {
