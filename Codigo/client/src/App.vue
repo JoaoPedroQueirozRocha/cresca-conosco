@@ -18,11 +18,7 @@ export default {
     }
   },
 
-  methods: {
-    logout() {
-      this.Auth.logout();
-    },
-  },
+  methods: {},
 };
 </script>
 

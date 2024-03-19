@@ -13,36 +13,28 @@ const routes = [
         name: 'Perfil',
         props: true,
         component: () => import('@/view/perfil/Index.vue'),
-        beforeEnter: () => {
-            //função do auth0
-        }
+        beforeEnter: Auth0.routeGuard
     },
     {
         path: '/gado',
         name: 'Gado',
         props: true,
         // component: () => import('@/App.vue'),
-        beforeEnter: () => {
-            //função do auth0
-        }
+        beforeEnter: Auth0.routeGuard
     },
     {
         path: '/financas',
         name: 'Finanças',
         props: true,
         // component: () => import('@/App.vue'),
-        beforeEnter: () => {
-            //função do auth0
-        }
+        beforeEnter: Auth0.routeGuard
     },
     {
         path: '/funcionarios',
         name: 'Funcionários',
         props: true,
         // component: () => import('@/App.vue'),
-        beforeEnter: () => {
-            //função do auth0
-        }
+        beforeEnter: Auth0.routeGuard
     },
 ];
 

@@ -7,6 +7,7 @@ import Button from './Button.vue';
 export default {
     name: 'Topbar',
     components: { Card, Notification, Button },
+    inject: ['Auth'],
     setup() {
         return {
             notificationActive: ref(false),
@@ -45,6 +46,9 @@ export default {
                 this[key] = false;
         },
 
+        logout(){
+            this.Auth.logout();
+        },
         async deleteNotification(item) {},
     }
 }
@@ -91,7 +95,7 @@ export default {
                         <router-link to="/perfil" @click="activate(false, false)">
                             <Button class="whitespace-nowrap">Editar Perfil</Button>
                         </router-link>
-                        <Button only-border class="w-full">Logout</Button>
+                        <Button only-border class="w-full" @click="logout()">Logout</Button>
                     </div>
                 </Card>
             </div>

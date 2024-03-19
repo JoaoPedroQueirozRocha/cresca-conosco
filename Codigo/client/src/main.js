@@ -17,13 +17,13 @@ const vuetify = createVuetify({
 });
 
 async function init() {
-    // const AuthPlugin = await Auth0.init();
+    const AuthPlugin = await Auth0.init();
 
 
     const app = createApp(App)
         .use(vuetify)
         .use(router)
-        // .use(AuthPlugin)
+        .use(AuthPlugin)
 
     const confirm = (options) => {
         return new Promise((resolve) => {
