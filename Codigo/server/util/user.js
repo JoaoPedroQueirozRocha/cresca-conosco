@@ -78,9 +78,9 @@ router.get('/:token', async (req, res) => {
 })
 
 router.post('/', async (req,res)=>{
-    const {name, email, senha_hash, token} = req.body
+    const {name, email, senha_hash, token, isadmin, description} = req.body
     try{
-        pool.query('INSERT INTO users (name, email, senha_hash, token) VALUES ($1,$2,$3,$4) RETURNING *', [name, email, senha_hash, token])
+        pool.query('INSERT INTO users (name, email, senha_hash, token, isadmin, description) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *', [name, email, senha_hash, token, isadmin, description])
     }catch{
         console.error('Erro ao fazer o post')
         res.status(404).send('Erro ao fazer o post')
@@ -88,9 +88,9 @@ router.post('/', async (req,res)=>{
 })
 
 router.put('/', async (req,res)=>{
-    const {name, email, senha_hash, tolken} = req.body
+    const {name, email, senha_hash, token} = req.body
     try{
-        pool.query('UPDATE users SET email = $2, senha_hash = $3, tolken = $4 WHERE name = $1',(name, email, senha_hash, tolken))
+        pool.query('UPDATE users SET email = $2, senha_hash = $3, token = $4 WHERE name = $1',(name, email, senha_hash, token))
     }catch{
         console.error('Erro ao fazer o put')
         res.status(404).send('Erro ao fazer o put')
@@ -106,9 +106,6 @@ router.delete('/', async (req,res)=>{
         console.error('Erro ao fazer o delete')
         res.status(404).send('Erro ao fazer o delete')
     }
-
-
-
 })
 
 // exportando o router para ser utilizado na index
