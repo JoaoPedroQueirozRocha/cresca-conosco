@@ -1,7 +1,7 @@
 import express from 'express';
 import 'dotenv/config'  
 import userRouter from './controller/user.js'
-import authRouter from './controller/auth.js';
+import authRouter from './routes/authRoutes.js';
 
 const app = express();
 const PORT = '3000';
