@@ -1,5 +1,5 @@
 // Alteração dos requires para import, seguindo o ES6
-import express from 'express'
+import express, { response } from 'express'
 import pool from '../db/index.js'
 
 const router = express.Router()
@@ -15,11 +15,13 @@ async function getUserByToken(){
 
 }
 
-async function createNewUser(){
-
+async function createNewUser(body){    
+    const result = await pool.query('INSERT INTO users (name, email, token, isadmin, description) VALUES ($1,$2,$3,$4,$5) RETURNING *', [body.name, body.email, body.token, body.isadmin, body.description])
+    return result;
 }
 
-async function updateUser(){
+async function updateUser(email){
+
 
 }
 
