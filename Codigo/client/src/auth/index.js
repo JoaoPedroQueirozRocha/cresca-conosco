@@ -36,6 +36,26 @@ function logout(o) {
     return client.logout(o);
 }
 
+async function getUserID() {
+    state.loading = true;
+
+    try {
+        // Garante que o usuário está autenticado
+        if (!state.isAuthenticated) {
+            await handleRedirectCallback();
+        }
+        const user = await client.getUser();
+        console.log("this is user",user);
+        state.user = user;
+        state.isAuthenticated = true;
+        return user.sub; // Retorna o ID do usuário
+    } catch (e) {
+        state.error = e;
+    } finally {
+        state.loading = false;
+    }
+}
+
 const authPlugin = {
     isAuthenticated: computed(() => state.isAuthenticated),
     loading: computed(() => state.loading),
@@ -44,6 +64,7 @@ const authPlugin = {
     loginWithRedirect,
     logout,
     handleRedirectCallback,
+    getUserID
 }
 
 const routeGuard = (to, from, next) => {
@@ -84,7 +105,6 @@ const routeGuard = (to, from, next) => {
 
 
 async function init(options) {
-    console.log(state)
     client = await createAuth0Client({
         domain: options.domain,
         clientId: options.clientId,
@@ -105,6 +125,7 @@ async function init(options) {
         window.history.replaceState({}, document.title, window.location.pathname)
         state.isAuthenticated = await client.isAuthenticated();
         state.user = await client.getUser();
+        sessionStorage.setItem("user", JSON.stringify(state.user));
         state.loading = false;
     }
 
