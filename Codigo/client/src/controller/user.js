@@ -9,10 +9,6 @@ function updateUser(id) {
     return axios.put(`${APIURL}/${id}`);
 }
 
-function changePass(id) {
-    return axios.put(`${APIURL}/${id}`);
-}
-
 function createUser() {
     return axios.post(APIURL);
 }
@@ -24,7 +20,6 @@ function deleteUser(id) {
 export default {
     getUser,
     updateUser,
-    changePass,
     createUser,
     deleteUser
 }

@@ -1,5 +1,6 @@
 <script>
 import userController from '@/controller/user.js';
+import authController from '@/controller/auth.js';
 import { ref } from 'vue';
 import Card from '@/components/Card.vue';
 import Dialog from '@/components/Dialog.vue';
@@ -19,20 +20,18 @@ export default {
                 timeout: 3500,
             }),
             passObject: ref({}),
+            userData: ref({}),
         }
     },
 
     computed: {
-        userData() {
-            return {}
-        },
         size() {
             return window.innerWidth > 352 ? 'medium' : 'small';
         }
     },
 
     beforeMount() {
-        // Set user
+        this.userData = JSON.parse(window.sessionStorage.getItem('user'));
     },
 
     methods: {
@@ -68,7 +67,15 @@ export default {
             }
 
             try {
-                await userController.updateUser();
+                const newUser = await userController.updateUser();
+                this.userData = {
+                    ...this.userData,
+                    email: newUser.email,
+                    name: newUser.name,
+                    description: newUser.description,
+                };
+                window.sessionStorage.setItem('user', JSON.stringify(this.userData));
+
                 this.$alert({
                     message: 'Usuário alterado com sucesso',
                     type: 'success',
@@ -98,7 +105,7 @@ export default {
             }
 
             try {
-                await userController.changePass();
+                await authController.changePass(this.userData.sub, { password: this.passObject.newPass });
                 this.$alert({
                     message: 'Senha alterada com sucesso',
                     type: 'success',

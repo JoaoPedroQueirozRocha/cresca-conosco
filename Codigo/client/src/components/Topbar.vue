@@ -187,6 +187,7 @@ export default {
 
 .top-holder {
   @apply fixed md:right-0 px-4 py-2 md:px-6 md:py-4 md:w-fit w-full h-fit flex justify-end;
+  background: $gray-200;
   z-index: 80;
 }
 
@@ -197,11 +198,5 @@ h5 {
 .description {
   @apply text-sm;
   color: $gray-500;
-}
-
-@media screen and (max-width: 768px) {
-  .top-holder {
-    background: $gray-200;
-  }
 }
 </style>
