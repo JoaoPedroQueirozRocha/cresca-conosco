@@ -1,6 +1,6 @@
 // Alteração dos requires para import, seguindo o ES6
 import express from 'express'
-import pool from '../controller/index.js'
+import pool from '../db/index.js'
 
 const router = express.Router()
 
