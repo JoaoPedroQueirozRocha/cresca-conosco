@@ -10,13 +10,14 @@ async function getUser(req, res) {
 }
 
 async function updateUser(req, res) {
-	const userId = req.params.authId; // Assume que o ID do usuário está disponível como um parâmetro de rota
-	const updates = req.body; // Pega os dados de atualização do corpo da requisição
+	const userId = req.params.authId;
+	const updates = req.body;
 
 	try {
 		const updatedUser = await authService.updateUser(userId, updates);
 		res.json(updatedUser);
 	} catch (error) {
+        console.log(error)  
 		res.status(error.response.status).json(error.response.data);
 	}
 }
