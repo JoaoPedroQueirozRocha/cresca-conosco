@@ -15,5 +15,16 @@ async function getUserByEmail(req, res){
     }
 }
 
-export { getUserByEmail }
+async function createNewUser(req, res){
+    try{
+        res.json({requestBody: req.body}) 
+        const body = req.body 
+        await userServices.createNewUser(body)
+    } catch (error){
+        console.error(error)
+        res.status(error.status).send('Erro ao fazer post') 
+    }
+}
+
+export { getUserByEmail, createNewUser }
 
