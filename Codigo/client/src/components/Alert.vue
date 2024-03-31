@@ -6,6 +6,7 @@ export default {
     name: 'Alert',
     setup() {
         return {
+            hidden: ref(true),
             show: ref(false),
             type: ref('error')
         }
@@ -35,11 +36,18 @@ export default {
             Object.keys(options).forEach((key) => {
                 this[key] = options[key];
             });
+
             this.show = true;
+            setTimeout(() => {
+                this.hidden = false;
+            }, 1);
         },
 
         closeAlert() {
-            this.show = false;
+            this.hidden = true;
+            setTimeout(() => {
+                this.show = false;
+            }, 600);
         }
     },
 }
@@ -49,7 +57,7 @@ export default {
     <div   
         v-if="show"
         class="alert"
-        :class="[type, {'top-3': top, 'bottom-3': bottom, 'left-3': left, 'right-3': right,}]"
+        :class="[type, {'top-3': top, 'bottom-3': bottom, 'left': left, 'right': right, 'hidden': hidden}]"
     >
         <div class="flex gap-2 items-center">
             <span class="material-symbols-rounded text-2xl">
@@ -78,9 +86,36 @@ export default {
     align-items: center;
     padding: 0.5em 0.7em;
     border-radius: 16px;
-    min-width: 300px;
+    word-break: break-all;
+    white-space: normal;
+    width: fit-content;
+    max-width: 50em;
     border-width: 0.1em;
+    transition: left 0.6s ease, right 0.6s ease;
 }
+
+.alert.hidden.right {
+    right: -100%;
+}
+
+.alert.hidden.left {
+    left: -100%;
+}
+
+.right {
+    right: 1em;
+}
+
+.left {
+    left: 1em;
+}
+
+@media screen and (max-width: 50em) {
+    .alert {
+        max-width: 95%;
+    }
+}
+
 
 .icon {
     font-size: 40px;
