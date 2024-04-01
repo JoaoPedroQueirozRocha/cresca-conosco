@@ -192,6 +192,7 @@ export default {
 
 .top-icon {
 	background: $gray-200;
+    border-radius: 50%;
 }
 
 h5 {

@@ -193,11 +193,11 @@ export default {
 				>
 			</div>
 		</Card>
-		<div class="flex w-full justify-end">
-			<Button v-if="editing" @click="salveUser">Salvar</Button>
+		<div class="flex w-full justify-end gap-2">
 			<Button v-if="editing" @click="editing = false" only-border>
 				Cancelar
 			</Button>
+			<Button v-if="editing" @click="salveUser">Salvar</Button>
 		</div>
 		<Dialog v-model="changingPass" @update:model-value="resetPassForm">
 			<div class="flex flex-col xs:gap-6 gap-4 p-2">
