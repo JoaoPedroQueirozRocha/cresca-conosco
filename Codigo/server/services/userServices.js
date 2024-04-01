@@ -11,8 +11,9 @@ async function getUserByEmail(email){
     return queryResult.rows[0];
 }
 
-async function getUserByToken(){
-
+async function getUserByToken(token){
+    const queryResult = await pool.query("SELECT * FROM users WHERE email = $1", [token])
+    return queryResult.rows[0];
 }
 
 async function createNewUser(body){    
@@ -20,13 +21,14 @@ async function createNewUser(body){
     return result;
 }
 
-async function updateUser(email){
-
-
+async function updateUser(body){
+    const result = await pool.query('UPDATE users SET name = $1, email = $2, token = $3, isadmin = $4, description = $5 WHERE email = $2',[body.name, body.email, body.token, body.isadmin, body.description])
+    return result;
 }
 
-async function deleteUser(){
-
+async function deleteUser(body){
+    const result = await pool.query('DELETE FROM users WHERE email = $1',[body.email])
+    return result;
 }
 
 //
