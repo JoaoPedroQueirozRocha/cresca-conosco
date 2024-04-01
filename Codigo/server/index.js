@@ -9,18 +9,18 @@ import workerRouter from './routes/workerRoutes.js';
 import gadoRouter from './routes/gadoRoutes.js';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3002;
 app
-	.use(express.json())
+    .use(express.json())
     .use(cors())
-	.use("/user", userRouter)
-	.use("/auth", authRouter)
-	.use("/animals", animalsRouter)
-	.use("/gestacoes", gestacaoRouter)
+    .use("/user", userRouter)
+    .use("/auth", authRouter)
+    .use("/animals", animalsRouter)
+    .use("/gestacoes", gestacaoRouter)
     .use('/worker', workerRouter)
     .use('/gado', gadoRouter)
 
 app.listen(PORT, () => {
-	console.log(process.env.POSTGRES_USER);
-	console.log(`Listening to http://localhost:${PORT}`);
+    console.log(process.env.POSTGRES_USER);
+    console.log(`Listening to http://localhost:${PORT}`);
 });
