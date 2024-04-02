@@ -1,5 +1,12 @@
 import * as userServices from '../services/userServices.js'
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {user}
+ * Função para procurar um usuário pelo seu email
+ */
 async function getUserByEmail(req, res){
     try {
         const email = req.params.email
@@ -11,10 +18,17 @@ async function getUserByEmail(req, res){
     
     } catch (error) {
         console.error(error)
-        res.status(error.status).send('Erro ao fazer query por email')
+        res.status(error.status).send('Erro ao fazer query por email' + error.message)
     }
 }
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {user}
+ * Função para procurar um usuário pelo seu token do auth0
+ */
 async function getUserByToken(req, res){
     try {
         const token = req.params.token
@@ -26,10 +40,17 @@ async function getUserByToken(req, res){
     
     } catch (error) {
         console.error(error)
-        res.status(error.status).send('Erro ao fazer query por token')
+        res.status(error.status).send('Erro ao fazer query por token' + error.message)
     }
 }
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {user}
+ * Função para criar um novo usuário
+ */
 async function createNewUser(req, res){
     try{
         res.json(req.body) 
@@ -37,10 +58,17 @@ async function createNewUser(req, res){
         await userServices.createNewUser(body)
     } catch (error){
         console.error(error)
-        res.status(error.status).send('Erro ao fazer post') 
+        res.status(error.status).send('Erro ao fazer post' + error.message) 
     }
 }
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {user}
+ * Função para atualizar um usuário
+ */
 async function updateUser(req, res){
     try{
         res.json(req.body)
@@ -48,10 +76,17 @@ async function updateUser(req, res){
         await userServices.updateUser(body)
     } catch(error){
         console.error(error);
-        res.status(error.status).send('Erro ao fazer update de usuário')
+        res.status(error.status).send('Erro ao fazer update de usuário' + error.message)
     }
 }
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {user}
+ * Função para deletar um usuário
+ */
 async function deleteUser(req,res){
     try{
         res.json(req.body) 
@@ -59,7 +94,7 @@ async function deleteUser(req,res){
         await userServices.deleteUser(body)
     }catch (error){
         console.error(error);
-        res.status(error.status).send('Erro ao fazer update de usuário')
+        res.status(error.status).send('Erro ao fazer update de usuário' + error.message)
     }   
 }
 
