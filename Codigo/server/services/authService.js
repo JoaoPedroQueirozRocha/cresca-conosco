@@ -22,4 +22,9 @@ async function updateUser(userId, updates) {
 	return response.data;
 }
 
-export { getUserById, updateUser };
+async function deleteUser(userId) {
+	const response = await axiosInstance.delete(`/api/v2/users/${userId}`);
+	return response.data;
+}
+
+export { getUserById, updateUser, deleteUser };

@@ -24,4 +24,9 @@ async function updateUser(req, res) {
 	}
 }
 
-export { getUser, updateUser };
+async function deleteUser(req, res) {
+	const userDelete = authService.deleteUser(req.params.authId);
+	res.json(userDelete);
+}
+
+export { getUser, updateUser, deleteUser };
