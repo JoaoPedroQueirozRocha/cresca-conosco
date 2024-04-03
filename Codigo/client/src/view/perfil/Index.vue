@@ -10,6 +10,7 @@ import Input from "@/components/Input.vue";
 export default {
 	name: "Perfil",
 	components: { Card, Dialog, Button, Input },
+    inject: ["Auth"],
 	setup() {
 		return {
 			editing: ref(false),
@@ -32,6 +33,7 @@ export default {
 
 	beforeMount() {
 		this.userData = JSON.parse(window.sessionStorage.getItem("user"));
+        console.log(this.Auth.getTokenSilently())
 	},
 
 	methods: {
@@ -71,14 +73,8 @@ export default {
 				return;
 			}
 
-			try {
-				const newUser = await userController.updateUser(this.userData.sub, this.userData);
-				this.userData = {
-					...this.userData,
-					email: newUser.email,
-					name: newUser.name,
-					description: newUser.description,
-				};
+			try {          
+                await userController.updateUser(this.userData.sub, this.userData);
 				window.sessionStorage.setItem("user", JSON.stringify(this.userData));
 
 				this.$alert({
@@ -309,6 +305,7 @@ h1 {
 @media screen and (max-width: 768px) {
 	.photo-name .name-input {
 		font-size: 1.5em;
+        text-align: center;
 	}
 }
 </style>
