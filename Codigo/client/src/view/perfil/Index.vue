@@ -72,7 +72,7 @@ export default {
 			}
 
 			try {
-				const newUser = await userController.updateUser();
+				const newUser = await userController.updateUser(this.userData.sub, this.userData);
 				this.userData = {
 					...this.userData,
 					email: newUser.email,
@@ -110,7 +110,8 @@ export default {
 			}
 
 			try {
-				await authController.changePass(this.userData.sub, {
+				await authController.changeUser(this.userData.sub, {
+                    ...this.userData,
 					password: this.passObject.newPass,
 				});
 				this.$alert({
@@ -129,7 +130,7 @@ export default {
 
 		isValid() {
 			return (
-				this.userData.name && this.userData.description && this.userData.email
+				this.userData.name && this.userData.email
 			);
 		},
 
