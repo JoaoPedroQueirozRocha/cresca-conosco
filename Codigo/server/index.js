@@ -2,6 +2,7 @@ import express from 'express';
 import 'dotenv/config'  
 import userRouter from './routes/userRoutes.js'
 import authRouter from './routes/authRoutes.js';
+import workerRouter from './routes/workerRoutes.js';
 
 
 const app = express();
