@@ -24,16 +24,17 @@ async function getWorker(req, res){
 
 /**
  * 
- * @param {*} req 
+ * @param { nome, salario, descricao } req 
  * @param {*} res 
  * @returns {worker}
  * Função para criar um novo funcionário
+ * 
  */
 async function createWorker(req, res){
     try{
-        res.json(req.body)
         const body = req.body 
-        await workerServices.createWorker(body)
+        const worker = await workerServices.createWorker(body)
+        res.json(worker)
     } catch (error){
         console.error(error)
         res.status(error.status).send('Erro ao fazer post' + error.message) 
@@ -49,9 +50,9 @@ async function createWorker(req, res){
  */
 async function updateWorker(req, res){
     try{
-        res.json(req.body)
         const body = req.body
-        await workerServices.updateWorker(body)
+        const worker = await workerServices.updateWorker(body)
+        res.json(worker)
     } catch(error){
         console.error(error);
         res.status(error.status).send('Erro ao fazer update de funcionário' + error.message)
@@ -67,9 +68,9 @@ async function updateWorker(req, res){
  */
 async function deleteWorker(req,res){
     try{
-        res.json(req.body) 
         const body = req.body
-        await workerServices.deleteWorker(body)
+        const worker = await workerServices.deleteWorker(body)
+        res.json(worker) 
     }catch (error){
         console.error(error);
         res.status(error.status).send('Erro ao deletar funcionário' + error.message)
