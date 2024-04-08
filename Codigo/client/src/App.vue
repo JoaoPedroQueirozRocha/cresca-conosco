@@ -35,7 +35,7 @@ body {
 }
 
 .title {
-  @apply text-4xl font-bold;
+  @apply text-4xl font-bold mt-4;
   color: $green-dark;
 }
 
