@@ -20,7 +20,7 @@ const routes = [
         path: '/financas',
         name: 'Finanças',
         props: true,
-        // component: () => import('@/App.vue'),
+        component: () => import('@/view/financas/Index.vue'),
         beforeEnter: Auth0.routeGuard
     },
     {
