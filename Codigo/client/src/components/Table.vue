@@ -12,6 +12,10 @@ export default {
             type: Array,
             default: []
         },
+        maxHeight: {
+            type: String,
+            default: "50vh",
+        },
         options: Object,
         isLoading: Boolean,
     },
@@ -73,7 +77,7 @@ export default {
 </script>
 
 <template>
-    <div class="table-holder" :class="{'overflow-auto': items.length || isLoading}">
+    <div class="table-holder" :class="{'overflow-auto': items.length || isLoading}" :style="{'max-height': maxHeight}">
         <table>
             <thead v-if="isLoading">
                 <tr>
