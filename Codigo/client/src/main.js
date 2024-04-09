@@ -31,6 +31,8 @@ async function init() {
     app.use(AuthPlugin)
         .use(router)
         .use(vuetify)
+        .use(router)
+        .use(AuthPlugin)
 
     const confirm = (options) => {
         return new Promise((resolve) => {

@@ -4,8 +4,8 @@ import * as authController from "../controller/authController.js";
 const router = express.Router();
 
 router.get("/:authId", authController.getUser);
-router.patch("/update-password/:authId", authController.updatePassword);
-router.patch("/update-username/:authId", authController.updateUsername);
-router.patch("/update-email/:authId", authController.updateEmail);
+router.patch("/update-user/:authId", authController.updateUser);
+router.delete("/delete-user/:authId", authController.deleteUser);
 
 export default router;
+
