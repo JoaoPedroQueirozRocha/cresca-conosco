@@ -152,6 +152,7 @@
             </Dialog>
         </div>
     </div>
+    </div>
 </template>
 
 <script>
