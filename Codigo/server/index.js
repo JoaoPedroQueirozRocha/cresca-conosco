@@ -18,3 +18,6 @@ app.listen(PORT, () => {
     console.log(process.env.POSTGRES_USER);
     console.log(`Listening to http://localhost:${PORT}`);
 });
+
+export default app;
+
