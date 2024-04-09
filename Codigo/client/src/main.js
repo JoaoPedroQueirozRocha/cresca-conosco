@@ -17,10 +17,19 @@ const vuetify = createVuetify({
 });
 
 async function init() {
-    const AuthPlugin = await Auth0.init();
+    const AuthPlugin = await Auth0.init({
+        onRedirectCallback: appState => {
+            router.push(appState && appState.targetUrl ? appState.targetUrl : window.location.pathname)
+        },
+        domain: import.meta.env.VITE_DOMAIN,
+        clientId: import.meta.env.VITE_CLIENT_ID,
+        redirectUri: window.location.origin
+    });
 
 
-    const app = createApp(App)
+    const app = createApp(App);
+    app.use(AuthPlugin)
+        .use(router)
         .use(vuetify)
         .use(router)
         .use(AuthPlugin)
@@ -28,19 +37,19 @@ async function init() {
     const confirm = (options) => {
         return new Promise((resolve) => {
             event.emit('open-confirm', options);
-        
+
             const onConfirm = () => {
                 event.off('confirm', onConfirm);
                 event.off('cancel', onCancel);
                 resolve(true);
             };
-        
+
             const onCancel = () => {
                 event.off('confirm', onConfirm);
                 event.off('cancel', onCancel);
                 resolve(false);
             };
-        
+
             event.on('confirm', onConfirm);
             event.on('cancel', onCancel);
         });

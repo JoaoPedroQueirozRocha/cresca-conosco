@@ -2,47 +2,33 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Auth0 from '../auth/index.js'
 const routes = [
     {
-        path: '/',
-        name: 'App',
-        // component: () => import('@/App.vue'),
-        beforeEnter: Auth0.routeGuard
-
-    },
-    {
         path: '/perfil',
+        alias: '/',
         name: 'Perfil',
         props: true,
         component: () => import('@/view/perfil/Index.vue'),
-        beforeEnter: () => {
-            //função do auth0
-        }
+        beforeEnter: Auth0.routeGuard
     },
     {
         path: '/gado',
         name: 'Gado',
         props: true,
-        // component: () => import('@/App.vue'),
-        beforeEnter: () => {
-            //função do auth0
-        }
+        component: () => import('@/view/gado/Index.vue'),
+        beforeEnter: Auth0.routeGuard
     },
     {
         path: '/financas',
         name: 'Finanças',
         props: true,
         // component: () => import('@/App.vue'),
-        beforeEnter: () => {
-            //função do auth0
-        }
+        beforeEnter: Auth0.routeGuard
     },
     {
         path: '/funcionarios',
         name: 'Funcionários',
         props: true,
         // component: () => import('@/App.vue'),
-        beforeEnter: () => {
-            //função do auth0
-        }
+        beforeEnter: Auth0.routeGuard
     },
 ];
 
