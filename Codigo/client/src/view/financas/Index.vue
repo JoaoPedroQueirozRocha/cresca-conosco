@@ -6,12 +6,12 @@ import Card from "@/components/Card.vue";
 import Table from "@/components/Table.vue";
 import Button from "@/components/Button.vue";
 import Input from "@/components/Input.vue";
-import Input from "@/components/Input.vue";
+import DatePicker from "@/components/DatePicker.vue";
 import Dialog from "@/components/Dialog.vue";
 
 export default {
 	name: "Perfil",
-	components: { Card, Table, Button, Input, Dialog, apexchart: VueApexCharts },
+	components: { Card, Table, Button, Input, Dialog, DatePicker, apexchart: VueApexCharts },
     inject: ["Auth"],
 	setup() {
 		return {
@@ -128,6 +128,7 @@ export default {
                 :series="series"
             ></apexchart>
         </Card>
+        <DatePicker></DatePicker>
         <Table :headers="headers"></Table>
     </div>
 </template>
