@@ -13,7 +13,7 @@ const routes = [
         path: '/gado',
         name: 'Gado',
         props: true,
-        // component: () => import('@/App.vue'),
+        component: () => import('@/view/gado/Index.vue'),
         beforeEnter: Auth0.routeGuard
     },
     {
