@@ -1,9 +1,9 @@
 import { reactive, ref, toRefs } from "vue"
 import { useFetchs } from "./useFetchs.js";
 
-export function useGado(allData) {
+export function useGado() {
 
-    const { getAllData } = useFetchs(allData);
+    const { getAllData, getBaseData } = useFetchs();
 
     const state = reactive({
         moreDetails: ref(false),
@@ -43,19 +43,42 @@ export function useGado(allData) {
                 align: "center",
             },
             { text: "Status", value: "status", sortable: true },
-        ])
+        ]),
+        isLoading: ref(false),
+        isDialogLoading: ref(false),
+        allData: ref([]),
+        gadoData: ref([]),
     })
 
+    async function loadBaseData() {
+        try {
+            state.isLoading = true;
+            state.gadoData = await getBaseData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isLoading = false;
+        }
+    }
+
     async function createDialog() {
-        state.moreDetails = true;
-        const data = await getAllData();
-        console.log("data fetch all", data);
-        allData.value = data;
+        try {
+            state.isDialogLoading = true;
+            state.moreDetails = true;
+            state.allData = await getAllData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isDialogLoading = false;
+        }
+
     }
 
 
     return {
-        ...toRefs(state, allData),
+        ...toRefs(state),
         createDialog,
+        loadBaseData,
     }
 }
+

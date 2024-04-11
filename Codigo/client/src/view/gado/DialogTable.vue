@@ -1,5 +1,5 @@
 <template>
-	<Table :items="allData" :headers="headers" maxHeight="85vh">
+	<Table :items="allData" :headers="headers" maxHeight="85vh" class="w-full" :loading="isDialogLoading">
 		<template #nome="{ item, index }">
 			<td>
 				{{ item.nome }}
@@ -62,6 +62,10 @@ export default {
 		},
 		allData: {
 			type: Array,
+			required: true,
+		},
+		isDialogLoading: {
+			type: Boolean,
 			required: true,
 		},
 	},

@@ -6,7 +6,7 @@
 					<h2 class="text-[2.5em] font-bold">Gado</h2>
 					<div class="flex flex-row flex-wrap gap-2 content-center">
 						<Button @click="createDialog">Mais detalhes</Button>
-						<Button>Adicionar</Button>
+						<Button @click="$router.push('/gado/create')">Adicionar</Button>
 					</div>
 				</div>
 				<div class="w-full flex flex-row justify-between">
@@ -69,8 +69,8 @@
 					</td>
 				</template>
 			</Table>
-			<Dialog v-model="moreDetails">
-				<DialogTable :headers="headersDialog" :allData="allData" />
+			<Dialog v-model="moreDetails" :width="'100%'">
+				<DialogTable :headers="headersDialog" :allData="allData" :isDialogLoading="isDialogLoading" />
 			</Dialog>
 		</div>
 	</div>
@@ -92,11 +92,17 @@ export default {
 	components: { Table, Button, Input, Dialog, DialogTable, Card },
 	inject: ['Auth'],
 	setup() {
-		const gadoData = ref([]);
-		const allData = ref([]);
-		const isLoading = ref(false);
-		const { getBaseData } = useFetchs(gadoData);
-		const { createDialog, moreDetails, headersDialog, headers } = useGado(allData);
+		const {
+			gadoData,
+			allData,
+			headersDialog,
+			headers,
+			isLoading,
+			isDialogLoading,
+			loadBaseData,
+			createDialog,
+			moreDetails,
+		} = useGado();
 
 		return {
 			gadoData,
@@ -104,7 +110,8 @@ export default {
 			headersDialog,
 			headers,
 			isLoading,
-			getBaseData,
+			isDialogLoading,
+			loadBaseData,
 			createDialog,
 			moreDetails,
 			opendedIndex: ref(null),
@@ -112,14 +119,8 @@ export default {
 	},
 
 	async beforeMount() {
-		try {
-			this.isLoading = true;
-			await this.getBaseData();
-		} catch (e) {
-			console.error(e);
-		} finally {
-			this.isLoading = false;
-		}
+		await this.loadBaseData();
+		console.log('gadoData');
 	},
 
 	mounted() {
