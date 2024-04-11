@@ -2,11 +2,11 @@ import { reactive, toRefs, ref } from 'vue'
 import gadoController from '../../controller/gado.js';
 
 
-export function useFetchs(gadoData) {
+export function useFetchs() {
 
     async function getBaseData() {
         const data = await gadoController.getBase();
-        gadoData.value = data;
+        return data;
     }
 
     async function getAllData() {
@@ -16,7 +16,6 @@ export function useFetchs(gadoData) {
     }
 
     return {
-        ...toRefs(gadoData),
         getBaseData,
         getAllData
     }
