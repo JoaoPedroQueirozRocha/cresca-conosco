@@ -128,7 +128,7 @@ export default {
                 :series="series"
             ></apexchart>
         </Card>
-        <DatePicker is-compare></DatePicker>
+        <DatePicker is-compare :max-date="new Date()"></DatePicker>
         <Table :headers="headers"></Table>
     </div>
 </template>
