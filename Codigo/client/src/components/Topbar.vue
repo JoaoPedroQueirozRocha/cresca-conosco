@@ -17,10 +17,12 @@ export default {
 			notificationIcon: ref(),
 			perfilDropdown: ref(),
 			perfilIcon: ref(),
+			userData: ref(),
 		};
 	},
 
 	beforeMount() {
+		this.userData = JSON.parse(window.sessionStorage.getItem('user'));
 		document.addEventListener("click", (event) => {
 			this.closeDropdown(
 				event,
@@ -130,7 +132,7 @@ export default {
 					ref="perfilDropdown"
 					class="flex flex-col items-center gap-4 w-fit"
 				>
-					<h3 class="user-name">Teste</h3>
+					<h3 class="user-name">{{ userData.name }}</h3>
 					<div class="flex flex-col gap-2">
 						<router-link to="/perfil" @click="activate(false, false)">
 							<Button class="whitespace-nowrap">Editar Perfil</Button>

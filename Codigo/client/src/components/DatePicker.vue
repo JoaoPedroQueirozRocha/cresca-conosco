@@ -97,7 +97,7 @@ export default {
     methods: {
         changeExpanded(value) {
             this.isExpanded = value;
-            this.$emit('update:modelValue', this.isExpanded);
+            this.$emit('update:expanded', this.isExpanded);
         },
 
         changeModel(value) {
@@ -336,12 +336,12 @@ export default {
 @import "../style/var.scss";
 
 .date-holder {
-    width: 340px;
+    width: 320px;
 }
 
 
 .date-space {
-    @apply [&>*]:p-[.5em];
+    @apply [&>*]:p-[.4em];
 }
 
 .table-header {

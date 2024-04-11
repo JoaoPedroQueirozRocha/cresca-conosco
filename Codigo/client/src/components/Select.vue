@@ -48,7 +48,7 @@ export default {
     methods: {
         changeExpanded(value) {
             this.isExpanded = value;
-            this.$emit('update:modelValue', this.isExpanded);
+            this.$emit('update:expanded', this.isExpanded);
         },
 
         changeModel(value) {
