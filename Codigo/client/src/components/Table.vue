@@ -17,7 +17,7 @@ export default {
             default: "50vh",
         },
         options: Object,
-        isLoading: Boolean,
+        loading: Boolean,
     },
 
     setup() {
@@ -77,9 +77,9 @@ export default {
 </script>
 
 <template>
-    <div class="table-holder" :class="{'overflow-auto': items.length || isLoading}" :style="{'max-height': maxHeight}">
+    <div class="table-holder" :class="{'overflow-auto': items.length || loading}" :style="{'max-height': maxHeight}">
         <table>
-            <thead v-if="isLoading">
+            <thead v-if="loading">
                 <tr>
                     <th v-for="header in (headers.length || 3)" :key="header" class="skeleton-table-cell pointer-events-none">
                         <div class="skeleton-table-div" />
@@ -115,7 +115,7 @@ export default {
                     <th v-if="$slots.actions" class="pointer-events-none" />
                 </tr>
             </thead>
-            <tbody v-if="isLoading">
+            <tbody v-if="loading">
                 <tr v-for="index in 6" :key="index">
                     <td v-if="enableSelection" class="skeleton-table-cell">
                         <div class="skeleton-table-div" />
@@ -139,7 +139,7 @@ export default {
 
             </tbody>
         </table>
-        <div class="empty" v-if="!items.length && !isLoading">
+        <div class="empty" v-if="!items.length && !loading">
             <slot name="empty-state" />
         </div>
     </div>
