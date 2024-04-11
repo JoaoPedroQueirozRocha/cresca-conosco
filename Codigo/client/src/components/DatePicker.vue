@@ -1,6 +1,7 @@
 <script>
 import { ref } from 'vue';
 import SelectContainer from './SelectContainer.vue';
+import { upperCaseFirstLetter } from '../util/index.js';
 
 export default {
     name: 'DatePicker',
@@ -29,21 +30,38 @@ export default {
             model: ref(),
             title: ref(),
             today: ref(new Date()),
+            hoverDate: ref()
         }
     },
 
     created() {
-        this.model = this.modelValue;
+        if (this.modelValue) {
+            this.model = this.modelValue;
+        } else {
+            if (this.isCompare) {
+                this.model = [];
+            } else {
+                this.model = null;
+            }
+        }
+    
         this.isExpanded = this.expanded;
         this.getArrayMonthDay(this.today);
     },
 
     watch: {
         modelValue() {
-            this.model = this.modelValue
+            this.model = this.modelValue;
         },
         expanded() {
             this.isExpanded = this.expanded;
+        }
+    },
+
+    computed: {
+        title() {
+            const title = this.today.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+            return upperCaseFirstLetter(title);
         }
     },
 
@@ -80,23 +98,70 @@ export default {
             }
         },
 
-        formateDate() {}
+        selectDate(date) {
+            if (this.isCompare) {
+                if (this.model.length == 2) this.model = [];
+
+                if (this.model.length == 1) {
+                    const date1 = this.model[0];
+
+                    if (date1.toLocaleDateString().substring(0, 10) > date.toLocaleDateString().substring(0, 10)) {
+                        this.model[0] = date;
+                        this.model[1] = date1;
+                    } else {
+                        this.model.push(date)
+                    }
+                } else {
+                    this.model[0] = date;
+                }
+                console.log(this.model)
+            } else {
+                this.model = date;
+            }
+            this.$emit('update:modelValue', this.model);
+        },
+
+        isDateSelected(date) {
+            if (this.isCompare) {
+                if (this.model.length === 2) {
+                    console.log(this.model[0].toLocaleDateString().substring(0, 10) >= date &&
+                        this.model[1].toLocaleDateString().substring(0, 10) <= date)
+                    return this.model[0].toLocaleDateString().substring(0, 10) <= date &&
+                        this.model[1].toLocaleDateString().substring(0, 10) >= date;
+                } else if (this.model.length === 1) {
+                    return this.model[0].toLocaleDateString().substring(0, 10) == date;
+                }
+            } else if (this.model instanceof Date) {
+                return this.model.toLocaleDateString().substring(0, 10) == date;
+            }
+            return false;
+        },
+
+        isBetween(date) {
+            if (!this.isCompare || this.model.length !== 1) return false;
+            return (this.model[0].toLocaleDateString().substring(0, 10) <= this.hoverDate &&
+                    date >= this.hoverDate && 
+                    date > this.model[0].toLocaleDateString().substring(0, 10)) ||
+                    (this.model[0].toLocaleDateString().substring(0, 10) >= this.hoverDate &&
+                    date <= this.hoverDate && date >= this.model[0].toLocaleDateString().substring(0, 10) && 
+                    date < this.model[0].toLocaleDateString().substring(0, 10));
+        }
     }
 }
 </script>
 
 <template>
-    <SelectContainer v-model="isExpanded" @update:model-value="changeModel" icon="calendar_month">
+    <SelectContainer v-model="isExpanded" @update:model-value="changeExpanded" icon="calendar_month">
         <template #item>
-            <div class="w-fit">
-                <div class="flex items-center justify-between gap-2">
+            <div class="w-fit px-1">
+                <div class="flex items-center justify-between gap-2 py-4">
                     <div class="chevron">
                         <span class="material-symbols-rounded">
                             chevron_left
                         </span>
                     </div>
                     <Transition>
-                        <h1 class="text-base font-bold cursor-pointer">{{ title }}</h1>
+                        <h1 class="text-lg font-bold cursor-pointer date-title">{{ title }}</h1>
                     </Transition>
                     <div class="chevron">
                         <span class="material-symbols-rounded">
@@ -112,7 +177,17 @@ export default {
                             </tr>
                             <tr v-for="(week, index) in month" :key="index" class="date-space">
                                 <td v-for="(day, index) in week" :key="index">
-                                    <div v-if="day" class="day">
+                                    <div 
+                                        v-if="day" 
+                                        class="day"
+                                        :class="{
+                                            'selected': isDateSelected(day.toLocaleDateString().substring(0, 10)),
+                                            'hover': hoverDate && isBetween(day.toLocaleDateString().substring(0, 10))
+                                        }"
+                                        @mouseenter="hoverDate = day.toLocaleDateString().substring(0, 10)"
+                                        @mouseleave="hoverDate = null"
+                                        @click="selectDate(day)"
+                                    >
                                         {{ day.getDate() }}
                                     </div>
                                 </td>
@@ -180,4 +255,14 @@ export default {
         background: $green-dark;
     }
 }
+
+.day.hover {
+    color: white;
+    background: $green-100;
+}
+
+.date-title {
+    color: $gray-500;
+}
 </style>
+

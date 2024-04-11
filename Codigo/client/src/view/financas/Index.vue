@@ -128,7 +128,7 @@ export default {
                 :series="series"
             ></apexchart>
         </Card>
-        <DatePicker></DatePicker>
+        <DatePicker is-compare></DatePicker>
         <Table :headers="headers"></Table>
     </div>
 </template>
