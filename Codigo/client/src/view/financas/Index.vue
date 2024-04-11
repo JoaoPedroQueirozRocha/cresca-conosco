@@ -1,40 +1,11 @@
+
+
 <template>
-    <h2 class="text-[2.5em] font-bold">Editar despesas</h2>
-
-    <Card>
-        <Input type="text" label="Descrição" placeholder="Digite aqui"></Input>
-
-        <div class="flex gap-6">
-            <Input type="text" label="Valor" placeholder="Digite aqui">Digite aqui</Input>
-            <div class="tipo-holder">
-                <h3 class="label-text">Tipo</h3>
-                <select class="input">
-                    <option disabled selected value="" default>Selecione</option>
-                    <option>Tipo1</option>
-                    <option>Tipo2</option>
-                    <option>Tipo3</option>
-                </select>
-            </div>
-        </div>
-
-        <input v-model="dataChecked" class="selecionar-data flex-row flex-wrap" type="checkbox" style="width: 2em; height: 1.3em;">Selecionar
-        data</input>
-
-        <Input v-if="dataChecked" type="date" label="Selecione a data"></Input>
-
-    </Card>
-
-    <div class="flex flex-row flex-wrap gap-2 justify-end ">
-
-        <Button class="only-border">Cancelar</Button>
-        <Button>Salvar</Button>
-
-    </div>
-
+    <Button @click="$router.push('/financas/edicao')">Editar despesa</Button>
 </template>
 
+
 <script>
-import { reactive, ref } from "vue";
 import Button from "../../components/Button.vue";
 import Dialog from "../../components/Dialog.vue";
 import Card from "../../components/Card.vue"
@@ -71,50 +42,3 @@ export default {
 };
 </script>
 
-
-<style lang="scss" scoped>
-@import "../../style/var.scss";
-
-.selecionar-data {
-    margin-top: 1em;
-    margin-bottom: 1em;
-}
-
-.tipo-holder {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 0.2em;
-    height: fit-content;
-    width: 100%;
-}
-
-.card {
-    margin-bottom: 1%;
-}
-
-.label-text {
-    color: #004d3c;
-    font-weight: 600;
-    gap: 0.2em;
-}
-
-.input {
-    width: 100%;
-    height: 2.5em;
-    border-radius: 8px;
-    border: 0.15em #d9d9d9 solid;
-    padding: 0.5em;
-    color: #5C5C5C;
-
-    &::placeholder {
-        color: #A6A6A6;
-    }
-
-    &:focus {
-        outline: none;
-        box-shadow: none;
-        border-color: #66d7d1;
-    }
-}
-</style>

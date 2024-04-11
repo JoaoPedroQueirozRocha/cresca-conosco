@@ -24,6 +24,13 @@ const routes = [
         beforeEnter: Auth0.routeGuard
     },
     {
+        path: '/financas/edicao',
+        name: 'FinançasEdicao',
+        props: true,
+        component: () => import('@/view/financas/EditarDespesa.vue'),
+        beforeEnter: Auth0.routeGuard
+    },
+    {
         path: '/funcionarios',
         name: 'Funcionários',
         props: true,
