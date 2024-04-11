@@ -6,19 +6,21 @@
 					<h2 class="text-[2.5em] font-bold">Gado</h2>
 					<div class="flex flex-row flex-wrap gap-2 content-center">
 						<Button @click="createDialog">Mais detalhes</Button>
-						<Button @click="$router.push('/gado/create')">Adicionar</Button>
+						<router-link to="/gado/create">
+							<Button>Adicionar</Button>
+						</router-link>
 					</div>
 				</div>
-				<div class="w-full flex flex-row justify-between">
-					<div>
-						<Input type="search" class="bg-white" />
-					</div>
-					<div>
-						<span class="material-symbols-rounded round-icon"> filter_list </span>
-					</div>
+				<div class="flex items-center justify-between gap-4 flex-wrap">
+					<Input type="search" class="filter-input" placeholder="Pesquisar" />
+					<Button class="filter-button" rounded>
+						<span class="material-symbols-rounded">
+							filter_list
+						</span>
+					</Button>
 				</div>
 			</div>
-			<Table :items="gadoData" :headers="headers" class="w-full" :isLoading="isLoading">
+			<Table :items="gadoData" :headers="headers" class="w-full gado-table" :isLoading="isLoading">
 				<template #actions="{ item, index }">
 					<td class="w-2 cursor-pointer action">
 						<span class="material-symbols-rounded" @click="positionCard(item, index)"> more_vert </span>
@@ -125,10 +127,16 @@ export default {
 
 	mounted() {
 		document.addEventListener('click', this.closeCard);
+		document.addEventListener('scroll', this.closeCard);
+		const table = document.querySelector('.gado-table');
+		table.addEventListener('scroll', this.closeCard);
 	},
 
 	beforeUnmount() {
 		document.removeEventListener('click', this.closeCard);
+		document.removeEventListener('scroll', this.closeCard);
+		const table = document.querySelector('.gado-table');
+		table.removeEventListener('scroll', this.closeCard);
 	},
 
 	methods: {
@@ -162,12 +170,24 @@ export default {
 <style lang="scss" scoped>
 @import '../../style/var.scss';
 
-.round-icon {
-	cursor: pointer;
-	color: white;
-	padding: 5px;
-	font-size: 35px;
-	background: $green-dark;
-	border-radius: 50%;
+
+.filter-button .material-symbols-rounded {
+    font-size: 30px;
+}
+
+.filter-input {
+    min-width: 25em;
+}
+
+@media screen and (max-width: 768px) {
+	.dialog-div {
+        width: 90vw;
+    }
+}
+
+@media screen and (max-width: 488px) {
+    .filter-input {
+        min-width: 100%;
+    }
 }
 </style>
