@@ -8,6 +8,7 @@ import { createVuetify } from 'vuetify';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 import event from './util/event';
+import VueApexCharts from "vue3-apexcharts";
 
 import '@/style/main.css';
 
@@ -31,6 +32,7 @@ async function init() {
     app.use(AuthPlugin)
         .use(router)
         .use(vuetify)
+        .use(VueApexCharts)
 
     const confirm = (options) => {
         return new Promise((resolve) => {
