@@ -39,6 +39,33 @@ body {
   color: $green-dark;
 }
 
+.skeleton-card-title {
+    width: 30%;
+    margin-bottom: 8px;
+}
+
+.skeleton-card-content {
+    width: 100%;
+    height: 24px !important;
+}
+
+.skeleton {
+    height: 14px;
+    background: $gray-200;
+    background: linear-gradient(90deg, transparent, $gray-200, transparent);
+    background-size: 200% 100%;
+    animation: moveBar 1.5s linear infinite
+}
+
+@keyframes moveBar {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .content {
     padding: 0 1em;

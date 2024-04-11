@@ -33,7 +33,6 @@ export default {
 
 	beforeMount() {
 		this.userData = JSON.parse(window.sessionStorage.getItem('user'));
-		// console.log(this.Auth.getTokenSilently())
 	},
 
 	methods: {

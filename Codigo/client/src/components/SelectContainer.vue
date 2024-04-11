@@ -92,7 +92,7 @@ export default {
                     arrow_drop_down
                 </span>
             </div>
-            <div ref="content" class="content absolute z-50 top-full left-0 overflow-hidden transition-[max-height] bg-white" :class="{'active': model}" style="max-height: 0;">
+            <div ref="content" class="select-content absolute z-50 top-full left-0 overflow-hidden transition-[max-height] bg-white" :class="{'active': model}" style="max-height: 0;">
                 <slot name="item" />
             </div>
         </div>
@@ -137,7 +137,7 @@ export default {
     }
 }
 
-.active.content {
+.active.select-content {
     border: 0.15em $blue-light solid;
     border-top: none;
     border-bottom-left-radius: 8px;
