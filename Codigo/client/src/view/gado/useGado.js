@@ -26,7 +26,23 @@ export function useGado(allData){
             },
             {text: "Num.Insem", value: "numInsem", sortable: true},
             { text: "Status", value: "status", sortable: true },
-
+        ]),
+        headers: ref([
+            { text: "Nome", value: "nome", sortable: true },
+            {
+                text: "Prox.Inseminação",
+                value: "proxInseminacao",
+                sortable: true,
+            },
+            { text: "Prev.Parto", value: "prevParto", sortable: true },
+            { text: "Sêmem", value: "semem", sortable: true },
+            {
+                text: "Lactante",
+                value: "lactante",
+                sortable: true,
+                align: "center",
+            },
+            { text: "Status", value: "status", sortable: true },
         ])
     })
 
