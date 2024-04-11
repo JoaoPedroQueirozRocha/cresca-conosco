@@ -9,7 +9,7 @@ export function useFetchs(gadoData) {
         gadoData.value = data;
     }
 
-    async function getAllData(){
+    async function getAllData() {
         const data = await gadoController.getAll();
         return data;
 

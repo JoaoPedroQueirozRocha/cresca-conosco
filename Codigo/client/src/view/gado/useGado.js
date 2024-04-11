@@ -1,16 +1,16 @@
 import { reactive, ref, toRefs } from "vue"
-import {useFetchs} from "./useFetchs.js";
+import { useFetchs } from "./useFetchs.js";
 
-export function useGado(allData){
+export function useGado(allData) {
 
-    const {getAllData} = useFetchs(allData);
+    const { getAllData } = useFetchs(allData);
 
-    const state =  reactive({
+    const state = reactive({
         moreDetails: ref(false),
         headersDialog: ref([
             { text: "Nome", value: "nome", sortable: true },
-            {text: "Crias", value: "crias", sortable: true},
-            {text: "DP", value: "dp", sortable: true},
+            { text: "Crias", value: "crias", sortable: true },
+            { text: "DP", value: "dp", sortable: true },
             {
                 text: "Prox.Inseminação",
                 value: "proxInseminacao",
@@ -24,7 +24,7 @@ export function useGado(allData){
                 sortable: true,
                 align: "center",
             },
-            {text: "Num.Insem", value: "numInsem", sortable: true},
+            { text: "Num.Insem", value: "numInsem", sortable: true },
             { text: "Status", value: "status", sortable: true },
         ]),
         headers: ref([
@@ -46,12 +46,12 @@ export function useGado(allData){
         ])
     })
 
-    async function createDialog(){
+    async function createDialog() {
         state.moreDetails = true;
         const data = await getAllData();
         console.log("data fetch all", data);
         allData.value = data;
-    }  
+    }
 
 
     return {
