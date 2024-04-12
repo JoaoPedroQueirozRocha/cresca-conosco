@@ -6,6 +6,7 @@ import Input from "@/components/Input.vue";
 import Checkbox from "@/components/Checkbox.vue";
 import Icon from "@/components/Icon.vue";
 import DatePicker from "@/components/DatePicker.vue";
+import Card from "@/components/Card.vue";
 import { formatCurrency, formatDate, upperCaseFirstLetter } from "@/util";
 
 export default {
@@ -17,15 +18,31 @@ export default {
         title: String,
         addRoute: String
     },
-	components: { Table, Button, Input, DatePicker, Checkbox, Icon },
+	components: { Table, Button, Input, DatePicker, Checkbox, Icon, Card },
     inject: ["Auth"],
 	setup() {
 		return {
             searchValue: ref(''),
+			opendedIndex: ref(null),
+			opendedChildIndex: ref(null),
             formatCurrency,
             formatDate,
-            upperCaseFirstLetter
+            upperCaseFirstLetter,
 		};
+	},
+    
+	mounted() {
+		document.addEventListener('click', this.closeCard);
+		document.addEventListener('scroll', this.closeCard);
+		const table = document.querySelector('.finance-table');
+		table.addEventListener('scroll', this.closeCard);
+	},
+
+	beforeUnmount() {
+		document.removeEventListener('click', this.closeCard);
+		document.removeEventListener('scroll', this.closeCard);
+		const table = document.querySelector('.finance-table');
+		table.removeEventListener('scroll', this.closeCard);
 	},
 
     computed: {
@@ -38,6 +55,40 @@ export default {
                 });
             });
         }
+    },
+
+    methods: {
+        positionCard(item, index, cIndex) {
+			this.setExpanded();
+			const card = this.$refs['card' + index + cIndex][0]?.$el
+			const rect = card?.parentElement?.getBoundingClientRect();
+
+            if (!card || !rect) return;
+
+			card.style.left = rect.left - 40 + 'px';
+			card.style.top = rect.top + 30 + 'px';
+			item.expanded = true;
+			this.opendedIndex = index;
+			this.opendedChildIndex = cIndex;
+		},
+
+		closeCard(event) {
+			const card = this.$refs['card' + this.opendedIndex + this.opendedChildIndex];
+            if (!card) return;
+            const cardParent = card[0]?.$el?.parentElement;
+			if (this.opendedIndex == null || this.opendedChildIndex == null || (cardParent && event.target.closest('.actions') === cardParent)) return;
+			this.setExpanded();
+		},
+
+		setExpanded() {
+            if (this.opendedIndex == null || this.opendedChildIndex == null) return;
+
+			const item = this.filteredData[this.opendedIndex][this.opendedChildIndex];
+			if (!item) return;
+			item.expanded = false;
+			this.opendedIndex = null;
+			this.opendedChildIndex = null;
+		},
     },
 };
 </script>
@@ -62,7 +113,7 @@ export default {
                 </span>
             </Button>
         </div>
-        <Table :headers="headers" :items="filteredData" :loading="loading">
+        <Table :headers="headers" :items="filteredData" :loading="loading" class="finance-table">
             <template v-for="(header, index) in headers" :key="index" v-slot:[header.value]="{item}">
                 <td v-if="item[header.value] instanceof Date">
                     {{ upperCaseFirstLetter(formatDate(item[header.value], { month: 'long' })) }}/{{ formatDate(item[header.value], { year: 'numeric' }) }}
@@ -81,7 +132,7 @@ export default {
                 <td v-else>{{ item[header.value] }}</td>
             </template>
             <template #actions></template>
-            <template #childs="{ item }">
+            <template #childs="{ item, index }">
                 <tr
                     v-for="(child, cIndex) in item.childs"
                     :key="cIndex"
@@ -109,16 +160,16 @@ export default {
                             </span>
                         </template>
                     </td>
-                    <td class="border-gray-200 border-t-[.1em] w-2">
-                        <div class="icon-holder action" @click="positionCard(item, index)">
+                    <td class="border-gray-200 border-t-[.1em] w-2 actions">
+                        <div class="icon-holder action" @click="positionCard(child, index, cIndex)">
                             <Icon name="more_vert" />
                         </div>
 						<Card
-							:ref="'card' + index"
+							:ref="'card' + index + cIndex"
 							class="fixed"
-							v-show="item.expanded"
+							v-show="child.expanded"
 							tabindex="0"
-							@blur="item.expanded = false"
+							@blur="child.expanded = false"
 						>
 							teste
 						</Card>
