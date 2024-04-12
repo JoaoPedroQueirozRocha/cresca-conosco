@@ -5,19 +5,19 @@ const router = express.Router()
 
 router.use(express.json())
 
-async function getNotificationBy(){
-    const queryResult = await pool.query("inserir querry")
+async function getNotificationById(id){
+    const queryResult = await pool.query("SELECT * FROM notifications WHERE id = $1", [id])
     return queryResult.rows[0]
 }
 
-async function createNewNotification(){
-    const queryResult = await pool.querry("inserir querry")
+async function createNewNotification(body){
+    const queryResult = await pool.querry('INSERT INTO notifications (title, description) VALUES ($1,$2) RETURNING *', [body.title, body.description])
     return queryResult
 }
 
-async function deleteNotification(){
-    const queryResult = await pool.query("inserir querry")
+async function deleteNotification(body){
+    const queryResult = await pool.query('DELETE FROM notifications WHERE id = $1',[body.id])
     return queryResult
 }
 
-export {getNotificationBy, createNewNotification, deleteNotification}
+export {getNotificationById, createNewNotification, deleteNotification}
