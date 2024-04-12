@@ -33,14 +33,14 @@ export default {
     
 	mounted() {
 		document.addEventListener('click', this.closeCard);
-		document.addEventListener('scroll', this.closeCard);
+		document.body.addEventListener('scroll', this.closeCard);
 		const table = document.querySelector('.finance-table');
 		table.addEventListener('scroll', this.closeCard);
 	},
 
 	beforeUnmount() {
 		document.removeEventListener('click', this.closeCard);
-		document.removeEventListener('scroll', this.closeCard);
+		document.body.removeEventListener('scroll', this.closeCard);
 		const table = document.querySelector('.finance-table');
 		table.removeEventListener('scroll', this.closeCard);
 	},
@@ -83,7 +83,7 @@ export default {
 		setExpanded() {
             if (this.opendedIndex == null || this.opendedChildIndex == null) return;
 
-			const item = this.filteredData[this.opendedIndex][this.opendedChildIndex];
+			const item = this.filteredData[this.opendedIndex]?.childs[this.opendedChildIndex];
 			if (!item) return;
 			item.expanded = false;
 			this.opendedIndex = null;
@@ -163,6 +163,7 @@ export default {
                     <td class="border-gray-200 border-t-[.1em] w-2 actions">
                         <div class="icon-holder action" @click="positionCard(child, index, cIndex)">
                             <Icon name="more_vert" />
+                            {{ child.expanded }}
                         </div>
 						<Card
 							:ref="'card' + index + cIndex"
