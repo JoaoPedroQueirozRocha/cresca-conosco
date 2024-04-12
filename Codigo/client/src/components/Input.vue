@@ -123,7 +123,6 @@ export default {
     flex-direction: column;
     gap: 0.2em;
     height: fit-content;
-    width: 100%;
 }
 
 .input-holder {
@@ -142,6 +141,7 @@ export default {
     border: 0.15em $gray-300 solid;
     padding: 0.5em;
     color: $gray-500;
+    background: white;
 
     &::placeholder {
         color: $gray-400;
@@ -159,7 +159,7 @@ export default {
 }
 
 .search {
-    padding-left: 2.3em;
+    padding-left: 2.5em;
     padding-right: 2.3em;
 }
 
