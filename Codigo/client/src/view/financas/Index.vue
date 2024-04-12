@@ -1,6 +1,6 @@
 <script>
 import VueApexCharts from "vue3-apexcharts";
-import { formartCurrency } from "../../util";
+import { formatCurrency } from "../../util";
 import { ref } from "vue";
 import Card from "@/components/Card.vue";
 import Button from "@/components/Button.vue";
@@ -15,69 +15,100 @@ export default {
 	components: { Card, Button, FinanceDialog, GenericTable, apexchart: VueApexCharts },
     inject: ["Auth"],
 	setup() {
+        const chartColors = ['#23b73c', '#ed0000', '#0973f5'];
+        const isCompare = ref(false);
+        const reportDate = ref({
+            chartCategories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
+            compareCategories: [[1991, 1992], [1993, 1994], [1995, 1996], [1997, 1998]]
+        });
+        const series = ref([
+            {
+                name: 'Ganhos',
+                data: [23, 45, 70, 60, 80, 95, 100, 120],
+            },
+            {
+                name: 'Custos',
+                data: [15, 30, 45, 40, 50, 60, 70, 80],
+            },
+            {
+                name: 'Lucro Líquido',
+                data: [8, 15, 25, 20, 30, 35, 30, 40],
+            },
+        ]);
+        const chartOptions = ref({
+            chart: {
+                id: "vuechart-example",
+                stacked: false
+            },
+            stroke: {
+                width: 4,
+            },
+            markers: {
+                size: 0,
+            },
+            dataLabels: {
+                enabled: false,
+                style: {
+                    colors: chartColors,
+                }
+            },
+            colors: chartColors,
+            xaxis: {
+                categories: reportDate.value.chartCategories,
+                overwriteCategories: reportDate.value.compareCategories,
+            },
+            yaxis: [
+                {
+                    title: {
+                        text: 'Valores',
+                    },
+                    labels: {
+                        formatter: function (value) {
+                            return formatCurrency(value);
+                        },
+                    },
+                    axisTicks: {
+                        show: true
+                    },
+                    axisBorder: {
+                        show: true,
+                    },
+                },
+            ],
+            tooltip: {
+                enabled: true,
+                custom: ({ s, seriesIndex, dataPointIndex, w }) => {
+                    const item = isCompare.value ? reportDate.value.compareCategories[dataPointIndex] : reportDate.value.chartCategories[dataPointIndex];
+                    return `<div class="custom-tooltip" style="width: max-content">
+                        <div class="date" style="display: flex; justify-content: center; background: #eceff1; padding: 8px 8px;">
+                            ${isCompare.value ? `${item[0]} - ${item[1]}` : item}
+                        </div>
+                        <div class="data-tooltip" style="padding: 15px 15px; display: flex; flex-direction: column; gap: 12px;">
+                            ${series.value.map((s, index) => `
+                                <div style="display: flex; flex-direction: row; align-items: center; width: 250px;">
+                                    <span class="tooltip-circle" style="background: ${chartColors[index]}; height: 10px; width: 10px; border-radius: 50%; margin-right: 10px;"></span>
+                                    <p style="margin-right: 10px; font-size: 15px; margin-bottom: 0px;">
+                                        ${s.name}:
+                                    </p>
+                                    <p style="font-weight: bold; font-size: 14px; margin-bottom: 0px;">
+                                        
+                                        ${formatCurrency(s.data[dataPointIndex])}
+                                    </p>
+                                </div>`
+                            ).join('')}
+                        </div>
+                    </div>`
+                }
+            },
+        });
 		return {
 			defaultAlert: ref({
 				top: true,
 				right: true,
 				timeout: 3500,
 			}),
-            series: ref([
-                {
-                    name: 'Ganhos',
-                    data: [23, 45, 70, 60, 80, 95, 100, 120],
-                },
-                {
-                    name: 'Custos',
-                    data: [15, 30, 45, 40, 50, 60, 70, 80],
-                },
-                {
-                    name: 'Lucro Líquido',
-                    data: [8, 15, 25, 20, 30, 35, 30, 40],
-                },
-            ]),
-            chartOptions: ref({
-                chart: {
-                    id: "vuechart-example",
-                    stacked: false
-                },
-                stroke: {
-                    width: 4,
-                },
-                markers: {
-                    size: 0,
-                },
-                dataLabels: {
-                    enabled: false,
-                    style: {
-                        colors: ['#23b73c', '#ed0000', '#0973f5'],
-                    }
-                },
-                colors: ['#23b73c', '#ed0000', '#0973f5'],
-                xaxis: {
-                    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
-                },
-                tooltip: {
-                    enabled: true,
-                },
-                yaxis: [
-                    {
-                        title: {
-                            text: 'Valores',
-                        },
-                        labels: {
-                            formatter: function (value) {
-                                return formartCurrency(value);
-                            },
-                        },
-                        axisTicks: {
-                            show: true
-                        },
-                        axisBorder: {
-                            show: true,
-                        },
-                    },
-                ],
-            }),
+            series,
+            chartOptions,
             totals: ref([
                 {
                     name: 'Ganhos',
@@ -188,9 +219,10 @@ export default {
                     }
                 ],
             }),
+            isCompare,
             loading: ref(false),
             showDialog: ref(false),
-            formartCurrency,
+            formatCurrency,
 		};
 	},
 
@@ -203,6 +235,7 @@ export default {
             try {
                 this.showDialog = false;
                 this.loading = true;
+                this.isCompare = !!period.length && !!period2.length;
                 const { data } = await financeController.generateReport(period, period2);
                 // tratar dados
             } catch (e) {
@@ -262,7 +295,7 @@ export default {
                 <div class="skeleton skeleton-card-title" v-if="loading" />
                 <h6 v-else>{{ total.name }}</h6>
                 <div class="skeleton skeleton-card-content" v-if="loading" />
-                <p :class="total.value" v-else>{{ formartCurrency(total.total) }}</p>
+                <p :class="total.value" v-else>{{ formatCurrency(total.total) }}</p>
             </Card>
         </div>
         <Card v-if="!loading">
