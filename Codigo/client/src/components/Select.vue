@@ -14,7 +14,7 @@ export default {
         },
         label: String,
         labelKey:  {
-            type: Boolean,
+            type: String,
             default: 'label'
         },
     },
