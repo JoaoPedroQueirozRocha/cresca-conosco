@@ -68,7 +68,7 @@ export default {
 
         setSort() {
             if (this.options) {
-                this.sortDesc[this.sortByName] = this.options.isDesc;
+                this.sortDesc[this.options.sortBy] = this.options.isDesc;
                 this.sortBy(this.options.sortBy, this.options.isDesc);
             }
         }
