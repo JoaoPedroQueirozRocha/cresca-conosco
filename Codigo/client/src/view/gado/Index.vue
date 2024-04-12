@@ -148,7 +148,6 @@ export default {
 
     async beforeMount() {
         await this.loadBaseData();
-        console.log("gadoData");
     },
 
     mounted() {
