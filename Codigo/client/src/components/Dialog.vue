@@ -13,6 +13,10 @@ export default {
             type: String,
             default: 'fit-content'
         },
+        noOverflow: {
+            type: Boolean,
+            default: false,
+        }
     },
     emits: ['update:modelValue'],
     setup() {
@@ -51,7 +55,7 @@ export default {
 <template>
     <Transition name="bounce">
         <div ref="dialogBg" class="dialog-bg" v-if="model">
-            <div ref="dialog" class="dialog" :style="{width: width, height: height}">
+            <div ref="dialog" class="dialog" :class="{'overflow-auto': !noOverflow}" :style="{width: width, height: height}">
                 <slot />
             </div>
         </div>
@@ -80,7 +84,6 @@ export default {
     padding: 1em;
     margin: 2em;
     max-height: 90vh;
-    overflow: auto;
 }
 
 .bounce-enter-active {

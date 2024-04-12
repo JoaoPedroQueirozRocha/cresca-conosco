@@ -45,7 +45,6 @@ async function getUserID() {
             await handleRedirectCallback();
         }
         const user = await client.getUser();
-        console.log("this is user",user);
         state.user = user;
         state.isAuthenticated = true;
         return user.sub; // Retorna o ID do usuário
