@@ -3,20 +3,39 @@ import Menu from "./components/Menu.vue";
 import Alert from "./components/Alert.vue";
 import Confirm from "./components/Confirm.vue";
 import Topbar from "./components/Topbar.vue";
+import { ref } from "vue";
 
 export default {
   name: "App",
   components: { Menu, Alert, Topbar, Confirm },
-  setup() {},
-  methods: {},
+  setup() {
+    return {
+      expanded: ref(false),
+      isPhone: ref(window.innerWidth <= 768),
+    }
+  },
+  beforeMount() {
+      window.addEventListener('resize', this.handleResize);
+  },
+  beforeUnmount() {
+      window.removeEventListener('resize', this.handleResize);
+  },
+  methods: {
+      handleResize() {
+          this.isPhone = window.innerWidth <= 768;
+      },
+      changeExpanded(value) {
+        this.expanded = value;
+      }
+  },
 };
 </script>
 
 <template>
   <Alert />
   <Confirm />
-  <div class="flex w-full h-screen">
-    <Menu />
+  <div class="grid-template" :class="{'small': expanded && !isPhone, 'is-phone': isPhone}">
+    <Menu @update:is-menu-opened="changeExpanded" />
     <Topbar />
     <div class="md:mt-14 mt-20 w-full h-fit md:px-8 content pb-4">
       <router-view />
@@ -31,7 +50,25 @@ body {
   font-family: "Inter", sans-serif;
   padding: 0;
   background: $gray-200;
+  overflow: hidden;
+}
+
+#app {
   overflow: auto;
+}
+
+.grid-template {
+  @apply w-full h-screen;
+  display: grid;
+  grid-template-columns: min-content auto;
+}
+
+.grid-template.is-phone {
+  display: flex !important;
+}
+
+.grid-template.small {
+  grid-template-columns: min-content 84%;
 }
 
 .title {

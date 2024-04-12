@@ -33,14 +33,16 @@ export default {
     
 	mounted() {
 		document.addEventListener('click', this.closeCard);
-		document.body.addEventListener('scroll', this.closeCard);
+        const app = document.querySelector('#app');
+		app.addEventListener('scroll', this.closeCard);
 		const table = document.querySelector('.finance-table');
 		table.addEventListener('scroll', this.closeCard);
 	},
 
 	beforeUnmount() {
 		document.removeEventListener('click', this.closeCard);
-		document.body.removeEventListener('scroll', this.closeCard);
+        const app = document.querySelector('#app');
+		app.removeEventListener('scroll', this.closeCard);
 		const table = document.querySelector('.finance-table');
 		table.removeEventListener('scroll', this.closeCard);
 	},
@@ -97,8 +99,8 @@ export default {
     <div class="flex flex-col gap-6 mt-12">
         <div class="flex items-center gap-4">
             <h1 class="title" style="margin: 0;">{{ title }}</h1>
-            <router-link :to="addRoute">
-                <Button rounded>
+            <router-link :to="addRoute" :class="{'pointer-events-none': loading}">
+                <Button rounded :disabled="loading">
                     <span class="material-symbols-rounded">
                         add
                     </span>
@@ -106,25 +108,27 @@ export default {
             </router-link>
         </div>
         <div class="flex items-center justify-between gap-4 flex-wrap">
-            <Input v-model="searchValue" type="search" class="filter-input" placeholder="Pesquisar" />
-            <Button class="filter-button" rounded>
+            <Input v-model="searchValue" type="search" class="filter-input" placeholder="Pesquisar" :disabled="loading" />
+            <Button class="filter-button" rounded :disabled="loading">
                 <span class="material-symbols-rounded">
                     filter_list
                 </span>
             </Button>
         </div>
         <Table :headers="headers" :items="filteredData" :loading="loading" class="finance-table">
-            <template v-for="(header, index) in headers" :key="index" v-slot:[header.value]="{item}">
+            <template v-for="(header, index) in headers" :key="index" v-slot:[header.value]="{ item }">
                 <td v-if="item[header.value] instanceof Date">
                     {{ upperCaseFirstLetter(formatDate(item[header.value], { month: 'long' })) }}/{{ formatDate(item[header.value], { year: 'numeric' }) }}
                 </td>
                 <td v-else-if="typeof item[header.value] == 'number'" class="text-center">
-                    {{ formatCurrency(item[header.value]) }}
-                    <span class="material-symbols-rounded text-xl ml-2 opacity-0">
-                        arrow_upward
-                    </span>
+                    <div class="flex items-center justify-center">
+                        {{ formatCurrency(item[header.value]) }}
+                        <span class="material-symbols-rounded text-xl ml-2 opacity-0">
+                            arrow_upward
+                        </span>
+                    </div>
                 </td>
-                <td v-else-if="header.value == 'none'">
+                <td v-else-if="header.value == 'none'" class="w-2">
                     <div class="icon-holder" :class="{'rotate-180': item.expanded}" @click="item.expanded = !item.expanded">
                         <Icon name="arrow_drop_down" />
                     </div>
@@ -154,10 +158,12 @@ export default {
                             {{ formatDate(child.date, { year: 'numeric', month: '2-digit', day: '2-digit' }) }}
                         </template>
                         <template v-else-if="header.value == 'total' && typeof child.value == 'number'">
-                            {{ formatCurrency(child.value) }}
-                            <span class="material-symbols-rounded text-xl ml-2 opacity-0">
-                                arrow_upward
-                            </span>
+                            <div class="flex items-center justify-center">
+                                {{ formatCurrency(child.value) }}
+                                <span class="material-symbols-rounded text-xl ml-2 opacity-0">
+                                    arrow_upward
+                                </span>
+                            </div>
                         </template>
                     </td>
                     <td class="border-gray-200 border-t-[.1em] w-2 actions">
@@ -176,6 +182,9 @@ export default {
                     </td>
                 </tr>
             </template>
+            <template #empty-state>
+                <Icon name="sentiment_dissatisfied" />
+            </template>
         </Table>
     </div>
 </template>
@@ -192,7 +201,7 @@ td {
     align-items: center;
     width: fit-content;
     border-radius: 50%;
-    padding: 0.1em;
+    padding: 0.1em 0.15em;
     cursor: pointer;
     color: $gray-500;
     transition-duration: 0.3s;

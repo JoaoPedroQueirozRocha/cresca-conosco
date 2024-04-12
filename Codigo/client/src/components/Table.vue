@@ -78,7 +78,7 @@ export default {
 
 <template>
     <div class="table-holder" :class="{'overflow-auto': items.length || loading}" :style="{'max-height': maxHeight}">
-        <table>
+        <table class="rounded-2xl" :class="{'overflow-hidden': !items.length && !loading}">
             <thead v-if="loading">
                 <tr>
                     <th v-for="header in (headers.length || 3)" :key="header" class="skeleton-table-cell pointer-events-none">
@@ -176,6 +176,7 @@ table {
         @apply border-b-[.1em] border-b-stone-100 w-full;
         border-top-right-radius: 16px;
         border-top-left-radius: 16px;
+
         th {
             @apply py-[.7em] px-[1em];
             color: $gray-500;

@@ -129,14 +129,16 @@ export default {
 
 	mounted() {
 		document.addEventListener('click', this.closeCard);
-		document.addEventListener('scroll', this.closeCard);
+        const app = document.querySelector('#app');
+		app.addEventListener('scroll', this.closeCard);
 		const table = document.querySelector('.gado-table');
 		table.addEventListener('scroll', this.closeCard);
 	},
 
 	beforeUnmount() {
 		document.removeEventListener('click', this.closeCard);
-		document.removeEventListener('scroll', this.closeCard);
+        const app = document.querySelector('#app');
+		app.removeEventListener('scroll', this.closeCard);
 		const table = document.querySelector('.gado-table');
 		table.removeEventListener('scroll', this.closeCard);
 	},

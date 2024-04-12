@@ -24,16 +24,34 @@ export default {
         const series = ref([
             {
                 name: 'Ganhos',
+                type: 'line',
                 data: [23, 45, 70, 60, 80, 95, 100, 120],
             },
             {
                 name: 'Custos',
+                type: 'line',
                 data: [15, 30, 45, 40, 50, 60, 70, 80],
             },
             {
                 name: 'Lucro Líquido',
+                type: 'line',
                 data: [8, 15, 25, 20, 30, 35, 30, 40],
             },
+            // {
+            //     name: 'Ganhos',
+            //     type: 'bar',
+            //     data: [23, 45, 70, 60, 80, 95, 100, 120],
+            // },
+            // {
+            //     name: 'Custos',
+            //     type: 'bar',
+            //     data: [15, 30, 45, 40, 50, 60, 70, 80],
+            // },
+            // {
+            //     name: 'Lucro Líquido',
+            //     type: 'bar',
+            //     data: [8, 15, 25, 20, 30, 35, 30, 40],
+            // },
         ]);
         const chartOptions = ref({
             chart: {
@@ -161,7 +179,7 @@ export default {
                     },
                     {
                         text: 'Mês/Ano',
-                        value: 'mes-ano',
+                        value: 'date',
                         sortable: true,
                     },
                     {
@@ -235,11 +253,59 @@ export default {
                 ],
                 cost: [
                     {
-                        description: 'Teste',
-                        value: 12,
-                        type: 'compras',
                         date: new Date(),
-                    }
+                        salarios: 4,
+                        encargos: 4,
+                        compras: 4,
+                        total: 12,
+                        childs: [
+                            {
+                                description: 'Teste',
+                                value: 4,
+                                type: 'salarios',
+                                date: new Date(),
+                            },
+                            {
+                                description: 'Teste',
+                                value: 4,
+                                type: 'encargos',
+                                date: new Date(),
+                            },
+                            {
+                                description: 'Teste',
+                                value: 4,
+                                type: 'compras',
+                                date: new Date(),
+                            },
+                        ],
+                    },
+                    {
+                        date: new Date(),
+                        salarios: 4,
+                        encargos: 4,
+                        compras: 4,
+                        total: 12,
+                        childs: [
+                            {
+                                description: 'Teste',
+                                value: 4,
+                                type: 'salarios',
+                                date: new Date(),
+                            },
+                            {
+                                description: 'Teste',
+                                value: 4,
+                                type: 'encargos',
+                                date: new Date(),
+                            },
+                            {
+                                description: 'Teste',
+                                value: 4,
+                                type: 'compras',
+                                date: new Date(),
+                            },
+                        ],
+                    },
                 ],
             }),
             isCompare,
@@ -310,8 +376,8 @@ export default {
 <template>
     <div class="flex flex-col gap-6">
         <h1 class="title">Finanças</h1>
-        <Button class="w-fit self-end" @click="showDialog = true">Gerar Relatório</Button>
-        <FinanceDialog v-model="showDialog" @generate-report="generateReport" @update:model-value="()=>{console.log('aui')}" />
+        <Button class="w-fit self-end" @click="showDialog = true" :disabled="loading">Gerar Relatório</Button>
+        <FinanceDialog v-model="showDialog" @generate-report="generateReport" />
         <div class="flex flex-wrap gap-4 [&>*]:w-full">
             <Card v-for="total in totals" class="total-card">
                 <div class="skeleton skeleton-card-title" v-if="loading" />
@@ -324,7 +390,7 @@ export default {
             <apexchart
                 width="100%"
                 height="300px"
-                type="line"
+                
                 :options="chartOptions"
                 :series="series"
             ></apexchart>
