@@ -28,7 +28,6 @@ export default {
 
     mounted() {
         this.model = this.modelValue;
-        console.log(this.resizeObserver)
 
         if (this.container) this.resizeObserver.observe(this.container, { box: 'border-box' });
         if (this.content) this.resizeObserver.observe(this.content, { box: 'border-box' });

@@ -47,7 +47,7 @@ export default {
         focusout() {
             setTimeout(() => {
                 this.onFocus = false;
-            }, 100);
+            }, 200);
         }
     }
 }
