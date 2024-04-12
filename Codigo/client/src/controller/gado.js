@@ -8,6 +8,7 @@ async function getAll() {
 
 async function getBase() {
     const response = await axios.get(`${APIURL}/base`);
+    console.log("response getBase ---->>");
     return response.data;
 }
 

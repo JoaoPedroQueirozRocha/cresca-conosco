@@ -14,6 +14,7 @@ export default {
         },
         onlyBorder: Boolean,
         disabled: Boolean,
+        rounded: Boolean,
     },
     emits: ['click'],
 }
@@ -22,7 +23,7 @@ export default {
 <template>
     <button
         class="button"
-        :class="[variant, size, { 'only-border': onlyBorder , 'disabled': disabled}]"
+        :class="[variant, size, { 'only-border': onlyBorder , 'disabled': disabled, 'rounded-button': rounded }]"
         @click="$emit('click')"
     >
         <slot />
@@ -42,6 +43,11 @@ export default {
     padding: 0.4em 1em;
     font-weight: 600;
     height: fit-content;
+}
+
+.button.rounded-button {
+    border-radius: 50%;
+    padding: 0.2em 0.2em;
 }
 
 .button.disabled {
