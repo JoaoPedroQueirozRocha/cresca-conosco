@@ -133,23 +133,26 @@ export default {
                     },
                     {
                         text: 'Mês/Ano',
-                        value: 'mes-ano',
+                        value: 'date',
                         sortable: true,
                     },
                     {
                         text: 'Leite',
                         value: 'leite',
                         sortable: true,
+                        align: 'center',
                     },
                     {
                         text: 'Venda de gado',
                         value: 'venda',
                         sortable: true,
+                        align: 'center',
                     },
                     {
                         text: 'Total',
                         value: 'total',
                         sortable: true,
+                        align: 'center',
                     },
                 ],
                 cost: [
@@ -165,57 +168,57 @@ export default {
                         text: 'Salários',
                         value: 'salarios',
                         sortable: true,
+                        align: 'center',
                     },
                     {
                         text: 'Encargos',
                         value: 'encargos',
                         sortable: true,
+                        align: 'center',
                     },
                     {
                         text: 'Compras',
                         value: 'compras',
                         sortable: true,
+                        align: 'center',
                     },
                     {
                         text: 'Total',
                         value: 'total',
                         sortable: true,
+                        align: 'center',
                     },
                 ],
             }),
             data: ref({
                 profit: [
                     {
-                        description: 'Teste',
-                        valor: 12,
-                        tipo: 'leite',
-                        data: new Date(),
+                        date: new Date(),
+                        leite: 6,
+                        venda: 6,
+                        total: 12,
+                        childs: [
+                            {
+                                description: 'Teste',
+                                value: 6,
+                                type: 'leite',
+                                date: new Date(),
+                            },
+                            {
+                                description: 'Teste',
+                                value: 6,
+                                type: 'venda',
+                                date: new Date(),
+                            },
+                        ],
                     }
                 ],
                 cost: [
                     {
                         description: 'Teste',
-                        valor: 12,
-                        tipo: 'compras',
-                        data: new Date(),
-                    }
-                ],
-            }),
-            filteredData: ref({
-                profit: [
-                    {
-                        description: 'Teste',
-                        valor: 12,
-                        tipo: 'leite',
-                        data: new Date(),
-                    }
-                ],
-                cost: [
-                    {
-                        description: 'Teste',
-                        valor: 12,
-                        tipo: 'compras',
-                        data: new Date(),
+                        value: 12,
+                        type: 'compras',
+                        date: new Date(),
                     }
                 ],
             }),
@@ -260,7 +263,6 @@ export default {
             try {
                 const { data } = await profitController.listProfits();
                 this.data.profit = data;
-                this.filteredData.profit = data;
             } catch (e) {
                 this.$alert({
 					message: 'Error carregar os lucros. Tente novamente mais tarde',
@@ -273,7 +275,7 @@ export default {
             try {
                 const { data } = await costController.listCosts();
                 this.data.cost = data;
-                this.filteredData.cost = data;
+                this.filteredData.cost = data
             } catch (e) {
                 this.$alert({
 					message: 'Error carregar as despesas. Tente novamente mais tarde',
@@ -308,8 +310,8 @@ export default {
             ></apexchart>
         </Card>
     </div>
-    <GenericTable title="Lucros" :headers="headers.profit" :items="filteredData.profit" :loading="loading" add-route="/" />
-    <GenericTable title="Despesas" :headers="headers.cost" :items="filteredData.cost" :loading="loading" add-route="/" />
+    <GenericTable title="Lucros" :headers="headers.profit" :items="data.profit" :loading="loading" add-route="/" />
+    <GenericTable title="Despesas" :headers="headers.cost" :items="data.cost" :loading="loading" add-route="/" />
 </template>
 
 <style scoped lang="scss">

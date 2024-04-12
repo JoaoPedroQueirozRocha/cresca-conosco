@@ -4,7 +4,9 @@ import Table from "@/components/Table.vue";
 import Button from "@/components/Button.vue";
 import Input from "@/components/Input.vue";
 import Checkbox from "@/components/Checkbox.vue";
+import Icon from "@/components/Icon.vue";
 import DatePicker from "@/components/DatePicker.vue";
+import { formatCurrency, formatDate, upperCaseFirstLetter } from "@/util";
 
 export default {
 	name: "GenericTable",
@@ -15,11 +17,14 @@ export default {
         title: String,
         addRoute: String
     },
-	components: { Table, Button, Input, DatePicker, Checkbox },
+	components: { Table, Button, Input, DatePicker, Checkbox, Icon },
     inject: ["Auth"],
 	setup() {
 		return {
-            searchValue: ref('')
+            searchValue: ref(''),
+            formatCurrency,
+            formatDate,
+            upperCaseFirstLetter
 		};
 	},
 
@@ -57,12 +62,86 @@ export default {
                 </span>
             </Button>
         </div>
-        <Table :headers="headers" :items="filteredData" :loading="loading"></Table>
+        <Table :headers="headers" :items="filteredData" :loading="loading">
+            <template v-for="(header, index) in headers" :key="index" v-slot:[header.value]="{item}">
+                <td v-if="item[header.value] instanceof Date">
+                    {{ upperCaseFirstLetter(formatDate(item[header.value], { month: 'long' })) }}/{{ formatDate(item[header.value], { year: 'numeric' }) }}
+                </td>
+                <td v-else-if="typeof item[header.value] == 'number'" class="text-center">
+                    {{ formatCurrency(item[header.value]) }}
+                    <span class="material-symbols-rounded text-xl ml-2 opacity-0">
+                        arrow_upward
+                    </span>
+                </td>
+                <td v-else-if="header.value == 'none'">
+                    <div class="show-childs" :class="{'rotate-180': item.expanded}" @click="item.expanded = !item.expanded">
+                        <Icon name="arrow_drop_down" />
+                    </div>
+                </td>
+                <td v-else>{{ item[header.value] }}</td>
+            </template>
+            <template #childs="{ item }">
+                <tr
+                    v-for="(child, cIndex) in item.childs"
+                    :key="cIndex"
+                    class="child-tr"
+                >
+                    <td
+                        v-for="(header, hIndex) in headers"
+                        :key="hIndex" 
+                        :class="{'text-center': header.value != 'date'}"
+                    >
+                        <template v-if="child.type == header.value">
+                            <Icon name="check" class="text-green-500" />
+                            <span class="material-symbols-rounded text-xl ml-2 opacity-0">
+                                arrow_upward
+                            </span>
+                        </template>
+                        <template v-else-if="header.value == 'date' && child.date instanceof Date">
+                            {{ formatDate(child.date, { year: 'numeric', month: '2-digit', day: '2-digit' }) }}
+                        </template>
+                        <template v-else-if="header.value == 'total' && typeof child.value == 'number'">
+                            {{ formatCurrency(child.value) }}
+                            <span class="material-symbols-rounded text-xl ml-2 opacity-0">
+                                arrow_upward
+                            </span>
+                        </template>
+                    </td>
+                </tr>
+            </template>
+        </Table>
     </div>
 </template>
 
 <style scoped lang="scss">
 @import "../../../style/var.scss";
+
+td {
+    color: $gray-500;
+}
+
+.show-childs {
+    display: flex;
+    align-items: center;
+    border-radius: 50%;
+    padding: 0.1em;
+    cursor: pointer;
+    color: $gray-500;
+    transition-duration: 0.3s;
+
+    &:hover {
+        background: $gray-200;
+    }
+
+    .material-symbols-rounded {
+        font-size: 35px;
+    }
+}
+
+.child-tr {
+    @apply [&>*]:py-2 [&>*]:px-4;
+    background: $gray-200;
+}
 
 .filter-button .material-symbols-rounded {
     font-size: 30px;

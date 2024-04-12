@@ -1,7 +1,7 @@
 <script>
 import { ref } from 'vue';
 import SelectContainer from './SelectContainer.vue';
-import { upperCaseFirstLetter } from '../util/index.js';
+import { upperCaseFirstLetter, formatDate } from '../util/index.js';
 
 export default {
     name: 'DatePicker',
@@ -86,9 +86,9 @@ export default {
         status() {
             const template = { year: 'numeric', month: '2-digit', day: '2-digit' };
             if (this.isCompare && this.model[0] instanceof Date) {
-                return this.formateDate(this.model[0], template) + (this.model[1] instanceof Date ? `-${this.formateDate(this.model[1], template)}` : '');
+                return formatDate(this.model[0], template) + (this.model[1] instanceof Date ? `-${formatDate(this.model[1], template)}` : '');
             } else if (this.model instanceof Date) {
-                return this.formateDate(this.model, template);
+                return formatDate(this.model, template);
             }
             return '';
         }
@@ -190,7 +190,7 @@ export default {
             if (this.showingMonths || this.showingYears) {
                 template = { year: 'numeric' };
             }
-            const title = this.formateDate(this.calendarDate, template);
+            const title = formatDate(this.calendarDate, template);
             this.title = upperCaseFirstLetter(title);
         },
 
@@ -219,10 +219,6 @@ export default {
             this.getArrayMonthDay();
         },
 
-        formateDate(date, template) {
-            if (!date instanceof Date || !date) return;
-            return date.toLocaleDateString('pt-BR', template);
-        },
         resetDate() {
             if (this.isCompare) {
                 this.changeModel([])
