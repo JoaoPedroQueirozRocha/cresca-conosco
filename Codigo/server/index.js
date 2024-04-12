@@ -14,6 +14,10 @@ const PORT = process.env.PORT || 3002;
 app
     .use(express.json())
     .use(cors())
+    .use(cors({
+        origin: ['http://localhost:5173', 'https://cresca-conosco.queirozrocha.com'],
+        credentials: true
+    }))
     .use("/user", userRouter)
     .use("/auth", authRouter)
     .use("/animals", animalsRouter)
