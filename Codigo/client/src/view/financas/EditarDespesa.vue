@@ -6,7 +6,7 @@
 
         <div class="flex items-center">
             <Button v-if="isEdicao" @click=mudarEdicao>Criar despesas</Button>
-            <Button v-else @click=mudarEdicao>Editar despesas</Button>
+            <Button v-else @click=mudarEdicao>Editar despesa</Button>
         </div>
     </div>
 
@@ -46,23 +46,23 @@
 
     <div v-show="!isEdicao">
 
-        <div class = "flex flex-row flex-wrap gap-2 justify-start" style="margin-bottom: 1em;">
+        <div class="flex flex-row flex-wrap gap-2 justify-start" style="margin-bottom: 1em;">
             <Button @click="$router.push('/gado')">
                 Criação
             </Button>
-            <Button class = "only-border">
+            <Button class="only-border">
                 Importar planilha
             </Button>
         </div>
 
         <Card>
-            <Input type="text" label="Descrição" placeholder="Digite aqui"></Input>
+            <Input type="text" label="Descrição" v-model="descricaoCriacao" placeholder="Digite aqui"></Input>
 
             <div class="flex gap-6">
-                <Input type="text" label="Valor" placeholder="Digite aqui">Digite aqui</Input>
+                <Input type="text" label="Valor" v-model="valorCriacao" placeholder="Digite aqui">Digite aqui</Input>
                 <div class="tipo-holder">
                     <h3 class="label-text">Tipo</h3>
-                    <select class="input">
+                    <select class="input" v-model="tipoCriacao">
                         <option disabled selected value="" default>Selecione</option>
                         <option>Tipo1</option>
                         <option>Tipo2</option>
@@ -75,27 +75,26 @@
                 style="width: 2em; height: 1.3em;">Selecionar
             data</input>
 
-            <Input v-if="dataChecked" type="date" label="Selecione a data"></Input>
+            <Input v-if="dataChecked" type="date" v-model="dataCriacao" label="Selecione a data"></Input>
 
         </Card>
 
         <div class="flex flex-row flex-wrap gap-2 justify-end ">
 
             <Button class="only-border" @click="$router.push('/financas')">Cancelar</Button>
-            <Button>Criar</Button>
+            <Button @click="criar">Criar</Button>
 
         </div>
     </div>
 </template>
 
 <script>
-import {ref} from "vue";
+import { ref } from "vue";
 import Button from "../../components/Button.vue";
 import Dialog from "../../components/Dialog.vue";
-import Card from "../../components/Card.vue"
-import Input from "../../components/Input.vue"
-
-
+import Card from "../../components/Card.vue";
+import Input from "../../components/Input.vue";
+import controller from "../../controller/despesas.js"
 
 export default {
     name: "Financas",
@@ -105,18 +104,52 @@ export default {
     setup() {
         const dataChecked = ref(false)
         const isEdicao = ref(false)
+        const descricaoCriacao = ref()
+        const valorCriacao = ref()
+        const tipoCriacao = ref()
+        const dataCriacao = ref()
         return {
             dataChecked,
-            isEdicao
+            isEdicao,
+            descricaoCriacao,
+            valorCriacao,
+            tipoCriacao,
+            dataCriacao
         }
 
     },
 
     methods: {
-        mudarEdicao() {
-            this.isEdicao = !this.isEdicao
-        }
+        async criar() {
+            console.log(this.descricaoCriacao);
+            console.log(this.valorCriacao);
+            console.log(this.tipoCriacao);
+            console.log(this.dataCriacao);
+
+            try {
+                const resposta = await controller.createDespesa(
+                    {
+                        valor: this.valorCriacao,
+                        descricao: this.descricaoCriacao,
+                        tipo: this.tipoCriacao,
+                        data: this.dataCriacao
+                     }
+                );
+
+                console.log(resposta);
+
+            }
+
+            catch (error) {
+                console.log("Erro ao criar despesa");
+                console.log(error);
+            }
     },
+
+    mudarEdicao() {
+        this.isEdicao = !this.isEdicao
+    }
+},
 
 };
 </script>

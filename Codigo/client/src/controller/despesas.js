@@ -6,8 +6,16 @@ async function getById(id){
     return response.data;
 }
 
+async function updateDespesa(id){
+    return axios.put(`${APIURL}/${id}`);
+}
 
+async function createDespesa(){
+    return axios.post(APIURL);
+}
 
 export default{
-    getById
+    getById,
+    updateDespesa,
+    createDespesa
 }
