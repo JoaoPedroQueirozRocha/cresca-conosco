@@ -74,12 +74,13 @@ export default {
                     </span>
                 </td>
                 <td v-else-if="header.value == 'none'">
-                    <div class="show-childs" :class="{'rotate-180': item.expanded}" @click="item.expanded = !item.expanded">
+                    <div class="icon-holder" :class="{'rotate-180': item.expanded}" @click="item.expanded = !item.expanded">
                         <Icon name="arrow_drop_down" />
                     </div>
                 </td>
                 <td v-else>{{ item[header.value] }}</td>
             </template>
+            <template #actions></template>
             <template #childs="{ item }">
                 <tr
                     v-for="(child, cIndex) in item.childs"
@@ -88,7 +89,8 @@ export default {
                 >
                     <td
                         v-for="(header, hIndex) in headers"
-                        :key="hIndex" 
+                        :key="hIndex"
+                        class="border-gray-200 border-t-[.1em]"
                         :class="{'text-center': header.value != 'date'}"
                     >
                         <template v-if="child.type == header.value">
@@ -107,6 +109,20 @@ export default {
                             </span>
                         </template>
                     </td>
+                    <td class="border-gray-200 border-t-[.1em] w-2">
+                        <div class="icon-holder action" @click="positionCard(item, index)">
+                            <Icon name="more_vert" />
+                        </div>
+						<Card
+							:ref="'card' + index"
+							class="fixed"
+							v-show="item.expanded"
+							tabindex="0"
+							@blur="item.expanded = false"
+						>
+							teste
+						</Card>
+                    </td>
                 </tr>
             </template>
         </Table>
@@ -120,9 +136,10 @@ td {
     color: $gray-500;
 }
 
-.show-childs {
+.icon-holder {
     display: flex;
     align-items: center;
+    width: fit-content;
     border-radius: 50%;
     padding: 0.1em;
     cursor: pointer;
@@ -135,6 +152,16 @@ td {
 
     .material-symbols-rounded {
         font-size: 35px;
+    }
+}
+
+.icon-holder.action {
+    &:hover {
+        background: $gray-300;
+    }
+
+    .material-symbols-rounded {
+        font-size: 30px;
     }
 }
 

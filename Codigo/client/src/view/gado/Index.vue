@@ -23,7 +23,9 @@
 			<Table :items="gadoData" :headers="headers" class="w-full gado-table" :isLoading="isLoading">
 				<template #actions="{ item, index }">
 					<td class="w-2 cursor-pointer action">
-						<span class="material-symbols-rounded" @click="positionCard(item, index)"> more_vert </span>
+						<div class="icon-holder" @click="positionCard(item, index)">
+							<span class="material-symbols-rounded" @click="positionCard(item, index)"> more_vert </span>
+                        </div>
 						<Card
 							:ref="'card' + index"
 							class="fixed"
@@ -169,6 +171,25 @@ export default {
 
 <style lang="scss" scoped>
 @import '../../style/var.scss';
+
+.icon-holder {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    border-radius: 50%;
+    padding: 0.1em;
+    cursor: pointer;
+    color: $gray-500;
+    transition-duration: 0.3s;
+
+    &:hover {
+        background: $gray-200;
+    }
+
+    .material-symbols-rounded {
+        font-size: 30px;
+    }
+}
 
 
 .filter-button .material-symbols-rounded {

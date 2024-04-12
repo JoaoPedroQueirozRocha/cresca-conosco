@@ -211,7 +211,27 @@ export default {
                                 date: new Date(),
                             },
                         ],
-                    }
+                    },
+                    {
+                        date: new Date(),
+                        leite: 6,
+                        venda: 6,
+                        total: 12,
+                        childs: [
+                            {
+                                description: 'Teste',
+                                value: 6,
+                                type: 'leite',
+                                date: new Date(),
+                            },
+                            {
+                                description: 'Teste',
+                                value: 6,
+                                type: 'venda',
+                                date: new Date(),
+                            },
+                        ],
+                    },
                 ],
                 cost: [
                     {
