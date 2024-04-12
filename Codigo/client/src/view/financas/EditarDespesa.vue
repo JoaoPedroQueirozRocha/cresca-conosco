@@ -62,11 +62,12 @@
                 <Input type="text" label="Valor" v-model="valorCriacao" placeholder="Digite aqui">Digite aqui</Input>
                 <div class="tipo-holder">
                     <h3 class="label-text">Tipo</h3>
-                    <select class="input" v-model="tipoCriacao">
+                    <select class="input" v-model="tipoCriacao" @change="() => {console.log(tipoCriacao);
+                    }">
                         <option disabled selected value="" default>Selecione</option>
-                        <option>Tipo1</option>
-                        <option>Tipo2</option>
-                        <option>Tipo3</option>
+                        <option value="compras">Compras</option>
+                        <option value="despesas trabalhistas">Despesas trabalhistas</option>
+                        <option value="diverso">Diversos</option>
                     </select>
                 </div>
             </div>

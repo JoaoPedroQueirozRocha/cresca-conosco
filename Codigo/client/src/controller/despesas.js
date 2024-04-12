@@ -11,7 +11,11 @@ async function updateDespesa(id){
 }
 
 async function createDespesa(){
-    return axios.post(APIURL);
+    try {
+        return axios.post(`${APIURL}/`);
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 export default{

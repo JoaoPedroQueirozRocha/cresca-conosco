@@ -180,12 +180,14 @@ export default {
     </div>
     <div class="flex flex-col gap-6 mt-8">
         <div class="flex items-center gap-4">
-            <h1 class="title" style="margin: 0;">Desepsas</h1>
-            <Button rounded>
-                <span class="material-symbols-rounded">
-                    add
-                </span>
-            </Button>
+            <h1 class="title" style="margin: 0;">Despesas</h1>
+            <router-link to="/financas/editar">
+                <Button rounded>
+                    <span class="material-symbols-rounded">
+                        add
+                    </span>
+                </Button>
+            </router-link>
         </div>
         <div class="flex items-center justify-between gap-4 flex-wrap">
             <Input type="search" class="filter-input" placeholder="Pesquisar" />
