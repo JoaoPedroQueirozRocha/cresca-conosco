@@ -163,7 +163,6 @@ export default {
                     <td class="border-gray-200 border-t-[.1em] w-2 actions">
                         <div class="icon-holder action" @click="positionCard(child, index, cIndex)">
                             <Icon name="more_vert" />
-                            {{ child.expanded }}
                         </div>
 						<Card
 							:ref="'card' + index + cIndex"
