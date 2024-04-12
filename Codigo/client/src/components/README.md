@@ -25,6 +25,7 @@ export default {
 
 ## Alert
 > Função
+
 Para utitlizar o componente alert, basta chamar `this.$alert({props})` passando as propriedades desejadas.
 
 ### Props:
@@ -96,6 +97,7 @@ Um card genérico
 
 ## Confirm
 > Função
+
 O componente 'Confirm' é uma função utilizada para se obter uma resposta de sim ou não do usuário. Para utitlizar o componente, basta chamar `this.$confirm({props})` passando as propriedades desejadas. Como essa função é uma promisse, pode-se o obter a resposta do usuário das seguintes formas.
 1. this.$confirm({props})
     .then((resposta) => console.log('O usuário click no botão de confirmar: ', resposta));
