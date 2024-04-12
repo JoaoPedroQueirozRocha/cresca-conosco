@@ -16,14 +16,15 @@
             <Input type="text" label="Descrição" placeholder="Digite aqui"></Input>
 
             <div class="flex gap-6">
-                <Input type="text" label="Valor" placeholder="Digite aqui">Digite aqui</Input>
+                <Input type="number" label="Valor" placeholder="Digite aqui">Digite aqui</Input>
                 <div class="tipo-holder">
                     <h3 class="label-text">Tipo</h3>
-                    <select class="input">
+                    <select class="input" v-model="tipoDespesa" @change="() => {console.log(tipoDespesa);
+                    }">
                         <option disabled selected value="" default>Selecione</option>
-                        <option>Tipo1</option>
-                        <option>Tipo2</option>
-                        <option>Tipo3</option>
+                        <option value="compras">Compras</option>
+                        <option value="despesas trabalhistas">Despesas trabalhistas</option>
+                        <option value="diverso">Diversos</option>
                     </select>
                 </div>
             </div>
@@ -56,13 +57,13 @@
         </div>
 
         <Card>
-            <Input type="text" label="Descrição" v-model="descricaoCriacao" placeholder="Digite aqui"></Input>
+            <Input type="text" label="Descrição" v-model="descricaoDespesa" placeholder="Digite aqui"></Input>
 
             <div class="flex gap-6">
-                <Input type="text" label="Valor" v-model="valorCriacao" placeholder="Digite aqui">Digite aqui</Input>
+                <Input type="number" label="Valor" v-model="valorDespesa" placeholder="Digite aqui">Digite aqui</Input>
                 <div class="tipo-holder">
                     <h3 class="label-text">Tipo</h3>
-                    <select class="input" v-model="tipoCriacao" @change="() => {console.log(tipoCriacao);
+                    <select class="input" v-model="tipoDespesa" @change="() => {console.log(tipoDespesa);
                     }">
                         <option disabled selected value="" default>Selecione</option>
                         <option value="compras">Compras</option>
@@ -105,45 +106,39 @@ export default {
     setup() {
         const dataChecked = ref(false)
         const isEdicao = ref(false)
-        const descricaoCriacao = ref()
-        const valorCriacao = ref()
-        const tipoCriacao = ref()
-        const dataCriacao = ref()
+        const descricaoDespesa = ref("")
+        const valorDespesa = ref(0)
+        const tipoDespesa = ref("")
+        const dataDespesa = ref("")
         return {
             dataChecked,
             isEdicao,
-            descricaoCriacao,
-            valorCriacao,
-            tipoCriacao,
-            dataCriacao
+            descricaoDespesa,
+            valorDespesa,
+            tipoDespesa,
+            dataDespesa
         }
 
     },
 
     methods: {
         async criar() {
-            console.log(this.descricaoCriacao);
-            console.log(this.valorCriacao);
-            console.log(this.tipoCriacao);
-            console.log(this.dataCriacao);
 
             try {
                 const resposta = await controller.createDespesa(
                     {
-                        valor: this.valorCriacao,
-                        descricao: this.descricaoCriacao,
-                        tipo: this.tipoCriacao,
-                        data: this.dataCriacao
-                     }
+                        valor: this.valorDespesa,
+                        descricao: this.descricaoDespesa,
+                        tipo: this.tipoDespesa,
+                        data: this.dataDespesa
+                    }
                 );
-
                 console.log(resposta);
-
             }
 
             catch (error) {
-                console.log("Erro ao criar despesa");
-                console.log(error);
+                console.log("Erro ao criar despesa ");
+                console.log(error.message);
             }
     },
 
