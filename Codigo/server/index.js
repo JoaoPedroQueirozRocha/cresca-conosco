@@ -7,6 +7,7 @@ import animalsRouter from "./routes/animalsRoutes.js";
 import gestacaoRouter from "./routes/gestacaoRoutes.js";
 import workerRouter from './routes/workerRoutes.js';
 import gadoRouter from './routes/gadoRoutes.js';
+import despesasRouter from './routes/despesasRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -19,6 +20,7 @@ app
     .use("/gestacoes", gestacaoRouter)
     .use('/worker', workerRouter)
     .use('/gado', gadoRouter)
+    .use('/despesas', despesasRouter)
 
 app.listen(PORT, () => {
     console.log(process.env.POSTGRES_USER);
