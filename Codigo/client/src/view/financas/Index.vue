@@ -180,7 +180,7 @@ export default {
     </div>
     <div class="flex flex-col gap-6 mt-8">
         <div class="flex items-center gap-4">
-            <h1 class="title" style="margin: 0;">Desepsas</h1>
+            <h1 class="title" style="margin: 0;">Despesas</h1>
             <Button rounded>
                 <span class="material-symbols-rounded">
                     add
