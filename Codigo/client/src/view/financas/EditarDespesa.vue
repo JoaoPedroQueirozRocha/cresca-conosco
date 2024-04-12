@@ -13,13 +13,16 @@
     <div v-show="isEdicao">
 
         <Card>
-            <Input type="text" label="Descrição" placeholder="Digite aqui"></Input>
+            <Input type="text" label="DebugId" v-model="editId" placeholder="DEBUG Digite o ID aqui DEBUG"></Input>
+
+            <Input type="text" label="Descrição" v-model="descricaoDespesa" placeholder="Digite aqui"></Input>
 
             <div class="flex gap-6">
-                <Input type="number" label="Valor" placeholder="Digite aqui">Digite aqui</Input>
+                <Input type="number" label="Valor" placeholder="Digite aqui" v-model="valorDespesa">Digite aqui</Input>
                 <div class="tipo-holder">
                     <h3 class="label-text">Tipo</h3>
-                    <select class="input" v-model="tipoDespesa" @change="() => {console.log(tipoDespesa);
+                    <select class="input" v-model="tipoDespesa" @change="() => {
+                        console.log(tipoDespesa);
                     }">
                         <option disabled selected value="" default>Selecione</option>
                         <option value="compras">Compras</option>
@@ -33,14 +36,14 @@
                 style="width: 2em; height: 1.3em;">Selecionar
             data</input>
 
-            <Input v-if="dataChecked" type="date" label="Selecione a data"></Input>
+            <Input v-if="dataChecked" v-model="dataDespesa" type="date" label="Selecione a data"></Input>
 
         </Card>
 
         <div class="flex flex-row flex-wrap gap-2 justify-end ">
 
             <Button class="only-border" @click="$router.push('/financas')">Cancelar</Button>
-            <Button>Editar</Button>
+            <Button @click = "editar(this.editId)">Editar</Button>
 
         </div>
     </div>
@@ -63,7 +66,8 @@
                 <Input type="number" label="Valor" v-model="valorDespesa" placeholder="Digite aqui">Digite aqui</Input>
                 <div class="tipo-holder">
                     <h3 class="label-text">Tipo</h3>
-                    <select class="input" v-model="tipoDespesa" @change="() => {console.log(tipoDespesa);
+                    <select class="input" v-model="tipoDespesa" @change="() => {
+                        console.log(tipoDespesa);
                     }">
                         <option disabled selected value="" default>Selecione</option>
                         <option value="compras">Compras</option>
@@ -110,14 +114,15 @@ export default {
         const valorDespesa = ref(0)
         const tipoDespesa = ref("")
         const dataDespesa = ref("")
+        const editId = ref()
         return {
             dataChecked,
             isEdicao,
             descricaoDespesa,
             valorDespesa,
             tipoDespesa,
-            dataDespesa
-        }
+            dataDespesa,
+            editId        }
 
     },
 
@@ -133,19 +138,35 @@ export default {
                         data: this.dataDespesa
                     }
                 );
-                console.log(resposta);
+                console.log("resposta: " + resposta);
             }
 
-            catch (error) {
-                console.log("Erro ao criar despesa ");
-                console.log(error.message);
+            catch (e) {
+                console.log("Erro ao criar despesa: " + e);
             }
+        },
+
+        async editar(id) {
+            try {
+                const resposta = await controller.updateDespesa(id,{
+
+                    valor: this.valorDespesa,
+                    descricao: this.descricaoDespesa,
+                    tipo: this.tipoDespesa,
+                    data: this.dataDespesa
+
+                })
+                console.log("resposta: "+ resposta);
+
+            } catch (e) {
+                console.log("Erro ao ediar despesa:" + e);
+            }
+        },
+
+        mudarEdicao() {
+            this.isEdicao = !this.isEdicao
+        }
     },
-
-    mudarEdicao() {
-        this.isEdicao = !this.isEdicao
-    }
-},
 
 };
 </script>
