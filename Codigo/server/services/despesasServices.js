@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.use(express.json());
 
-async function getDespesasById(id) {
-    const queryResult = await pool.query("SELECT * FROM despesas d WHERE d.id = $1", [id]);
+async function getDespesaById(id) {
+    const result = await pool.query("SELECT * FROM despesas d WHERE d.id = $1", [id]);
     return result.rows;
 }
 
@@ -18,23 +18,31 @@ async function createNewDespesa(body) {
         data
     } = body;
 
-    const queryResult = await pool.query("INSERT INTO despesas (valor, descricao, tipo, data) VALUES ($1, $2, $3, $4)", [valor, descricao, tipo, data]);
+    const queryResult = await pool.query("INSERT INTO despesas (valor, descricao, tipo, data) VALUES ($1, $2, $3, $4) RETURNING *", [valor, descricao, tipo, data]);
     return queryResult.rows[0];
 }
 
-async function updateDespesa(body) {
-    const {
-        id,
-        valor,
-        descricao,
-        tipo,
-        data
-    } = body;
+async function updateDespesaById(id, updates) {
+    const despesa = await getDespesaById(id);
+    if (!despesa) throw new Error("Despesa não encontrada");
+    const fields = Object.keys(updates)
+        .map(((field, index) => `${field} = $${index + 1}`))
+        .join(", ");
 
-    const queryResult = await pool.query("UPDATE despesas SET valor = $1, descricao = $2, tipo = $3, data = $4 WHERE id = $5", [valor, descricao, tipo, data, id]);
-    return queryResult.rows[0];
+    const values = Object.values(updates);
+    const query = `UPDATE despesas SET ${fields} WHERE id = $${values.length + 1} RETURNING *`;
+    const result = await pool.query(query, [...values, id]);
+    return result.rows[0];
 }
+
+async function deleteDespesaById(id) {
+    const result = await pool.query("DELETE FROM despesas d WHERE d.id = $1", [id])
+    return result.rows[0]
+};
 
 export {
-    getDespesasById
+    getDespesaById,
+    createNewDespesa,
+    updateDespesaById,
+    deleteDespesaById
 }
