@@ -1,41 +1,273 @@
 <script>
 import VueApexCharts from "vue3-apexcharts";
-import { formartCurrency } from "../../util";
+import { formatCurrency } from "../../util";
 import { ref } from "vue";
 import Card from "@/components/Card.vue";
-import Table from "@/components/Table.vue";
 import Button from "@/components/Button.vue";
-import Input from "@/components/Input.vue";
-import Checkbox from "@/components/Checkbox.vue";
-import DatePicker from "@/components/DatePicker.vue";
-import Dialog from "@/components/Dialog.vue";
+import FinanceDialog from "./components/FinanceDialog.vue";
+import GenericTable from "./components/GenericTable.vue";
+import profitController from "@/controller/profit";
+import costController from "@/controller/cost";
+import financeController from "@/controller/finance";
 
 export default {
-	name: "Perfil",
-	components: { Card, Table, Button, Input, Dialog, DatePicker, Checkbox, apexchart: VueApexCharts },
+	name: "Finance",
+	components: { Card, Button, FinanceDialog, GenericTable, apexchart: VueApexCharts },
     inject: ["Auth"],
 	setup() {
+        const chartColors = ['#23b73c', '#ed0000', '#0973f5', '#23b772', '#ed002b', '#09aaf5'];
+        const isCompare = ref(false);
+        const reportDate = ref({
+            chartCategories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
+            compareCategories: [[1991, 1992], [1993, 1994], [1995, 1996], [1997, 1998], [1999, 2000], [2001, 2002], [2003, 2004], [2005, 2006]]
+        });
+        const series = ref([
+            {
+                name: 'Ganhos',
+                type: 'line',
+                data: [23, 45, 70, 60, 80, 95, 100, 120],
+            },
+            {
+                name: 'Custos',
+                type: 'line',
+                data: [15, 30, 45, 40, 50, 60, 70, 80],
+            },
+            {
+                name: 'Lucro Líquido',
+                type: 'line',
+                data: [8, 15, 25, 20, 30, 35, 30, 40],
+            },
+            // {
+            //     name: 'Ganhos',
+            //     type: 'bar',
+            //     data: [23, 45, 70, 60, 80, 95, 100, 120],
+            // },
+            // {
+            //     name: 'Custos',
+            //     type: 'bar',
+            //     data: [15, 30, 45, 40, 50, 60, 70, 80],
+            // },
+            // {
+            //     name: 'Lucro Líquido',
+            //     type: 'bar',
+            //     data: [8, 15, 25, 20, 30, 35, 30, 40],
+            // },
+        ]);
+
 		return {
 			defaultAlert: ref({
 				top: true,
 				right: true,
 				timeout: 3500,
 			}),
-            series: ref([
+            series,
+            totals: ref([
                 {
                     name: 'Ganhos',
-                    data: [23, 45, 70, 60, 80, 95, 100, 120],
+                    value: 'profit',
+                    total: 200,
                 },
                 {
                     name: 'Custos',
-                    data: [15, 30, 45, 40, 50, 60, 70, 80],
+                    value: 'costs',
+                    total: 180,
                 },
                 {
                     name: 'Lucro Líquido',
-                    data: [8, 15, 25, 20, 30, 35, 30, 40],
+                    value: 'receita',
+                    total: 20,
                 },
             ]),
-            chartOptions: ref({
+            headers: ref({
+                profit: [
+                    {
+                        value: 'none',
+                    },
+                    {
+                        text: 'Mês/Ano',
+                        value: 'date',
+                        sortable: true,
+                    },
+                    {
+                        text: 'Leite',
+                        value: 'leite',
+                        sortable: true,
+                        align: 'center',
+                    },
+                    {
+                        text: 'Venda de gado',
+                        value: 'venda',
+                        sortable: true,
+                        align: 'center',
+                    },
+                    {
+                        text: 'Total',
+                        value: 'total',
+                        sortable: true,
+                        align: 'center',
+                    },
+                ],
+                cost: [
+                    {
+                        value: 'none',
+                    },
+                    {
+                        text: 'Mês/Ano',
+                        value: 'date',
+                        sortable: true,
+                    },
+                    {
+                        text: 'Salários',
+                        value: 'salarios',
+                        sortable: true,
+                        align: 'center',
+                    },
+                    {
+                        text: 'Encargos',
+                        value: 'encargos',
+                        sortable: true,
+                        align: 'center',
+                    },
+                    {
+                        text: 'Compras',
+                        value: 'compras',
+                        sortable: true,
+                        align: 'center',
+                    },
+                    {
+                        text: 'Total',
+                        value: 'total',
+                        sortable: true,
+                        align: 'center',
+                    },
+                ],
+            }),
+            data: ref({
+                profit: [
+                    {
+                        date: new Date(),
+                        leite: 6,
+                        venda: 6,
+                        total: 12,
+                        childs: [
+                            {
+                                id: 1,
+                                description: 'Teste',
+                                value: 6,
+                                type: 'leite',
+                                date: new Date(),
+                            },
+                            {
+                                id: 2,
+                                description: 'Teste',
+                                value: 6,
+                                type: 'venda',
+                                date: new Date(),
+                            },
+                        ],
+                    },
+                    {
+                        date: new Date(),
+                        leite: 6,
+                        venda: 6,
+                        total: 12,
+                        childs: [
+                            {
+                                id: 3,
+                                description: 'Teste',
+                                value: 6,
+                                type: 'leite',
+                                date: new Date(),
+                            },
+                            {
+                                id: 4,
+                                description: 'Teste',
+                                value: 6,
+                                type: 'venda',
+                                date: new Date(),
+                            },
+                        ],
+                    },
+                ],
+                cost: [
+                    {
+                        date: new Date(),
+                        salarios: 4,
+                        encargos: 4,
+                        compras: 4,
+                        total: 12,
+                        childs: [
+                            {
+                                id: 1,
+                                description: 'Teste',
+                                value: 4,
+                                type: 'salarios',
+                                date: new Date(),
+                            },
+                            {
+                                id: 2,
+                                description: 'Teste',
+                                value: 4,
+                                type: 'encargos',
+                                date: new Date(),
+                            },
+                            {
+                                id: 3,
+                                description: 'Teste',
+                                value: 4,
+                                type: 'compras',
+                                date: new Date(),
+                            },
+                        ],
+                    },
+                    {
+                        date: new Date(),
+                        salarios: 4,
+                        encargos: 4,
+                        compras: 4,
+                        total: 12,
+                        childs: [
+                            {
+                                id: 4,
+                                description: 'Teste',
+                                value: 4,
+                                type: 'salarios',
+                                date: new Date(),
+                            },
+                            {
+                                id: 5,
+                                description: 'Teste',
+                                value: 4,
+                                type: 'encargos',
+                                date: new Date(),
+                            },
+                            {
+                                id: 6,
+                                description: 'Teste',
+                                value: 4,
+                                type: 'compras',
+                                date: new Date(),
+                            },
+                        ],
+                    },
+                ],
+            }),
+            isCompare,
+            chartColors,
+            reportDate,
+            loading: ref({
+                report: false,
+                profit: false,
+                costs: false,
+            }),
+            showDialog: ref(false),
+            formatCurrency,
+		};
+	},
+
+    computed: {
+        chartOptions() {
+            return {
                 chart: {
                     id: "vuechart-example",
                     stacked: false
@@ -49,15 +281,13 @@ export default {
                 dataLabels: {
                     enabled: false,
                     style: {
-                        colors: ['#23b73c', '#ed0000', '#0973f5'],
+                        colors: this.chartColors,
                     }
                 },
-                colors: ['#23b73c', '#ed0000', '#0973f5'],
+                colors: this.chartColors,
                 xaxis: {
-                    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
-                },
-                tooltip: {
-                    enabled: true,
+                    categories: this.reportDate.chartCategories,
+                    overwriteCategories: this.reportDate.compareCategories,
                 },
                 yaxis: [
                     {
@@ -66,7 +296,7 @@ export default {
                         },
                         labels: {
                             formatter: function (value) {
-                                return formartCurrency(value);
+                                return formatCurrency(value);
                             },
                         },
                         axisTicks: {
@@ -77,44 +307,164 @@ export default {
                         },
                     },
                 ],
-            }),
-            totals: ref([
-                {
-                    name: 'Ganhos',
-                    value: 'ganhos',
-                    total: 200,
+                tooltip: {
+                    enabled: true,
+                    custom: ({ s, seriesIndex, dataPointIndex, w }) => {
+                        const item = this.isCompare ? this.reportDate.compareCategories[dataPointIndex] : this.reportDate.chartCategories[dataPointIndex];
+                        return `<div class="custom-tooltip" style="width: max-content">
+                            <div class="date" style="display: flex; justify-content: center; background: #eceff1; padding: 8px 8px;">
+                                ${this.isCompare ? `${item[0]} - ${item[1]}` : item}
+                            </div>
+                            <div class="data-tooltip" style="display: grid; gap: 12px; ${this.isCompare ? 'grid-template-columns: 1fr 1fr;' : 'grid-template-columns: 1fr;'}">
+                                <div style="padding: 15px 15px; display: grid; gap: 12px;">
+                                    ${this.series.filter((nothing, index) => index < 3).map((s, index) => `
+                                        <div style="display: flex; flex-direction: row; align-items: center; width: 250px;">
+                                            <span class="tooltip-circle" style="background: ${this.chartColors[index]}; height: 10px; width: 10px; border-radius: 50%; margin-right: 10px;"></span>
+                                            <p style="margin-right: 10px; font-size: 15px; margin-bottom: 0px;">
+                                                ${s.name}:
+                                            </p>
+                                            <p style="font-weight: bold; font-size: 14px; margin-bottom: 0px;">
+                                                ${formatCurrency(s.data[dataPointIndex])}
+                                            </p>
+                                        </div>`
+                                    ).join('')}
+                                </div>
+                                ${this.isCompare ? `
+                                    <div style="padding: 15px 15px; display: grid; gap: 12px;">
+                                        ${this.series.filter((nothing, index) => index >= 3).map((s, index) => `
+                                            <div style="display: flex; flex-direction: row; align-items: center; width: 250px;">
+                                                <span class="tooltip-circle" style="background: ${this.chartColors[index + 3]}; height: 10px; width: 10px; border-radius: 50%; margin-right: 10px;"></span>
+                                                <p style="margin-right: 10px; font-size: 15px; margin-bottom: 0px;">
+                                                    ${s.name}:
+                                                </p>
+                                                <p style="font-weight: bold; font-size: 14px; margin-bottom: 0px;">
+                                                    ${formatCurrency(s.data[dataPointIndex])}
+                                                </p>
+                                            </div>`
+                                        ).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>`
+                    }
                 },
-                {
-                    name: 'Custos',
-                    value: 'custos',
-                    total: 180,
-                },
-                {
-                    name: 'Lucro Líquido',
-                    value: 'receita',
-                    total: 20,
-                },
-            ]),
-            headers: ref([
-                {
-                    text: 'Teste',
-                    value: 'teste',
-                }
-            ]),
-            loading: ref(false),
-            isCompare: ref(false),
-            showDialog: ref(false),
-            isDateOpened: ref(false),
-            isDateOpened2: ref(false),
-            formartCurrency,
-		};
-	},
+            }
+        }
+    },
+
+    async created() {
+        await this.getAllData();
+    },
 
 	methods: {
-        gerarRelatorio() {
-            this.showDialog = false;
-            this.loading = true;
-        }
+        async generateReport(period = [], period2 = []) {
+            try {
+                this.showDialog = false;
+                this.loading.report = true;
+                // this.isCompare = !!period.length && !!period2.length;
+                const { data } = await financeController.generateReport(period, period2);
+                // tratar dados
+            } catch (e) {
+                this.$alert({
+					message: 'Erro ao gerar o relatório de finanças. Tente novamente mais tarde',
+					...this.defaultAlert,
+				});
+            } finally {
+                this.loading.report = false;
+            }
+        },
+
+        async getAllData() {
+            await this.getProfits();
+            await this.getCosts();
+            await this.generateReport();
+        },
+
+        async getProfits(period = []) {
+            try {
+                this.loading.profit = true;
+                const { data } = await profitController.listProfits(period);
+                this.data.profit = data;
+            } catch (e) {
+                this.$alert({
+					message: 'Erro carregar os lucros. Tente novamente mais tarde',
+					...this.defaultAlert,
+				});
+            } finally {
+                this.loading.profit = false;
+            }
+        },
+
+        async getCosts(period = []) {
+            try {
+                this.loading.costs = true;
+                const { data } = await costController.listCosts(period);
+                this.data.cost = data;
+            } catch (e) {
+                this.$alert({
+					message: 'Erro carregar as despesas. Tente novamente mais tarde',
+					...this.defaultAlert,
+				});
+            } finally {
+                this.loading.costs = false;
+            }
+        },
+
+        async deleteProfit(date, id) {
+            try {
+                this.loading.profit = true;
+                await profitController.deleteProfit(id);
+                
+                const index = this.data.profit.findIndex((item) => date.toISOString().substring(0, 10) == item.date.toISOString().substring(0, 10));
+                if (index > -1) {
+                    const childIndex = this.data.profit[index].childs.findIndex((item) => item.id == id);
+                    if (childIndex > -1) {
+                        this.data.profit[index].childs.splice(childIndex, 1);
+                    }
+                }
+
+                this.$alert({
+                    type: 'success',
+					message: 'Lucro deletado com sucesso',
+					...this.defaultAlert,
+				});
+            } catch (e) {
+                this.$alert({
+					message: 'Erro ao deletar lucro. Tente novamente mais tarde',
+					...this.defaultAlert,
+				});
+            } finally {
+                this.loading.profit = false;
+            }
+        },
+
+        async deleteCost(date, id) {
+            try {
+                this.loading.costs = true;
+                await costController.deleteCost(id);
+
+                const index = this.data.cost.findIndex((item) => date.toISOString().substring(0, 10) == item.date.toISOString().substring(0, 10));
+                if (index > -1) {
+                    const childIndex = this.data.cost[index].childs.findIndex((item) => item.id == id);
+                    if (childIndex > -1) {
+                        this.data.cost[index].childs.splice(childIndex, 1);
+                    }
+                }
+
+                this.$alert({
+                    type: 'success',
+					message: 'Despesa deletada com sucesso',
+					...this.defaultAlert,
+				});
+            } catch (e) {
+                this.$alert({
+					message: 'Erro ao deletar despesa. Tente novamente mais tarde',
+					...this.defaultAlert,
+				});
+            } finally {
+                this.loading.costs = false;
+            }
+        },
 	},
 };
 </script>
@@ -122,83 +472,43 @@ export default {
 <template>
     <div class="flex flex-col gap-6">
         <h1 class="title">Finanças</h1>
-        <Button class="w-fit self-end" @click="showDialog = true">Gerar Relatório</Button>
+        <Button class="w-fit self-end" @click="showDialog = true" :disabled="loading.report">Gerar Relatório</Button>
+        <FinanceDialog v-model="showDialog" @generate-report="generateReport" />
         <div class="flex flex-wrap gap-4 [&>*]:w-full">
             <Card v-for="total in totals" class="total-card">
-                <div class="skeleton skeleton-card-title" v-if="loading" />
+                <div class="skeleton skeleton-card-title" v-if="loading.report" />
                 <h6 v-else>{{ total.name }}</h6>
-                <div class="skeleton skeleton-card-content" v-if="loading" />
-                <p :class="total.value" v-else>{{ formartCurrency(total.total) }}</p>
+                <div class="skeleton skeleton-card-content" v-if="loading.report" />
+                <p :class="total.value" v-else>{{ formatCurrency(total.total) }}</p>
             </Card>
         </div>
-        <Card v-if="!loading">
+        <Card v-if="!loading.report">
             <apexchart
                 width="100%"
                 height="300px"
-                type="line"
                 :options="chartOptions"
                 :series="series"
             ></apexchart>
         </Card>
-        <Dialog v-model="showDialog" no-overflow>
-            <div class="dialog-div" :class="{'bigger': isDateOpened || isDateOpened2}">
-                <div class="flex justify-between">
-                    <h1 class="title" style="margin: 0;">Campos do relatório</h1>
-                    <div class="close-dialog">
-                        <span class="material-symbols-rounded" @click="showDialog = false">
-                            close
-                        </span>
-                    </div>
-                </div>
-                <div class="flex flex-wrap gap-4 w-full">
-                    <DatePicker is-compare :max-date="new Date()" class="w-full" label="Período 1" v-model:expanded="isDateOpened">Selecionar período</DatePicker>
-                    <DatePicker is-compare :max-date="new Date()" class="w-full" label="Período 2" v-model:expanded="isDateOpened2" v-if="isCompare">Selecionar período</DatePicker>
-                </div>
-                <Checkbox v-model="isCompare">Comparar dois perídos</Checkbox>
-                <Button @click="gerarRelatorio" class="w-fit self-end">Gerar</Button>
-            </div>
-        </Dialog>
     </div>
-    <div class="flex flex-col gap-6 mt-8">
-        <div class="flex items-center gap-4">
-            <h1 class="title" style="margin: 0;">Receita</h1>
-            <Button rounded>
-                <span class="material-symbols-rounded">
-                    add
-                </span>
-            </Button>
-        </div>
-        <div class="flex items-center justify-between gap-4 flex-wrap">
-            <Input type="search" class="filter-input" placeholder="Pesquisar" />
-            <Button class="filter-button" rounded>
-                <span class="material-symbols-rounded">
-                    filter_list
-                </span>
-            </Button>
-        </div>
-        <Table :headers="headers" :loading="loading"></Table>
-    </div>
-    <div class="flex flex-col gap-6 mt-8">
-        <div class="flex items-center gap-4">
-            <h1 class="title" style="margin: 0;">Despesas</h1>
-            <router-link to="/financas/editar">
-                <Button rounded>
-                    <span class="material-symbols-rounded">
-                        add
-                    </span>
-                </Button>
-            </router-link>
-        </div>
-        <div class="flex items-center justify-between gap-4 flex-wrap">
-            <Input type="search" class="filter-input" placeholder="Pesquisar" />
-            <Button class="filter-button" rounded>
-                <span class="material-symbols-rounded">
-                    filter_list
-                </span>
-            </Button>
-        </div>
-        <Table :headers="headers" :loading="loading"></Table>
-    </div>
+    <GenericTable
+        title="Lucros"
+        :headers="headers.profit"
+        :items="data.profit"
+        :loading="loading.profit"
+        add-route="/"
+        @filter-data="getProfits"
+        @delete-item="deleteProfit"
+    />
+    <GenericTable
+        title="Despesas"
+        :headers="headers.cost"
+        :items="data.cost"
+        :loading="loading.cost"
+        add-route="/financas/despesa"
+        @filter-data="getCosts"
+        @delete-item="deleteCost"
+    />
 </template>
 
 <style scoped lang="scss">
@@ -220,48 +530,16 @@ export default {
     }
 }
 
-.ganhos {
+.profit {
     color: $green-strong;
 }
 
-.custos {
+.costs {
     color: $red-strong;
 }
 
 .receita {
     color: $blue-strong;
-}
-
-.dialog-div {
-    display: flex;
-    flex-direction: column;
-    gap: 2em;
-    width: 60vw;
-    min-height: 290px;
-    padding: 1em;
-    transition-duration: 1s;
-
-    .close-dialog {
-        display: flex;
-        align-items: center;
-        border-radius: 50%;
-        padding: 0.1em 0.2em;
-        cursor: pointer;
-        color: $green-dark;
-        transition-duration: 0.3s;
-
-        &:hover {
-            background: $gray-200;
-        }
-
-        .material-symbols-rounded {
-            font-size: 35px;
-        }
-    }
-}
-
-.dialog-div.bigger {
-    min-height: 90vh;
 }
 
 .filter-button .material-symbols-rounded {
@@ -270,12 +548,6 @@ export default {
 
 .filter-input {
     min-width: 25em;
-}
-
-@media screen and (max-width: 768px) {
-	.dialog-div {
-        width: 90vw;
-    }
 }
 
 @media screen and (max-width: 488px) {
