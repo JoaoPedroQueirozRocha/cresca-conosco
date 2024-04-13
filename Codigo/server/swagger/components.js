@@ -50,14 +50,14 @@ const components = {
                     type: "string",
                     enum: ["compras", "despesas trabalhistas", "diverso"]
                 },
-                data: { type: "date" }
+                data_despesa: { type: "date" }
             },
             required: ["valor", "descricao", "tipo"],
             example: {
                 valor: 150.0,
                 descricao: "Compra de equipamentos",
                 tipo: "compras",
-                data: "2024-02-09"
+                data_despesa: "2024-02-09"
             }
         },
         Receita: {
@@ -70,14 +70,14 @@ const components = {
                     type: "string",
                     enum: ["leite", "venda", "diverso"]
                 },
-                data: { type: "date" }
+                data_receita: { type: "date" }
             },
             required: ["valor", "descricao", "tipo"],
             example: {
                 valor: 400.0,
                 descricao: "Entrega de leite",
                 tipo: "leite",
-                data: "2024-02-09"
+                data_receita: "2024-02-09"
             }
         },
         Mao_de_obra: {
