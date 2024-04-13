@@ -6,8 +6,8 @@ const router = express.Router();
 /**
  * @swagger
  * tags:
- *  name: Despesas
- *  description: Gerenciamento de despesas
+ *   - name: Despesas
+ *     description: Gerenciamento de despesas
  */
 
 /**
@@ -58,30 +58,49 @@ router.post("/", despesasController.createNewDespesa);
 /**
  * @swagger
  * /despesas/{id}:
- *  put:
- *   summary: Atualiza uma despesa específica pelo seu id
- *  tags: [Despesas]
- *  parameters:
- *   - in: path
- *    name: id
- *    required: true
- *    schema:
- *     type: string
- *    description: Id da despesa específica
- *  requestBody:
- *   required: true
- *   content:
- *    application/json:
- *     schema:
- *      $ref: '#/components/schemas/Despesa'
- *  responses:
- *   200:
- *    description: Despesa atualizada com sucesso
- *   404:
- *    description: Despesa não encontrada
+ *   put:
+ *     summary: Atualiza uma despesa específica pelo seu id
+ *     tags: [Despesas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true 
+ *         schema:
+ *           type: string
+ *         description: Id da despesa específica
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Despesa'
+ *     responses:
+ *       200:
+ *         description: Despesa atualizada com sucesso
+ *       404:
+ *         description: Despesa não encontrada
  */
 router.put("/:id", despesasController.updateDespesaById);
+
+/**
+ * @swagger
+ * /despesas/{id}:
+ *   delete:
+ *     summary: Deleta uma despesa específica pelo seu id
+ *     tags: [Despesas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Id da despesa específica
+ *     responses:
+ *       200:
+ *         description: Despesa deletada com sucesso
+ *       404:
+ *         description: Despesa não encontrada
+ */
 router.delete("/:id", despesasController.deleteDespesaById);
 
 export default router;
-

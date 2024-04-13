@@ -60,6 +60,26 @@ const components = {
                 data: "2024-02-09"
             }
         },
+        Receita: {
+            type: "object",
+            properties: {
+                id: { type: "string" },
+                valor: { type: "number" },
+                descricao: { type: "string" },
+                tipo: {
+                    type: "string",
+                    enum: ["leite", "venda", "diverso"]
+                },
+                data: { type: "date" }
+            },
+            required: ["valor", "descricao", "tipo"],
+            example: {
+                valor: 400.0,
+                descricao: "Entrega de leite",
+                tipo: "leite",
+                data: "2024-02-09"
+            }
+        },
         Mao_de_obra: {
             type: "object",
             properties: {
@@ -73,7 +93,8 @@ const components = {
                 salario: 1500.0,
                 descricao: "Trabalha na fazenda"
             }
-        }
+        },
+
     },
 };
 
