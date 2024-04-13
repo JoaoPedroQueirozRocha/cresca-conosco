@@ -82,7 +82,7 @@ export default {
         <label v-if="label" class="label">{{ label }}</label>
         <div ref="container" class="select-container relative min-w-[5em]" tabindex="0" @blur="changeModel(false)">
             <div ref="labelContainer" class="label-container" @click="changeModel(!model)" :class="{'active': model, 'disabled': disabled}">
-                <div class="flex gap-4">
+                <div class="flex gap-4 truncate">
                     <span class="material-symbols-rounded select-none" v-if="icon">
                         {{ icon }}
                     </span>
