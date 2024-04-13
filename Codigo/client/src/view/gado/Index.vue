@@ -6,7 +6,7 @@
 					<h2 class="text-[2.5em] font-bold">Gado</h2>
 					<div class="flex flex-row flex-wrap gap-2 content-center">
 						<Button @click="createDialog">Mais detalhes</Button>
-						<router-link to="/gado/create">
+						<router-link to="/gado/NovaVaca">
 							<Button>Adicionar</Button>
 						</router-link>
 					</div>

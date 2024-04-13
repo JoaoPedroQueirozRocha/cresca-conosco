@@ -17,6 +17,13 @@ const routes = [
         beforeEnter: Auth0.routeGuard
     },
     {
+        path: '/gado',
+        name: 'NovaVaca',
+        props: true,
+        component: () => import('@/view/gado/NovaVaca.vue'),
+        beforeEnter: Auth0.routeGuard
+    },
+    {
         path: '/financas',
         name: 'Finanças',
         props: true,
