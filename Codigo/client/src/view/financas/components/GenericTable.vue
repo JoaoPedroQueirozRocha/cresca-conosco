@@ -199,7 +199,7 @@ export default {
 							tabindex="0"
 							@blur="child.expanded = false"
 						>
-							<router-link to="/">
+							<router-link :to="`${addRoute}/${child.id}`">
                                 <div class="action-option">
                                     <Icon name="edit" />
                                     Editar

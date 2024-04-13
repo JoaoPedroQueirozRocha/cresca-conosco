@@ -173,12 +173,14 @@ export default {
                         total: 12,
                         childs: [
                             {
+                                id: 3,
                                 description: 'Teste',
                                 value: 6,
                                 type: 'leite',
                                 date: new Date(),
                             },
                             {
+                                id: 4,
                                 description: 'Teste',
                                 value: 6,
                                 type: 'venda',
@@ -196,18 +198,21 @@ export default {
                         total: 12,
                         childs: [
                             {
+                                id: 1,
                                 description: 'Teste',
                                 value: 4,
                                 type: 'salarios',
                                 date: new Date(),
                             },
                             {
+                                id: 2,
                                 description: 'Teste',
                                 value: 4,
                                 type: 'encargos',
                                 date: new Date(),
                             },
                             {
+                                id: 3,
                                 description: 'Teste',
                                 value: 4,
                                 type: 'compras',
@@ -223,18 +228,21 @@ export default {
                         total: 12,
                         childs: [
                             {
+                                id: 4,
                                 description: 'Teste',
                                 value: 4,
                                 type: 'salarios',
                                 date: new Date(),
                             },
                             {
+                                id: 5,
                                 description: 'Teste',
                                 value: 4,
                                 type: 'encargos',
                                 date: new Date(),
                             },
                             {
+                                id: 6,
                                 description: 'Teste',
                                 value: 4,
                                 type: 'compras',
@@ -358,7 +366,7 @@ export default {
                 // tratar dados
             } catch (e) {
                 this.$alert({
-					message: 'Error ao gerar o relatório de finanças. Tente novamente mais tarde',
+					message: 'Erro ao gerar o relatório de finanças. Tente novamente mais tarde',
 					...this.defaultAlert,
 				});
             } finally {
@@ -379,7 +387,7 @@ export default {
                 this.data.profit = data;
             } catch (e) {
                 this.$alert({
-					message: 'Error carregar os lucros. Tente novamente mais tarde',
+					message: 'Erro carregar os lucros. Tente novamente mais tarde',
 					...this.defaultAlert,
 				});
             } finally {
@@ -394,7 +402,7 @@ export default {
                 this.data.cost = data;
             } catch (e) {
                 this.$alert({
-					message: 'Error carregar as despesas. Tente novamente mais tarde',
+					message: 'Erro carregar as despesas. Tente novamente mais tarde',
 					...this.defaultAlert,
 				});
             } finally {
@@ -497,7 +505,7 @@ export default {
         :headers="headers.cost"
         :items="data.cost"
         :loading="loading.cost"
-        add-route="/"
+        add-route="/financas/despesa"
         @filter-data="getCosts"
         @delete-item="deleteCost"
     />

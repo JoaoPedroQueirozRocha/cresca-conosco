@@ -24,10 +24,17 @@ const routes = [
         beforeEnter: Auth0.routeGuard
     },
     {
-        path: '/financas/editar',
-        name: 'FinançasEditar',
+        path: '/financas/despesa/:id',
+        name: 'DespesaEditar',
+        props: { isEdicao: true },
+        component: () => import('@/view/financas/components/EditarDespesa.vue'),
+        beforeEnter: Auth0.routeGuard
+    },
+    {
+        path: '/financas/despesa',
+        name: 'DespesaCriar',
         props: true,
-        component: () => import('@/view/financas/EditarDespesa.vue'),
+        component: () => import('@/view/financas/components/EditarDespesa.vue'),
         beforeEnter: Auth0.routeGuard
     },
     {

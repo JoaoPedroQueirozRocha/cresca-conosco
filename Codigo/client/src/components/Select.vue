@@ -6,7 +6,7 @@ export default {
     name: 'Select',
     components: { SelectContainer },
     props: {
-        modelValue: Array | Date,
+        modelValue: Object | String | Number,
         items: Array,
         expanded: {
             type: Boolean,
@@ -28,12 +28,7 @@ export default {
     },
 
     created() {
-        if (this.modelValue) {
-            this.model = this.modelValue;
-        } else {
-            this.model = [];
-        }
-    
+        this.model = this.modelValue;    
         this.isExpanded = this.expanded;
     },
 
