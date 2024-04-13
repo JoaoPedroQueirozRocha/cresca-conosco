@@ -151,6 +151,7 @@ export default {
 
 .menu.mobile.closed {
     padding: 0em;
+    height: 0;
 }
 
 .logo {
