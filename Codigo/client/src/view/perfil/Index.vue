@@ -46,7 +46,7 @@ export default {
 				await userController.deleteUser();
 			} catch (e) {
 				this.$alert({
-					message: 'Error ao deletar o usuário. Tente novamente mais tarde',
+					message: 'Error ao deletar o usuário. Tente novamente mais tarde.',
 					...this.defaultAlert,
 				});
 			}
