@@ -8,9 +8,11 @@ export default {
     setup() {
         const isPhone = ref(window.innerWidth <= 768);
         const isExpanded = ref(!isPhone);
+        const menu = ref();
 
         return {
             isPhone,
+            menu,
             isExpanded,
             options: [
                 {
@@ -51,13 +53,23 @@ export default {
             this.isExpanded = value;
             this.$emit('update:isMenuOpened', value)
         },
+        changeHeight(value) {
+            this.isExpanded = value;
+            let height = '0';
+            if (value) {
+                const topbar = document.querySelector('.top-holder');
+                const windowHeight = window.innerHeight;
+                height = windowHeight - topbar.scrollHeight;
+            }
+            this.menu.style.height = `${height}px`;
+        }
     }
 }
 </script>
 
 <template>
     <div class="menu-holder" :class="{'closed': !isExpanded, 'mobile': isPhone}">
-        <span class="material-symbols-rounded menu-expand-icon top-3 left-4 fixed" @click="isExpanded = !isExpanded" v-if="isPhone">
+        <span class="material-symbols-rounded menu-expand-icon top-3 left-4 fixed" @click="changeHeight(!isExpanded)" v-if="isPhone">
             {{ isExpanded ? 'close' : 'menu' }}
         </span>
         <div class="menu" ref="menu" :class="{'closed': !isExpanded, 'mobile': isPhone}">
@@ -132,7 +144,6 @@ export default {
     position: fixed;
     z-index: 90;
     bottom: 0;
-    height: 90vh;
     min-width: 100%;
     max-width: none;
     transition: height 0.5s ease;
