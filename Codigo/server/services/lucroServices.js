@@ -19,7 +19,7 @@ async function getLucro(id){
 }
 
 async function createLucro(body){
-    const result = await pool.query('INSERT INTO receita (descricao, tipo, valor, data) VALUES ($1,$2)', [body.descricao, body.tipo, body.valor, body.data])
+    const result = await pool.query('INSERT INTO receita (descricao, tipo, valor, data) VALUES ($1, $2, $3, $4)', [body.descricao, body.tipo, body.valor, body.data])
     return result;
 }
 

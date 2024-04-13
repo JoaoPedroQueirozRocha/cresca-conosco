@@ -1,7 +1,7 @@
 import express from "express";
 import * as lucroController from "../controller/lucroController.js";
 
-const router = expres.Router();
+const router = express.Router();
 
 router.post('/list', lucroController.listarLucro);
 router.get('/:id', lucroController.getLucro);
