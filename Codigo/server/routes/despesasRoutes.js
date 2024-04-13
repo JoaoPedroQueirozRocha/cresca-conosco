@@ -3,7 +3,7 @@ import * as despesasController from "../controller/despesasController.js";
 
 const router = express.Router();
 
-router.post("/list", despesasController.createNewDespesa);
+router.post("/list", despesasController.listarDespesas);
 router.get("/:id", despesasController.getDespesaById);
 router.post("/", despesasController.createNewDespesa);
 router.put("/:id", despesasController.updateDespesaById);

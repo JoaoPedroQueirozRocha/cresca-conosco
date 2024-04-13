@@ -9,6 +9,7 @@ async function listarDespesas(req, res) {
 
         res.send(despesas);
     } catch (e) {
+        console.error(e)
         res.status(e.status).send(e.message);
     }
 }
@@ -79,4 +80,4 @@ async function deleteDespesaById(req, res) {
     }
 }
 
-export { getDespesaById, createNewDespesa, updateDespesaById, deleteDespesaById };
+export { getDespesaById, createNewDespesa, updateDespesaById, deleteDespesaById, listarDespesas };
