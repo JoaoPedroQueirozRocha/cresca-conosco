@@ -144,7 +144,6 @@ export default {
     position: fixed;
     z-index: 90;
     bottom: 0;
-    height: 90vh;
     min-width: 100%;
     max-width: none;
     transition: height 0.5s ease;
@@ -152,7 +151,6 @@ export default {
 
 .menu.mobile.closed {
     padding: 0em;
-    height: 0;
 }
 
 .logo {
