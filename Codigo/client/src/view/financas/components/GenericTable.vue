@@ -3,7 +3,6 @@ import { ref } from "vue";
 import Table from "@/components/Table.vue";
 import Button from "@/components/Button.vue";
 import Input from "@/components/Input.vue";
-import Checkbox from "@/components/Checkbox.vue";
 import Icon from "@/components/Icon.vue";
 import DatePicker from "@/components/DatePicker.vue";
 import Card from "@/components/Card.vue";
@@ -18,13 +17,16 @@ export default {
         title: String,
         addRoute: String
     },
-	components: { Table, Button, Input, DatePicker, Checkbox, Icon, Card },
+	components: { Table, Button, Input, DatePicker, Icon, Card },
+    emits: ['filterData', 'deleteItem'],
     inject: ["Auth"],
 	setup() {
 		return {
             searchValue: ref(''),
 			opendedIndex: ref(null),
 			opendedChildIndex: ref(null),
+            filteredDate: ref([]),
+			expandedDate: ref(null),
             formatCurrency,
             formatDate,
             upperCaseFirstLetter,
@@ -67,14 +69,15 @@ export default {
 
             if (!card || !rect) return;
 
-			card.style.left = rect.left - 40 + 'px';
-			card.style.top = rect.top + 30 + 'px';
+			card.style.left = rect.left - 100 + 'px';
+			card.style.top = rect.top + 40 + 'px';
 			item.expanded = true;
 			this.opendedIndex = index;
 			this.opendedChildIndex = cIndex;
 		},
 
 		closeCard(event) {
+            this.isFilterExpanded = false;
 			const card = this.$refs['card' + this.opendedIndex + this.opendedChildIndex];
             if (!card) return;
             const cardParent = card[0]?.$el?.parentElement;
@@ -91,6 +94,20 @@ export default {
 			this.opendedIndex = null;
 			this.opendedChildIndex = null;
 		},
+
+        async filterDate() {
+            if (this.filteredDate.length > 1) {
+                this.expandedDate = false;
+                await this.$emit('filterData', this.filteredDate)
+            }
+        },
+
+        async confirmDeletion(date, id) {
+            const result = await this.$confirm({
+                title: 'Tem certeza que deseja deletar esse item?'
+            });
+            if (result) await this.$emit('deleteItem', date, id);
+        }
     },
 };
 </script>
@@ -109,11 +126,16 @@ export default {
         </div>
         <div class="flex items-center justify-between gap-4 flex-wrap">
             <Input v-model="searchValue" type="search" class="filter-input" placeholder="Pesquisar" :disabled="loading" />
-            <Button class="filter-button" rounded :disabled="loading">
-                <span class="material-symbols-rounded">
-                    filter_list
-                </span>
-            </Button>
+            <DatePicker
+                v-model="filteredDate"
+                v-model:expanded="expandedDate"
+                @update:model-value="filterDate"
+                is-compare
+                :disabled="loading"
+                :max-date="new Date()"
+            >
+                Filtro por data
+            </DatePicker>
         </div>
         <Table :headers="headers" :items="filteredData" :loading="loading" class="finance-table">
             <template v-for="(header, index) in headers" :key="index" v-slot:[header.value]="{ item }">
@@ -172,18 +194,30 @@ export default {
                         </div>
 						<Card
 							:ref="'card' + index + cIndex"
-							class="fixed"
+							class="fixed action-card"
 							v-show="child.expanded"
 							tabindex="0"
 							@blur="child.expanded = false"
 						>
-							teste
+							<router-link to="/">
+                                <div class="action-option">
+                                    <Icon name="edit" />
+                                    Editar
+                                </div>
+                            </router-link>
+							<div class="action-option delete" @click="confirmDeletion(item.date, child.id)">
+                                <Icon name="delete" />
+                                Deletar
+                            </div>
 						</Card>
                     </td>
                 </tr>
             </template>
             <template #empty-state>
-                <Icon name="sentiment_dissatisfied" />
+                <div class="empty-div">
+                    <Icon name="sentiment_dissatisfied" />
+                    <p>Sem dados para exibir</p>
+                </div>
             </template>
         </Table>
     </div>
@@ -236,6 +270,37 @@ td {
 
 .filter-input {
     min-width: 25em;
+}
+
+.empty-div {
+    @apply flex flex-col items-center justify-center gap-4 p-4;
+    color: $gray-400;
+
+    .material-symbols-rounded {
+        font-size: 100px;
+    }
+}
+
+.action-card {
+    @apply p-3 flex flex-col gap-2;
+}
+
+.action-option {
+    @apply flex items-center gap-4 cursor-pointer p-2 font-bold;
+    color: $gray-500;
+    border-radius: 8px;
+    
+    &:hover {
+        background: $gray-200;
+    }
+}
+
+.action-option.delete {
+    color: $red-strong;
+    
+    &:hover {
+        background: $red-light;
+    }
 }
 
 @media screen and (max-width: 488px) {

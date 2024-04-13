@@ -10,6 +10,7 @@ export default {
         },
         icon: String,
         label: String,
+        disabled: Boolean,
     },
     emits: ['update:modelValue'],
     setup() {
@@ -80,7 +81,7 @@ export default {
     <div class="flex flex-col gap-1">
         <label v-if="label" class="label">{{ label }}</label>
         <div ref="container" class="select-container relative min-w-[5em]" tabindex="0" @blur="changeModel(false)">
-            <div ref="labelContainer" class="label-container" @click="changeModel(!model)" :class="{'active': model}">
+            <div ref="labelContainer" class="label-container" @click="changeModel(!model)" :class="{'active': model, 'disabled': disabled}">
                 <div class="flex gap-4">
                     <span class="material-symbols-rounded select-none" v-if="icon">
                         {{ icon }}
@@ -141,5 +142,11 @@ export default {
     border-top: none;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
+}
+
+.disabled {
+    @apply pointer-events-none;
+    border-color: $gray-300;
+    background: $gray-200;
 }
 </style>

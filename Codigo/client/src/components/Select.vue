@@ -17,6 +17,7 @@ export default {
             type: String,
             default: 'label'
         },
+        disabled: Boolean,
     },
     emits: ['update:modelValue', 'update:expanded'],
     setup() {
@@ -61,7 +62,7 @@ export default {
 </script>
 
 <template>
-    <SelectContainer v-model="isExpanded" @update:model-value="changeExpanded" :label="label">
+    <SelectContainer v-model="isExpanded" @update:model-value="changeExpanded" :label="label" :disabled="disabled">
         <template #status>
             <p v-if="model[labelKey] || model" class="status-text">{{ model[labelKey] ? model[labelKey] : model }}</p>
             <slot v-else />

@@ -77,7 +77,7 @@ export default {
 </script>
 
 <template>
-    <div class="table-holder" :class="{'overflow-auto': items.length || loading}" :style="{'max-height': maxHeight}">
+    <div class="table-holder overflow-auto" :style="{'max-height': maxHeight}">
         <table class="rounded-2xl" :class="{'overflow-hidden': !items.length && !loading}">
             <thead v-if="loading">
                 <tr>

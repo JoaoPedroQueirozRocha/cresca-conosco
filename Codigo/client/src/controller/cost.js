@@ -1,8 +1,8 @@
 import axios from 'axios';
 const APIURL = `${import.meta.env.VITE_API_URL}/finance/cost`
 
-function listCosts() {
-    return axios.get(`${APIURL}`);
+function listCosts(period = []) {
+    return axios.post(`${APIURL}`, {period});
 }
 
 function getCost(id) {

@@ -19,6 +19,7 @@ export default {
             default: false
         },
         label: String,
+        disabled: Boolean,
     },
     emits: ['update:modelValue', 'update:expanded'],
     setup() {
@@ -60,7 +61,10 @@ export default {
         },
         expanded() {
             this.isExpanded = this.expanded;
-        }
+        },
+        isCompare() {
+            this.resetDate();
+        },
     },
 
     computed: {
@@ -244,7 +248,7 @@ export default {
 </script>
 
 <template>
-    <SelectContainer v-model="isExpanded" @update:model-value="changeExpanded" :label="label" icon="calendar_month" class="date-holder">
+    <SelectContainer v-model="isExpanded" @update:model-value="changeExpanded" :label="label" :disabled="disabled" icon="calendar_month" class="date-holder">
         <template #status>
             <p v-if="status" class="status-text">{{ status }}</p>
             <slot v-else />

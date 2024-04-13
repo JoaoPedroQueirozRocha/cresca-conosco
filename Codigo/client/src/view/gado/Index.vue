@@ -1,8 +1,8 @@
 <template>
 	<div class="flex flex-col w-full mt-[3em]">
-		<div class="w-fullflex flex-col gap-3">
-			<div class="mb-3">
-				<div class="flex flex-row w-full justify-between align-middle">
+		<div class="w-fullflex flex-col gap-4">
+			<div class="mb-6">
+				<div class="flex flex-row w-full justify-between align-middle mb-4">
 					<h2 class="text-[2.5em] font-bold">Gado</h2>
 					<div class="flex flex-row flex-wrap gap-2 content-center">
 						<Button @click="createDialog">Mais detalhes</Button>
@@ -12,7 +12,7 @@
 					</div>
 				</div>
 				<div class="flex items-center justify-between gap-4 flex-wrap">
-					<Input type="search" class="filter-input" placeholder="Pesquisar" />
+					<Input v-model="searchValue" type="search" class="filter-input" placeholder="Pesquisar" />
 					<Button class="filter-button" rounded>
 						<span class="material-symbols-rounded">
 							filter_list
@@ -20,7 +20,7 @@
 					</Button>
 				</div>
 			</div>
-			<Table :items="gadoData" :headers="headers" class="w-full gado-table" :isLoading="isLoading">
+			<Table :items="filteredDate" :headers="headers" class="w-full gado-table" :isLoading="isLoading">
 				<template #actions="{ item, index }">
 					<td class="w-2 cursor-pointer action">
 						<div class="icon-holder" @click="positionCard(item, index)">
@@ -28,12 +28,21 @@
                         </div>
 						<Card
 							:ref="'card' + index"
-							class="fixed"
+							class="fixed action-card"
 							v-show="item.expanded"
 							tabindex="0"
 							@blur="item.expanded = false"
 						>
-							teste
+							<router-link to="/">
+                                <div class="action-option">
+                                    <Icon name="edit" />
+                                    Editar
+                                </div>
+                            </router-link>
+							<div class="action-option delete" @click="confirmDeletion(item.id)">
+                                <Icon name="delete" />
+                                Deletar
+                            </div>
 						</Card>
 					</td>
 				</template>
@@ -72,6 +81,12 @@
 						{{ item.status }}
 					</td>
 				</template>
+				<template #empty-state>
+					<div class="empty-div">
+						<Icon name="sentiment_dissatisfied" />
+						<p>Sem dados para exibir</p>
+					</div>
+				</template>
 			</Table>
 			<Dialog v-model="moreDetails" :width="'100%'">
 				<DialogTable :headers="headersDialog" :allData="allData" :isDialogLoading="isDialogLoading" />
@@ -87,13 +102,14 @@ import { reactive, ref } from 'vue';
 import Table from '../../components/Table.vue';
 import Button from '../../components/Button.vue';
 import Input from '../../components/Input.vue';
+import Card from '../../components/Card.vue';
+import Icon from '../../components/Icon.vue';
 import Dialog from '../../components/Dialog.vue';
 import DialogTable from './DialogTable.vue';
-import Card from '../../components/Card.vue';
 
 export default {
 	name: 'Gado',
-	components: { Table, Button, Input, Dialog, DialogTable, Card },
+	components: { Table, Button, Input, Dialog, DialogTable, Card, Icon },
 	inject: ['Auth'],
 	setup() {
 		const {
@@ -119,7 +135,21 @@ export default {
 			createDialog,
 			moreDetails,
 			opendedIndex: ref(null),
+            searchValue: ref(''),
 		};
+	},
+
+	computed: {
+		filteredDate() {
+            if (!this.searchValue) return this.gadoData;
+
+			return this.gadoData.filter((item) => {
+				return Object.values(item).some((value) => {
+                    const stringValue = String(value);
+                    return stringValue.includes(this.searchValue);
+                });
+			});
+		}
 	},
 
 	async beforeMount() {
@@ -149,8 +179,8 @@ export default {
 			const card = this.$refs['card' + index]?.$el;
 			const rect = card.parentElement.getBoundingClientRect();
 
-			card.style.left = rect.left - 40 + 'px';
-			card.style.top = rect.top + 30 + 'px';
+			card.style.left = rect.left - 100 + 'px';
+			card.style.top = rect.top + 40 + 'px';
 			item.expanded = true;
 			this.opendedIndex = index;
 		},
@@ -167,6 +197,14 @@ export default {
 			item.expanded = false;
 			this.opendedIndex = null;
 		},
+
+        async confirmDeletion(id) {
+            const result = await this.$confirm({
+                title: 'Tem certeza que deseja deletar esse item?'
+            });
+			// Tratar dados
+            if (result) ()=>{};
+        }
 	},
 };
 </script>
@@ -200,6 +238,37 @@ export default {
 
 .filter-input {
     min-width: 25em;
+}
+
+.empty-div {
+    @apply flex flex-col items-center justify-center gap-4 p-4;
+    color: $gray-400;
+
+    .material-symbols-rounded {
+        font-size: 100px;
+    }
+}
+
+.action-card {
+    @apply p-3 flex flex-col gap-2;
+}
+
+.action-option {
+    @apply flex items-center gap-4 cursor-pointer p-2 font-bold;
+    color: $gray-500;
+    border-radius: 8px;
+    
+    &:hover {
+        background: $gray-200;
+    }
+}
+
+.action-option.delete {
+    color: $red-strong;
+    
+    &:hover {
+        background: $red-light;
+    }
 }
 
 @media screen and (max-width: 768px) {
