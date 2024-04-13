@@ -47,6 +47,10 @@ export default {
         handleResize() {
             this.isPhone = window.innerWidth <= 768;
         },
+        changeExpanded(value) {
+            this.isExpanded = value;
+            this.$emit('update:isMenuOpened', value)
+        },
     }
 }
 </script>
@@ -77,7 +81,7 @@ export default {
                         <span v-if="isExpanded">{{ option.text }}</span>
                     </router-link>
                 </div>
-                <span @click="isExpanded = !isExpanded" class="material-symbols-rounded arrow" :class="[isExpanded ? 'rotate-180' : ' ml-2']" style="font-size: 50px;" v-if="!isPhone">
+                <span @click="changeExpanded(!isExpanded)" class="material-symbols-rounded arrow" :class="[isExpanded ? 'rotate-180' : ' ml-2']" style="font-size: 50px;" v-if="!isPhone">
                     chevron_right
                 </span>
             </div>

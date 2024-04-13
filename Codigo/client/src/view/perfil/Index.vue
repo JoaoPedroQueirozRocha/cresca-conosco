@@ -114,7 +114,6 @@ export default {
 					message: 'Error ao alterar a senha. Tente novamente mais tarde',
 					...this.defaultAlert,
 				});
-			} finally {
 			}
 		},
 

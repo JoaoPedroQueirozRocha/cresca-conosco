@@ -6,7 +6,7 @@ export default {
     name: 'Select',
     components: { SelectContainer },
     props: {
-        modelValue: Array | Date,
+        modelValue: Object | String | Number,
         items: Array,
         expanded: {
             type: Boolean,
@@ -17,6 +17,7 @@ export default {
             type: String,
             default: 'label'
         },
+        disabled: Boolean,
     },
     emits: ['update:modelValue', 'update:expanded'],
     setup() {
@@ -27,12 +28,7 @@ export default {
     },
 
     created() {
-        if (this.modelValue) {
-            this.model = this.modelValue;
-        } else {
-            this.model = [];
-        }
-    
+        this.model = this.modelValue;    
         this.isExpanded = this.expanded;
     },
 
@@ -61,7 +57,7 @@ export default {
 </script>
 
 <template>
-    <SelectContainer v-model="isExpanded" @update:model-value="changeExpanded" :label="label">
+    <SelectContainer v-model="isExpanded" @update:model-value="changeExpanded" :label="label" :disabled="disabled">
         <template #status>
             <p v-if="model[labelKey] || model" class="status-text">{{ model[labelKey] ? model[labelKey] : model }}</p>
             <slot v-else />
