@@ -85,7 +85,7 @@ export default {
                     },
                     {
                         text: 'Mês/Ano',
-                        value: 'date',
+                        value: 'updated_at',
                         sortable: true,
                     },
                     {
@@ -113,12 +113,12 @@ export default {
                     },
                     {
                         text: 'Mês/Ano',
-                        value: 'date',
+                        value: 'updated_at',
                         sortable: true,
                     },
                     {
                         text: 'Salários',
-                        value: 'salarios',
+                        value: 'despesas trabalhistas',
                         sortable: true,
                         align: 'center',
                     },
@@ -143,114 +143,8 @@ export default {
                 ],
             }),
             data: ref({
-                profit: [
-                    {
-                        date: new Date(),
-                        leite: 6,
-                        venda: 6,
-                        total: 12,
-                        childs: [
-                            {
-                                id: 1,
-                                description: 'Teste',
-                                value: 6,
-                                type: 'leite',
-                                date: new Date(),
-                            },
-                            {
-                                id: 2,
-                                description: 'Teste',
-                                value: 6,
-                                type: 'venda',
-                                date: new Date(),
-                            },
-                        ],
-                    },
-                    {
-                        date: new Date(),
-                        leite: 6,
-                        venda: 6,
-                        total: 12,
-                        childs: [
-                            {
-                                id: 3,
-                                description: 'Teste',
-                                value: 6,
-                                type: 'leite',
-                                date: new Date(),
-                            },
-                            {
-                                id: 4,
-                                description: 'Teste',
-                                value: 6,
-                                type: 'venda',
-                                date: new Date(),
-                            },
-                        ],
-                    },
-                ],
-                cost: [
-                    {
-                        date: new Date(),
-                        salarios: 4,
-                        encargos: 4,
-                        compras: 4,
-                        total: 12,
-                        childs: [
-                            {
-                                id: 1,
-                                description: 'Teste',
-                                value: 4,
-                                type: 'salarios',
-                                date: new Date(),
-                            },
-                            {
-                                id: 2,
-                                description: 'Teste',
-                                value: 4,
-                                type: 'encargos',
-                                date: new Date(),
-                            },
-                            {
-                                id: 3,
-                                description: 'Teste',
-                                value: 4,
-                                type: 'compras',
-                                date: new Date(),
-                            },
-                        ],
-                    },
-                    {
-                        date: new Date(),
-                        salarios: 4,
-                        encargos: 4,
-                        compras: 4,
-                        total: 12,
-                        childs: [
-                            {
-                                id: 4,
-                                description: 'Teste',
-                                value: 4,
-                                type: 'salarios',
-                                date: new Date(),
-                            },
-                            {
-                                id: 5,
-                                description: 'Teste',
-                                value: 4,
-                                type: 'encargos',
-                                date: new Date(),
-                            },
-                            {
-                                id: 6,
-                                description: 'Teste',
-                                value: 4,
-                                type: 'compras',
-                                date: new Date(),
-                            },
-                        ],
-                    },
-                ],
+                profit: [],
+                cost: [],
             }),
             isCompare,
             chartColors,
@@ -410,17 +304,16 @@ export default {
             }
         },
 
-        async deleteProfit(date, id) {
+        async deleteProfit(index, childIndex, id) {
             try {
                 this.loading.profit = true;
                 await profitController.deleteProfit(id);
-                
-                const index = this.data.profit.findIndex((item) => date.toISOString().substring(0, 10) == item.date.toISOString().substring(0, 10));
-                if (index > -1) {
-                    const childIndex = this.data.profit[index].childs.findIndex((item) => item.id == id);
-                    if (childIndex > -1) {
-                        this.data.profit[index].childs.splice(childIndex, 1);
-                    }
+        
+                if (this.data.profit[index] && this.data.profit[index].childs[childIndex]) {
+                    const child = this.data.profit[index].childs[childIndex];
+                    this.data.profit[index].total -= child.valor;
+                    this.data.profit[index][child.tipo] -= child.valor;
+                    this.data.profit[index].childs.splice(childIndex, 1);
                 }
 
                 this.$alert({
@@ -430,7 +323,7 @@ export default {
 				});
             } catch (e) {
                 this.$alert({
-					message: 'Erro ao deletar lucro. Tente novamente mais tarde',
+					message: 'Erro ao deletar lucro. Tente novamente mais tarde ' + e,
 					...this.defaultAlert,
 				});
             } finally {
@@ -438,17 +331,17 @@ export default {
             }
         },
 
-        async deleteCost(date, id) {
+        async deleteCost(index, childIndex, id) {
             try {
                 this.loading.costs = true;
                 await costController.deleteCost(id);
 
-                const index = this.data.cost.findIndex((item) => date.toISOString().substring(0, 10) == item.date.toISOString().substring(0, 10));
-                if (index > -1) {
-                    const childIndex = this.data.cost[index].childs.findIndex((item) => item.id == id);
-                    if (childIndex > -1) {
-                        this.data.cost[index].childs.splice(childIndex, 1);
-                    }
+                
+                if (this.data.cost[index] && this.data.cost[index].childs[childIndex]) {
+                    const child = this.data.cost[index].childs[childIndex];
+                    this.data.cost[index].total -= child.valor;
+                    this.data.cost[index][child.tipo] -= child.valor;
+                    this.data.cost[index].childs.splice(childIndex, 1);
                 }
 
                 this.$alert({

@@ -4,14 +4,36 @@ import * as lucroServices from "../services/lucroServices.js"
  * 
  * @param {*} req 
  * @param {*} res 
+ * @returns {lucros}
+ * Função para listar os lucros
+ */
+
+async function listarLucro(req, res){
+    try {
+        const { period } = req.body;
+        const lucros = await lucroServices.listarLucro(period);
+
+        if(!lucros) throw new Error('Error ao listar lucros')
+
+        res.json(lucros)
+    } catch (error) {
+    console.error(error)
+    res.status(error.status).send('Erro ao fazer query pela descrição' + error.message)
+    }
+}
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
  * @returns {lucro}
  * Função para procurar um lucro
  */
 
 async function getLucro(req, res){
     try {
-        const descricao = req.params.descricao
-        const lucro = await lucroServices.getLucro(descricao)
+        const id = req.params.id
+        const lucro = await lucroServices.getLucro(id)
 
         if(!lucro) throw new Error('Lucro não encontrado')
 
@@ -68,8 +90,8 @@ async function updateLucro(req, res){
  */
 async function deleteLucro(req,res){
     try{
-        const body = req.body
-        const lucro = await worker.deleteLucro(body)
+        const { id } = req.body
+        const lucro = await lucroServices.deleteLucro(id)
         res.json(lucro)
     } catch (error){
         console.error(error);
@@ -77,4 +99,4 @@ async function deleteLucro(req,res){
     }
 }
 
-export { getLucro, createLucro, updateLucro, deleteLucro}
+export { getLucro, createLucro, updateLucro, deleteLucro, listarLucro }

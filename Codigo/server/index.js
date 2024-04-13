@@ -7,9 +7,10 @@ import userRouter from "./routes/userRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import animalsRouter from "./routes/animalsRoutes.js";
 import gestacaoRouter from "./routes/gestacaoRoutes.js";
-import workerRouter from "./routes/workerRoutes.js";
-import gadoRouter from "./routes/gadoRoutes.js";
-import despesasRouter from "./routes/despesasRoutes.js";
+import workerRouter from './routes/workerRoutes.js';
+import gadoRouter from './routes/gadoRoutes.js';
+import despesasRouter from './routes/despesasRoutes.js';
+import lucroRouter from './routes/lucroRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -29,9 +30,10 @@ app.use(express.json())
     .use("/auth", authRouter)
     .use("/animals", animalsRouter)
     .use("/gestacoes", gestacaoRouter)
-    .use("/worker", workerRouter)
-    .use("/gado", gadoRouter)
-    .use("/despesas", despesasRouter);
+    .use('/worker', workerRouter)
+    .use('/gado', gadoRouter)
+    .use('/despesas', despesasRouter)
+    .use('/lucro', lucroRouter)
 
 app.listen(PORT, () => {
     console.log(process.env.POSTGRES_USER);
