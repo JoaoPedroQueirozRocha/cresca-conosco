@@ -1,8 +1,10 @@
 <script>
 import { ref } from 'vue';
+import Icon from './Icon.vue';
 
 export default {
     name: 'Input',
+    components: { Icon },
     props: {
         modelValue: [String, Number],
         type: {
@@ -57,13 +59,12 @@ export default {
     <div class="holder">
         <label v-if="label" class="label">{{ label }}</label>
         <div tabindex="0"  class="input-holder" v-if="!textArea">
-            <span
+            <Icon
                 v-if="type === 'search'"
-                class="material-symbols-rounded search-icon icon"
+                name="search"
+                class="search-icon icon"
                 :class="{'on-focus': onFocus}"
-            >
-                search
-            </span>
+            />
             <input
                 class="input"
                 :class="[type, {'disabled': disabled, 'error': isError || error}]"
@@ -82,21 +83,19 @@ export default {
                 }"
                 @blur="$emit('blur')"
             />
-            <span
+            <Icon
                 v-if="type === 'password'"
-                class="material-symbols-rounded eye icon"
+                :name="hidePass ? 'visibility_off' : 'visibility'"
+                class="eye icon"
                 :class="{'on-focus': onFocus}"
                 @click="hidePass = !hidePass"
-            >
-                {{ hidePass ? 'visibility_off' : 'visibility' }}
-            </span>
-            <span
+            />
+            <Icon
                 v-if="type === 'search' && onFocus"
-                class="material-symbols-rounded eye icon on-focus"
+                name="close"
+                class="eye icon on-focus"
                 @click="resetModel"
-            >
-                close
-            </span>
+            />
         </div>
         <textarea 
             v-else

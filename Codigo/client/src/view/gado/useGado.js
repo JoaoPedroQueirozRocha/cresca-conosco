@@ -35,7 +35,7 @@ export function useGado() {
                 sortable: true,
             },
             { text: "Prev.Parto", value: "prevParto", sortable: true },
-            { text: "Sêmem", value: "semem", sortable: true },
+            { text: "Sêmen", value: "semen", align: "center", sortable: true },
             {
                 text: "Lactante",
                 value: "lactante",

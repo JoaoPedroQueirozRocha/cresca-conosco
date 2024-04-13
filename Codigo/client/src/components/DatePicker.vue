@@ -1,11 +1,12 @@
 <script>
 import { ref } from 'vue';
 import SelectContainer from './SelectContainer.vue';
+import Icon from './Icon.vue';
 import { upperCaseFirstLetter, formatDate } from '../util/index.js';
 
 export default {
     name: 'DatePicker',
-    components: { SelectContainer },
+    components: { SelectContainer, Icon },
     props: {
         modelValue: Array | Date,
         maxDate: Date,
@@ -257,17 +258,13 @@ export default {
             <div class="w-fit px-1 relative overflow-hidden">
                 <div class="flex items-center justify-between gap-2 py-4">
                     <div class="chevron" @click="changeViewMonth(-1)">
-                        <span class="material-symbols-rounded">
-                            chevron_left
-                        </span>
+                        <Icon name="chevron_left" />
                     </div>
                     <Transition :name="!isBack ? 'slide-fade' : 'slide-fade-out'">
                         <h1 class="text-lg font-bold cursor-pointer date-title" v-if="show" @click="showMonthsOrYears">{{ title }}</h1>
                     </Transition>
                     <div class="chevron" @click="changeViewMonth(1)">
-                        <span class="material-symbols-rounded">
-                            chevron_right
-                        </span>
+                        <Icon name="chevron_right" />
                     </div>
                 </div>
                 <div>

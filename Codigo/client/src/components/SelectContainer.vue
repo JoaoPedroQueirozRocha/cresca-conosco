@@ -1,8 +1,10 @@
 <script>
 import { ref } from 'vue';
+import Icon from './Icon.vue';
 
 export default {
     name: 'SelectContainer',
+    components: { Icon },
     props: {
         modelValue: {
             type: Boolean,
@@ -83,14 +85,14 @@ export default {
         <div ref="container" class="select-container relative min-w-[5em]" tabindex="0" @blur="changeModel(false)">
             <div ref="labelContainer" class="label-container" @click="changeModel(!model)" :class="{'active': model, 'disabled': disabled}">
                 <div class="flex gap-4 truncate">
-                    <span class="material-symbols-rounded select-none" v-if="icon">
-                        {{ icon }}
-                    </span>
+                    <Icon :name="icon" class="select-none" v-if="icon" />
                     <slot name="status" />
                 </div>
-                <span class="transition duration-150 material-symbols-rounded select-none" :class="{'rotate-180': model}">
-                    arrow_drop_down
-                </span>
+                <Icon
+                    name="arrow_drop_down"
+                    class="transition duration-150 select-none"
+                    :class="{'rotate-180': model}"
+                />
             </div>
             <div ref="content" class="select-content absolute z-50 top-full left-0 overflow-hidden transition-[max-height] bg-white" :class="{'active': model}" style="max-height: 0;">
                 <slot name="item" />
