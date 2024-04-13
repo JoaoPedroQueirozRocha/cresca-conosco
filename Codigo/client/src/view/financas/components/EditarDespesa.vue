@@ -5,7 +5,7 @@
     <Tab v-model="tabIndex" :items="tabItems" disabled v-if="!isEdicao" class="mb-6" />
 
     <div>
-        <Card class="flex flex-col gap-4">
+        <Card class="flex flex-col gap-4 mb-4">
             <Input type="text" label="Descrição" v-model="descricaoDespesa" placeholder="Digite aqui"></Input>
 
             <div class="flex gap-6">
