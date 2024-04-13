@@ -1,9 +1,11 @@
 <script>
 import { ref } from 'vue';
 import cow from '../assets/cow-face.svg';
+import Icon from './Icon.vue';
 
 export default {
     name: 'Menu',
+    components: { Icon },
     emits: ['update:isMenuOpened'],
     setup() {
         const isPhone = ref(window.innerWidth <= 768);
@@ -69,9 +71,12 @@ export default {
 
 <template>
     <div class="menu-holder" :class="{'closed': !isExpanded, 'mobile': isPhone}">
-        <span class="material-symbols-rounded menu-expand-icon top-3 left-4 fixed" @click="changeHeight(!isExpanded)" v-if="isPhone">
-            {{ isExpanded ? 'close' : 'menu' }}
-        </span>
+        <Icon
+            class="menu-expand-icon top-3 left-4 fixed"
+            :name="isExpanded ? 'close' : 'menu'"
+            @click="changeHeight(!isExpanded)"
+            v-if="isPhone"
+        />
         <div class="menu" ref="menu" :class="{'closed': !isExpanded, 'mobile': isPhone}">
             <div class="flex flex-col justify-between h-full" ref="content">
                 <div class="flex flex-col gap-4">
@@ -87,15 +92,18 @@ export default {
                         :to="option.value"
                     >
                         <img :src="option.icon" :alt="option.text + ' icon'" v-if="option.isImg" />
-                        <span class="material-symbols-rounded" v-else>
-                            {{ option.icon }}
-                        </span>
+                        <Icon :name="option.icon" v-else />
                         <span v-if="isExpanded">{{ option.text }}</span>
                     </router-link>
                 </div>
-                <span @click="changeExpanded(!isExpanded)" class="material-symbols-rounded arrow" :class="[isExpanded ? 'rotate-180' : ' ml-2']" style="font-size: 50px;" v-if="!isPhone">
-                    chevron_right
-                </span>
+                <Icon
+                    @click="changeExpanded(!isExpanded)"
+                    name="chevron_right"
+                    class="arrow"
+                    :class="[isExpanded ? 'rotate-180' : ' ml-2']"
+                    style="font-size: 50px;"
+                    v-if="!isPhone"
+                />
             </div>
         </div>
     </div>

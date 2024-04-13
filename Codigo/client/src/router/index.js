@@ -41,7 +41,7 @@ const routes = [
         path: '/funcionarios',
         name: 'Funcionários',
         props: true,
-        // component: () => import('@/App.vue'),
+        component: () => import('@/view/funcionarios/Index.vue'),
         beforeEnter: Auth0.routeGuard
     },
 ];

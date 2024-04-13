@@ -26,15 +26,18 @@
 			</td>
 		</template>
 		<template #semem="{ item, index }">
-			<td>
+			<td class="text-center">
 				{{ item.semem }}
+				<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 			</td>
 		</template>
 		<template #lactante="{ item, index }">
-			<td class="flex flex-row justify-center items-center">
-				<span class="material-symbols-rounded" :class="item.lactante ? 'text-green-500' : 'text-red-500'">
-					{{ item.lactante ? 'done' : 'close' }}
-				</span>
+			<td class="text-center">
+				<Icon
+					:name="item.lactante ? 'done' : 'close'"
+					:class="item.lactante ? 'text-green-500' : 'text-red-500'"
+				/>
+				<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 			</td>
 		</template>
 		<template #numInsem="{ item, index }">

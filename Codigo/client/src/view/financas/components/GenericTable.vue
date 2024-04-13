@@ -118,9 +118,7 @@ export default {
             <h1 class="title" style="margin: 0;">{{ title }}</h1>
             <router-link :to="addRoute" :class="{'pointer-events-none': loading}">
                 <Button rounded :disabled="loading">
-                    <span class="material-symbols-rounded">
-                        add
-                    </span>
+                    <Icon name="add" />
                 </Button>
             </router-link>
         </div>
@@ -145,9 +143,7 @@ export default {
                 <td v-else-if="typeof item[header.value] == 'number'" class="text-center">
                     <div class="flex items-center justify-center">
                         {{ formatCurrency(item[header.value]) }}
-                        <span class="material-symbols-rounded text-xl ml-2 opacity-0">
-                            arrow_upward
-                        </span>
+                        <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
                     </div>
                 </td>
                 <td v-else-if="header.value == 'none'" class="w-2">
@@ -172,9 +168,7 @@ export default {
                     >
                         <template v-if="child.type == header.value">
                             <Icon name="check" class="text-green-500" />
-                            <span class="material-symbols-rounded text-xl ml-2 opacity-0">
-                                arrow_upward
-                            </span>
+                            <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
                         </template>
                         <template v-else-if="header.value == 'date' && child.date instanceof Date">
                             {{ formatDate(child.date, { year: 'numeric', month: '2-digit', day: '2-digit' }) }}
@@ -182,9 +176,7 @@ export default {
                         <template v-else-if="header.value == 'total' && typeof child.value == 'number'">
                             <div class="flex items-center justify-center">
                                 {{ formatCurrency(child.value) }}
-                                <span class="material-symbols-rounded text-xl ml-2 opacity-0">
-                                    arrow_upward
-                                </span>
+                                <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
                             </div>
                         </template>
                     </td>
