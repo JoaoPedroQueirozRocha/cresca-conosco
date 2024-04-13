@@ -5,6 +5,14 @@ const router = express.Router();
 
 router.use(express.json());
 
+async function listarDespesas(period) {
+    if (period.lenght) {
+        return await pool.query('SELECT * FROM despesas WHERE data BETWEEN $1 AND $2', [period[0], period[1]]);
+    } else {
+        return await pool.query('SELECT * FROM despesas');
+    }
+}
+
 async function getDespesaById(id) {
     const result = await pool.query("SELECT * FROM despesas d WHERE d.id = $1", [id]);
     return result.rows;
@@ -44,5 +52,6 @@ export {
     getDespesaById,
     createNewDespesa,
     updateDespesaById,
-    deleteDespesaById
+    deleteDespesaById,
+    listarDespesas
 }

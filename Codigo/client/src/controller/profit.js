@@ -2,7 +2,7 @@ import axios from 'axios';
 const APIURL = `${import.meta.env.VITE_API_URL}/finance/profit`
 
 function listProfits(period = []) {
-    return axios.post(`${APIURL}`, {period});
+    return axios.post(`${APIURL}/list`, {period});
 }
 
 function getProfit(id) {

@@ -1,5 +1,18 @@
 import * as despesasServices from "../services/despesasServices.js";
 
+async function listarDespesas(req, res) {
+    try {
+        const { period } = req.body;
+        const despesas = await despesasServices.listarDespesas(period);
+
+        if (!despesas) throw new Error("Erro ao listar despesas");
+
+        res.send(despesas);
+    } catch (e) {
+        res.status(e.status).send(e.message);
+    }
+}
+
 async function getDespesaById(req, res) {
     try {
         const { id } = req.params;

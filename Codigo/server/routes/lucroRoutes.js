@@ -3,9 +3,10 @@ import * as lucroController from "../controller/lucroController.js";
 
 const router = expres.Router();
 
-router.get('/:descricao', lucroController.getLucro);
+router.post('/list', lucroController.listarLucro);
+router.get('/:id', lucroController.getLucro);
 router.post('/', lucroController.createLucro);
-router.put('/:descricao', lucroController.updateLucro);
-router.delete('/:descricao', lucroController.deleteLucro);
+router.put('/:id', lucroController.updateLucro);
+router.delete('/:id', lucroController.deleteLucro);
 
 export default router;

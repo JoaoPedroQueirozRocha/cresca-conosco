@@ -2,7 +2,7 @@ import axios from 'axios';
 const APIURL = `${import.meta.env.VITE_API_URL_PROD}despesas`
 
 function listCosts(period = []) {
-    return axios.post(`${APIURL}`, {period});
+    return axios.post(`${APIURL}/list`, {period});
 }
 
 function getCost(id) {
