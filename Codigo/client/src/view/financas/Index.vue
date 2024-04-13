@@ -16,7 +16,7 @@ export default {
     inject: ["Auth"],
 	setup() {
         const chartColors = ['#23b73c', '#ed0000', '#0973f5'];
-        const isCompare = ref(false);
+        const isCompare = ref(true);
         const reportDate = ref({
             chartCategories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
             compareCategories: [[1991, 1992], [1993, 1994], [1995, 1996], [1997, 1998]]
@@ -37,88 +37,23 @@ export default {
                 type: 'line',
                 data: [8, 15, 25, 20, 30, 35, 30, 40],
             },
-            // {
-            //     name: 'Ganhos',
-            //     type: 'bar',
-            //     data: [23, 45, 70, 60, 80, 95, 100, 120],
-            // },
-            // {
-            //     name: 'Custos',
-            //     type: 'bar',
-            //     data: [15, 30, 45, 40, 50, 60, 70, 80],
-            // },
-            // {
-            //     name: 'Lucro Líquido',
-            //     type: 'bar',
-            //     data: [8, 15, 25, 20, 30, 35, 30, 40],
-            // },
+            {
+                name: 'Ganhos',
+                type: 'bar',
+                data: [23, 45, 70, 60, 80, 95, 100, 120],
+            },
+            {
+                name: 'Custos',
+                type: 'bar',
+                data: [15, 30, 45, 40, 50, 60, 70, 80],
+            },
+            {
+                name: 'Lucro Líquido',
+                type: 'bar',
+                data: [8, 15, 25, 20, 30, 35, 30, 40],
+            },
         ]);
-        const chartOptions = ref({
-            chart: {
-                id: "vuechart-example",
-                stacked: false
-            },
-            stroke: {
-                width: 4,
-            },
-            markers: {
-                size: 0,
-            },
-            dataLabels: {
-                enabled: false,
-                style: {
-                    colors: chartColors,
-                }
-            },
-            colors: chartColors,
-            xaxis: {
-                categories: reportDate.value.chartCategories,
-                overwriteCategories: reportDate.value.compareCategories,
-            },
-            yaxis: [
-                {
-                    title: {
-                        text: 'Valores',
-                    },
-                    labels: {
-                        formatter: function (value) {
-                            return formatCurrency(value);
-                        },
-                    },
-                    axisTicks: {
-                        show: true
-                    },
-                    axisBorder: {
-                        show: true,
-                    },
-                },
-            ],
-            tooltip: {
-                enabled: true,
-                custom: ({ s, seriesIndex, dataPointIndex, w }) => {
-                    const item = isCompare.value ? reportDate.value.compareCategories[dataPointIndex] : reportDate.value.chartCategories[dataPointIndex];
-                    return `<div class="custom-tooltip" style="width: max-content">
-                        <div class="date" style="display: flex; justify-content: center; background: #eceff1; padding: 8px 8px;">
-                            ${isCompare.value ? `${item[0]} - ${item[1]}` : item}
-                        </div>
-                        <div class="data-tooltip" style="padding: 15px 15px; display: flex; flex-direction: column; gap: 12px;">
-                            ${series.value.map((s, index) => `
-                                <div style="display: flex; flex-direction: row; align-items: center; width: 250px;">
-                                    <span class="tooltip-circle" style="background: ${chartColors[index]}; height: 10px; width: 10px; border-radius: 50%; margin-right: 10px;"></span>
-                                    <p style="margin-right: 10px; font-size: 15px; margin-bottom: 0px;">
-                                        ${s.name}:
-                                    </p>
-                                    <p style="font-weight: bold; font-size: 14px; margin-bottom: 0px;">
-                                        
-                                        ${formatCurrency(s.data[dataPointIndex])}
-                                    </p>
-                                </div>`
-                            ).join('')}
-                        </div>
-                    </div>`
-                }
-            },
-        });
+
 		return {
 			defaultAlert: ref({
 				top: true,
@@ -126,7 +61,6 @@ export default {
 				timeout: 3500,
 			}),
             series,
-            chartOptions,
             totals: ref([
                 {
                     name: 'Ganhos',
@@ -309,11 +243,83 @@ export default {
                 ],
             }),
             isCompare,
+            chartColors,
+            reportDate,
             loading: ref(false),
             showDialog: ref(false),
             formatCurrency,
 		};
 	},
+
+    computed: {
+        chartOptions() {
+            return {
+                chart: {
+                    id: "vuechart-example",
+                    stacked: false
+                },
+                stroke: {
+                    width: 4,
+                },
+                markers: {
+                    size: 0,
+                },
+                dataLabels: {
+                    enabled: false,
+                    style: {
+                        colors: this.chartColors,
+                    }
+                },
+                colors: this.chartColors,
+                xaxis: {
+                    categories: this.reportDate.chartCategories,
+                    overwriteCategories: this.reportDate.compareCategories,
+                },
+                yaxis: [
+                    {
+                        title: {
+                            text: 'Valores',
+                        },
+                        labels: {
+                            formatter: function (value) {
+                                return formatCurrency(value);
+                            },
+                        },
+                        axisTicks: {
+                            show: true
+                        },
+                        axisBorder: {
+                            show: true,
+                        },
+                    },
+                ],
+                tooltip: {
+                    enabled: true,
+                    custom: ({ s, seriesIndex, dataPointIndex, w }) => {
+                        const item = this.isCompare ? this.reportDate.compareCategories[dataPointIndex] : this.reportDate.chartCategories[dataPointIndex];
+                        return `<div class="custom-tooltip" style="width: max-content">
+                            <div class="date" style="display: flex; justify-content: center; background: #eceff1; padding: 8px 8px;">
+                                ${this.isCompare ? `${item[0]} - ${item[1]}` : item}
+                            </div>
+                            <div class="data-tooltip" style="padding: 15px 15px; display: grid; gap: 12px; ${this.isCompare ? 'grid-template-columns: 1fr 1fr;' : 'grid-template-rows: 1fr;'}">
+                                ${this.series.map((s, index) => `
+                                    <div style="display: flex; flex-direction: row; align-items: center; width: 250px; grid-column: ${index < 3 ? '1' : '2'};">
+                                        <span class="tooltip-circle" style="background: ${this.chartColors[index]}; height: 10px; width: 10px; border-radius: 50%; margin-right: 10px;"></span>
+                                        <p style="margin-right: 10px; font-size: 15px; margin-bottom: 0px;">
+                                            ${s.name}:
+                                        </p>
+                                        <p style="font-weight: bold; font-size: 14px; margin-bottom: 0px;">
+                                            ${formatCurrency(s.data[dataPointIndex])}
+                                        </p>
+                                    </div>`
+                                ).join('')}
+                            </div>
+                        </div>`
+                    }
+                },
+            }
+        }
+    },
 
     async created() {
         await this.getAllData();
@@ -324,7 +330,7 @@ export default {
             try {
                 this.showDialog = false;
                 this.loading = true;
-                this.isCompare = !!period.length && !!period2.length;
+                // this.isCompare = !!period.length && !!period2.length;
                 const { data } = await financeController.generateReport(period, period2);
                 // tratar dados
             } catch (e) {
