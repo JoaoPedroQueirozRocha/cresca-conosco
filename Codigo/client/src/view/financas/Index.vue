@@ -5,23 +5,20 @@ import { ref } from "vue";
 import Icon from "@/components/Icon.vue";
 import Card from "@/components/Card.vue";
 import Button from "@/components/Button.vue";
-import FinanceDialog from "./components/FinanceDialog.vue";
-import GenericTable from "./components/GenericTable.vue";
 import profitController from "@/controller/profit";
 import costController from "@/controller/cost";
 import financeController from "@/controller/finance";
+import FinanceDialog from "./components/FinanceDialog.vue";
+import GenericTable from "./components/GenericTable.vue";
+import Totals from "./components/Totals.vue";
 
 export default {
 	name: "Finance",
-	components: { Card, Button, Icon, FinanceDialog, GenericTable, apexchart: VueApexCharts },
+	components: { Card, Button, Icon, FinanceDialog, GenericTable, Totals, apexchart: VueApexCharts },
     inject: ["Auth"],
 	setup() {
         const chartColors = ['#23b73c', '#ed0000', '#0973f5', '#23b772', '#ed002b', '#09aaf5'];
         const isCompare = ref(false);
-        const reportDate = ref({
-            chartCategories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
-            compareCategories: [[1991, 1992], [1993, 1994], [1995, 1996], [1997, 1998], [1999, 2000], [2001, 2002], [2003, 2004], [2005, 2006]]
-        });
         const series = ref([]);
         const totals = ref({
             receita: {
@@ -61,7 +58,6 @@ export default {
             totals,
             isCompare,
             chartColors,
-            reportDate,
             showDialog,
             loading,
 			defaultAlert,
@@ -242,8 +238,9 @@ export default {
             this.loading.profit = true;
             this.loading.costs = true;
             await this.generateReport([startDate, endDate]);
-            await this.getProfits();
-            await this.getCosts();
+            await this.getItems([], 'profit');
+            await this.getItems([], 'cost');
+            console.log(this.data)
         },
 
         async generateReport(range, compare = []) {
@@ -266,88 +263,60 @@ export default {
             }
         },
 
-        async getProfits(period = []) {
+        async getItems(period = [], type) {
             try {
-                this.loading.profit = true;
-                const { data } = await profitController.listProfits(period);
-                this.data.profit = data;
-            } catch (e) {
-                this.$alert({
-					message: 'Erro carregar os lucros. Tente novamente mais tarde',
-					...this.defaultAlert,
-				});
-            } finally {
-                this.loading.profit = false;
-            }
-        },
-
-        async getCosts(period = []) {
-            try {
-                this.loading.costs = true;
-                const { data } = await costController.listCosts(period);
-                this.data.cost = data;
-            } catch (e) {
-                this.$alert({
-					message: 'Erro carregar as despesas. Tente novamente mais tarde',
-					...this.defaultAlert,
-				});
-            } finally {
-                this.loading.costs = false;
-            }
-        },
-
-        async deleteProfit(index, childIndex, id) {
-            try {
-                this.loading.profit = true;
-                await profitController.deleteProfit(id);
-        
-                if (this.data.profit[index] && this.data.profit[index].childs[childIndex]) {
-                    const child = this.data.profit[index].childs[childIndex];
-                    this.data.profit[index].total -= child.valor;
-                    this.data.profit[index][child.tipo] -= child.valor;
-                    this.data.profit[index].childs.splice(childIndex, 1);
-                }
-
-                this.$alert({
-                    type: 'success',
-					message: 'Lucro deletado com sucesso',
-					...this.defaultAlert,
-				});
-            } catch (e) {
-                this.$alert({
-					message: 'Erro ao deletar lucro. Tente novamente mais tarde ' + e,
-					...this.defaultAlert,
-				});
-            } finally {
-                this.loading.profit = false;
-            }
-        },
-
-        async deleteCost(index, childIndex, id) {
-            try {
-                this.loading.costs = true;
-                await costController.deleteCost(id);
-
+                this.loading[type] = true;
+                let response;
                 
-                if (this.data.cost[index] && this.data.cost[index].childs[childIndex]) {
-                    const child = this.data.cost[index].childs[childIndex];
-                    this.data.cost[index].total -= child.valor;
-                    this.data.cost[index][child.tipo] -= child.valor;
-                    this.data.cost[index].childs.splice(childIndex, 1);
+                if (type == 'profit') {
+                    const { data } = await profitController.listProfits(period);
+                    response = data;
+                } else {
+                    const { data } = await costController.listCosts(period);
+                    response = data;
+                }
+
+                this.data[type] = response;
+
+            } catch (e) {
+                this.$alert({
+					message: `Erro ao carregar ${type == 'profit' ? 'os lucros' : 'as despesas'}. Tente novamente mais tarde`,
+					...this.defaultAlert,
+				});
+            } finally {
+                this.loading[type] = false;
+            }
+        },
+
+        async deleteItem(item, childIndex, id, type) {
+            try {
+                this.loading[type] = true;
+                if (type == 'profit') {
+                    await profitController.deleteProfit(id);
+                } else {
+                    await costController.deleteCost(id);
+                }
+        
+                const index = this.data[type].findIndex((i) => JSON.stringify(i) == JSON.stringify(item));
+                if (this.data[type][index] && this.data[type][index].childs[childIndex]) {
+                    const child = this.data[type][index].childs[childIndex];
+                    this.data[type][index].total -= child.valor;
+                    this.data[type][index][child.tipo] -= child.valor;
+                    this.data[type][index].childs.splice(childIndex, 1);
                 }
 
                 this.$alert({
                     type: 'success',
-					message: 'Despesa deletada com sucesso',
+					message: 'Item deletado com sucesso',
 					...this.defaultAlert,
 				});
             } catch (e) {
                 this.$alert({
-					message: 'Erro ao deletar despesa. Tente novamente mais tarde',
+					message: 'Erro ao deletar item. Tente novamente mais tarde ' + e,
 					...this.defaultAlert,
 				});
             } finally {
-                this.loading.costs = false;
+                this.loading[type] = false;
             }
         },
 
@@ -438,12 +407,6 @@ export default {
         calculatePercentage(newValue, oldValue) {
             return ((newValue - oldValue) / oldValue) * 100;
         },
-
-        getIcon(value) {
-            if (!value) return 'remove';
-            else if (value > 0) return 'arrow_drop_up';
-            return 'arrow_drop_down';
-        }
 	},
 };
 </script>
@@ -453,99 +416,34 @@ export default {
         <h1 class="title">Finanças</h1>
         <Button class="w-fit self-end" @click="showDialog = true" :disabled="loading.report">Gerar Relatório</Button>
         <FinanceDialog v-model="showDialog" @generate-report="generateReport" />
-        <div class="flex flex-wrap gap-4 [&>*]:w-full">
-            <Card v-for="total in totals" class="total-card">
-                <div class="skeleton skeleton-card-title" v-if="loading.report" />
-                <h6 class="flex item-center gap-1" v-else>
-                    {{ total.name }}
-                    <span
-                        v-if="isCompare"
-                        class="flex items-center text-sm"
-                        :class="{
-                            'text-yellow-500': !total.percentage, 
-                            'text-green-500' : total.percentage > 0, 
-                            'text-red-500': total.percentage < 0
-                        }"
-                    >
-                        <Icon :name="getIcon(total.percentage)" class="text-2xl" />
-                        {{ total.percentage || 0 }}%
-                    </span>
-                </h6>
-                <div class="skeleton skeleton-card-content" v-if="loading.report" />
-                <p :class="total.value" v-else>{{ formatCurrency(total.total) }}</p>
-            </Card>
-        </div>
+        <Totals :totals="totals" :loading="loading.report" :is-compare="isCompare" />
         <Card v-if="!loading.report">
             <apexchart
                 width="100%"
                 height="300px"
                 :options="chartOptions"
                 :series="series"
-            ></apexchart>
+            />
         </Card>
     </div>
     <GenericTable
-        title="Lucros"
+        title="Receita"
+        type="profit"
         :headers="headers.profit"
         :items="data.profit"
         :loading="loading.profit"
-        add-route="/"
-        @filter-data="getProfits"
-        @delete-item="deleteProfit"
+        add-route="/financas/receita"
+        @filter-data="getItems"
+        @delete-item="deleteItem"
     />
     <GenericTable
         title="Despesas"
+        type="costs"
         :headers="headers.cost"
         :items="data.cost"
         :loading="loading.cost"
         add-route="/financas/despesa"
-        @filter-data="getCosts"
-        @delete-item="deleteCost"
+        @filter-data="getItems"
+        @delete-item="deleteItem"
     />
 </template>
-
-<style scoped lang="scss">
-@import "../../style/var.scss";
-
-.total-card {
-    flex: 1;
-    min-width: 300px;
-
-    h6 {
-        font-weight: bold;
-        font-size: 20px;
-        color: $gray-500;
-    }
-
-    p {
-        font-weight: bold;
-        font-size: 26px;
-    }
-}
-
-.profit {
-    color: $green-strong;
-}
-
-.costs {
-    color: $red-strong;
-}
-
-.roi {
-    color: $blue-strong;
-}
-
-.filter-button .material-symbols-rounded {
-    font-size: 30px;
-}
-
-.filter-input {
-    min-width: 25em;
-}
-
-@media screen and (max-width: 488px) {
-    .filter-input {
-        min-width: 100%;
-    }
-}
-</style>

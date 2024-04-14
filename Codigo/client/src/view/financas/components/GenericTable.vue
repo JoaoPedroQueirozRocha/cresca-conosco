@@ -15,6 +15,7 @@ export default {
         headers: Array,
         loading: Boolean,
         title: String,
+        type: String,
         addRoute: String,
     },
 	components: { Table, Button, Input, DatePicker, Icon, Card },
@@ -98,15 +99,15 @@ export default {
         async filterDate() {
             if (this.filteredDate.length > 1 || !this.filteredDate.length) {
                 this.expandedDate = false;
-                await this.$emit('filterData', this.filteredDate)
+                await this.$emit('filterData', this.filteredDate, this.type)
             }
         },
 
-        async confirmDeletion(index, cIndex, id) {
+        async confirmDeletion(item, childIndex, id) {
             const result = await this.$confirm({
                 title: 'Tem certeza que deseja deletar esse item?'
             });
-            if (result) await this.$emit('deleteItem', index, cIndex, id);
+            if (result) await this.$emit('deleteItem', item, childIndex, id, this.type);
         }
     },
 };
@@ -164,20 +165,20 @@ export default {
                         v-for="(header, hIndex) in headers"
                         :key="hIndex"
                         class="border-gray-200 border-t-[.1em]"
-                        :class="{'text-center': !header.value.includes('data')}"
+                        :class="{'text-center': !header.value == 'updated_at'}"
                     >
                         <template v-if="child.tipo == header.value">
                             <Icon name="check" class="text-green-500" />
                             <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
-                        </template>
-                        <template v-else-if="header.value.includes('data')">
-                            {{ child[header.value] }}
                         </template>
                         <template v-else-if="header.value == 'total' && typeof child.valor == 'number'">
                             <div class="flex items-center justify-center">
                                 {{ formatCurrency(child.valor) }}
                                 <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
                             </div>
+                        </template>
+                        <template v-else>
+                            {{ child[header.value] }}
                         </template>
                     </td>
                     <td class="border-gray-200 border-t-[.1em] w-2 actions">
@@ -197,7 +198,7 @@ export default {
                                     Editar
                                 </div>
                             </router-link>
-							<div class="action-option delete" @click="confirmDeletion(index, cIndex, child.id)">
+							<div class="action-option delete" @click="confirmDeletion(item, cIndex, child.id)">
                                 <Icon name="delete" />
                                 Deletar
                             </div>
