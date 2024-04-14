@@ -6,15 +6,27 @@ async function getAll() {
     return response.data;
 }
 
+function createGado(gado) {
+    return axios.post(`${APIURL}/animals`, gado);
+}
+
+function updateGado(gado) {
+    return axios.put(`${APIURL}/animals/${gado.id}`, gado);
+}
+
 async function getBase() {
     const response = await axios.get(`${APIURL}/base`);
     return response.data;
 }
 
-export default {
-    getAll,
-    getBase
+function deleteGado(id) {
+    return axios.put(`${APIURL}/animals/${id}`);
 }
 
-
-
+export default {
+    getAll,
+    getBase,
+    createGado,
+    updateGado,
+    deleteGado,
+};

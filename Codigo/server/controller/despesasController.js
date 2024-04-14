@@ -77,6 +77,7 @@ async function deleteDespesaById(req, res) {
         await despesasServices.deleteDespesaById(id);
         res.send("Despesa deletada com sucesso");
     } catch (e) {
+        console.error(e);
         res.status(e.status).send(e.message);
     }
 }

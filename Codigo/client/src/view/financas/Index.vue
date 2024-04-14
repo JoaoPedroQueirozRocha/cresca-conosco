@@ -295,7 +295,7 @@ export default {
                 } else {
                     await costController.deleteCost(id);
                 }
-        
+
                 const index = this.data[type].findIndex((i) => JSON.stringify(i) == JSON.stringify(item));
                 if (this.data[type][index] && this.data[type][index].childs[childIndex]) {
                     const child = this.data[type][index].childs[childIndex];
@@ -311,7 +311,7 @@ export default {
 				});
             } catch (e) {
                 this.$alert({
-					message: 'Erro ao deletar item. Tente novamente mais tarde ' + e,
+					message: 'Erro ao deletar item. Tente novamente mais tarde',
 					...this.defaultAlert,
 				});
             } finally {
@@ -437,7 +437,7 @@ export default {
     />
     <GenericTable
         title="Despesas"
-        type="costs"
+        type="cost"
         :headers="headers.cost"
         :items="data.cost"
         :loading="loading.cost"

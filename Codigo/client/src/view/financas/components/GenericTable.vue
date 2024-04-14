@@ -175,7 +175,7 @@ export default {
                         v-for="(header, hIndex) in headers"
                         :key="hIndex"
                         class="border-gray-200 border-t-[.1em]"
-                        :class="{'text-center': !header.value == 'updated_at'}"
+                        :class="{'text-center': header.value != 'updated_at'}"
                     >
                         <template v-if="child.tipo == header.value">
                             <Icon name="check" class="text-green-500" />
