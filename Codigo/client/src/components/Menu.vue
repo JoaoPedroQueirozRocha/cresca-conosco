@@ -1,40 +1,57 @@
 <script>
 import { ref } from 'vue';
 import cow from '../assets/cow-face.svg';
+import Icon from './Icon.vue';
 
 export default {
     name: 'Menu',
+    components: { Icon },
     emits: ['update:isMenuOpened'],
     setup() {
         const isPhone = ref(window.innerWidth <= 768);
         const isExpanded = ref(!isPhone);
+        const menu = ref();
+        const options = ref([
+            {
+                text: 'Perfil',
+                value: 'perfil',
+                path: '/perfil',
+                icon: 'account_circle',
+            },
+            {
+                text: 'Gado',
+                value: 'gado',
+                path: '/gado',
+                icon: cow,
+                isImg: true,
+            },
+            {
+                text: 'Finanças',
+                value: 'financas',
+                path: '/financas',
+                icon: 'payments',
+            },
+            {
+                text: 'Funcionários',
+                value: 'funcionarios',
+                path: '/funcionarios',
+                icon: 'supervised_user_circle',
+            },
+        ]);
 
         return {
             isPhone,
+            menu,
             isExpanded,
-            options: [
-                {
-                    text: 'Perfil',
-                    value: '/perfil',
-                    icon: 'account_circle',
-                },
-                {
-                    text: 'Gado',
-                    value: '/gado',
-                    icon: cow,
-                    isImg: true,
-                },
-                {
-                    text: 'Finanças',
-                    value: '/financas',
-                    icon: 'payments',
-                },
-                {
-                    text: 'Funcionários',
-                    value: '/funcionarios',
-                    icon: 'supervised_user_circle',
-                },
-            ]
+            options
+        }
+    },
+    computed: {
+        getMenuOption() {
+            if (this.$route.path.includes('financas')) return 'financas';
+            if (this.$route.path.includes('funcionario')) return 'funcionarios';
+            if (this.$route.path.includes('gado')) return 'gado';
+            return 'perfil';
         }
     },
     beforeMount() {
@@ -47,15 +64,32 @@ export default {
         handleResize() {
             this.isPhone = window.innerWidth <= 768;
         },
+        changeExpanded(value) {
+            this.isExpanded = value;
+            this.$emit('update:isMenuOpened', value)
+        },
+        changeHeight(value) {
+            this.isExpanded = value;
+            let height = '0';
+            if (value) {
+                const topbar = document.querySelector('.top-holder');
+                const windowHeight = window.innerHeight;
+                height = windowHeight - topbar.scrollHeight;
+            }
+            this.menu.style.height = `${height}px`;
+        }
     }
 }
 </script>
 
 <template>
     <div class="menu-holder" :class="{'closed': !isExpanded, 'mobile': isPhone}">
-        <span class="material-symbols-rounded menu-expand-icon top-3 left-4 fixed" @click="isExpanded = !isExpanded" v-if="isPhone">
-            {{ isExpanded ? 'close' : 'menu' }}
-        </span>
+        <Icon
+            class="menu-expand-icon top-3 left-4 fixed"
+            :name="isExpanded ? 'close' : 'menu'"
+            @click="changeHeight(!isExpanded)"
+            v-if="isPhone"
+        />
         <div class="menu" ref="menu" :class="{'closed': !isExpanded, 'mobile': isPhone}">
             <div class="flex flex-col justify-between h-full" ref="content">
                 <div class="flex flex-col gap-4">
@@ -65,21 +99,24 @@ export default {
                     </div>
                     <router-link
                         class="option"
-                        :class="{'active': $route.path === option.value, 'justify-center': !isExpanded}"
+                        :class="{'active': getMenuOption === option.value, 'justify-center': !isExpanded}"
                         v-for="option in options"
                         :key="option.value"
-                        :to="option.value"
+                        :to="option.path"
                     >
                         <img :src="option.icon" :alt="option.text + ' icon'" v-if="option.isImg" />
-                        <span class="material-symbols-rounded" v-else>
-                            {{ option.icon }}
-                        </span>
+                        <Icon :name="option.icon" v-else />
                         <span v-if="isExpanded">{{ option.text }}</span>
                     </router-link>
                 </div>
-                <span @click="isExpanded = !isExpanded" class="material-symbols-rounded arrow" :class="[isExpanded ? 'rotate-180' : ' ml-2']" style="font-size: 50px;" v-if="!isPhone">
-                    chevron_right
-                </span>
+                <Icon
+                    @click="changeExpanded(!isExpanded)"
+                    name="chevron_right"
+                    class="arrow"
+                    :class="[isExpanded ? 'rotate-180' : ' ml-2']"
+                    style="font-size: 50px;"
+                    v-if="!isPhone"
+                />
             </div>
         </div>
     </div>
@@ -128,7 +165,6 @@ export default {
     position: fixed;
     z-index: 90;
     bottom: 0;
-    height: 90vh;
     min-width: 100%;
     max-width: none;
     transition: height 0.5s ease;

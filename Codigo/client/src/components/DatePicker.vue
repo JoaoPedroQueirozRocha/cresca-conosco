@@ -1,11 +1,12 @@
 <script>
 import { ref } from 'vue';
 import SelectContainer from './SelectContainer.vue';
-import { upperCaseFirstLetter } from '../util/index.js';
+import Icon from './Icon.vue';
+import { upperCaseFirstLetter, formatDate } from '../util/index.js';
 
 export default {
     name: 'DatePicker',
-    components: { SelectContainer },
+    components: { SelectContainer, Icon },
     props: {
         modelValue: Array | Date,
         maxDate: Date,
@@ -19,6 +20,7 @@ export default {
             default: false
         },
         label: String,
+        disabled: Boolean,
     },
     emits: ['update:modelValue', 'update:expanded'],
     setup() {
@@ -60,7 +62,10 @@ export default {
         },
         expanded() {
             this.isExpanded = this.expanded;
-        }
+        },
+        isCompare() {
+            this.resetDate();
+        },
     },
 
     computed: {
@@ -86,9 +91,9 @@ export default {
         status() {
             const template = { year: 'numeric', month: '2-digit', day: '2-digit' };
             if (this.isCompare && this.model[0] instanceof Date) {
-                return this.formateDate(this.model[0], template) + (this.model[1] instanceof Date ? `-${this.formateDate(this.model[1], template)}` : '');
+                return formatDate(this.model[0], template) + (this.model[1] instanceof Date ? `-${formatDate(this.model[1], template)}` : '');
             } else if (this.model instanceof Date) {
-                return this.formateDate(this.model, template);
+                return formatDate(this.model, template);
             }
             return '';
         }
@@ -190,7 +195,7 @@ export default {
             if (this.showingMonths || this.showingYears) {
                 template = { year: 'numeric' };
             }
-            const title = this.formateDate(this.calendarDate, template);
+            const title = formatDate(this.calendarDate, template);
             this.title = upperCaseFirstLetter(title);
         },
 
@@ -219,10 +224,6 @@ export default {
             this.getArrayMonthDay();
         },
 
-        formateDate(date, template) {
-            if (!date instanceof Date || !date) return;
-            return date.toLocaleDateString('pt-BR', template);
-        },
         resetDate() {
             if (this.isCompare) {
                 this.changeModel([])
@@ -248,7 +249,7 @@ export default {
 </script>
 
 <template>
-    <SelectContainer v-model="isExpanded" @update:model-value="changeExpanded" :label="label" icon="calendar_month" class="date-holder">
+    <SelectContainer v-model="isExpanded" @update:model-value="changeExpanded" :label="label" :disabled="disabled" icon="calendar_month" class="date-holder">
         <template #status>
             <p v-if="status" class="status-text">{{ status }}</p>
             <slot v-else />
@@ -257,17 +258,13 @@ export default {
             <div class="w-fit px-1 relative overflow-hidden">
                 <div class="flex items-center justify-between gap-2 py-4">
                     <div class="chevron" @click="changeViewMonth(-1)">
-                        <span class="material-symbols-rounded">
-                            chevron_left
-                        </span>
+                        <Icon name="chevron_left" />
                     </div>
                     <Transition :name="!isBack ? 'slide-fade' : 'slide-fade-out'">
                         <h1 class="text-lg font-bold cursor-pointer date-title" v-if="show" @click="showMonthsOrYears">{{ title }}</h1>
                     </Transition>
                     <div class="chevron" @click="changeViewMonth(1)">
-                        <span class="material-symbols-rounded">
-                            chevron_right
-                        </span>
+                        <Icon name="chevron_right" />
                     </div>
                 </div>
                 <div>

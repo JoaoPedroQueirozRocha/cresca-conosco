@@ -35,7 +35,7 @@ export function useGado() {
                 sortable: true,
             },
             { text: "Prev.Parto", value: "prevParto", sortable: true },
-            { text: "Sêmem", value: "semem", sortable: true },
+            { text: "Sêmen", value: "semen", align: "center", sortable: true },
             {
                 text: "Lactante",
                 value: "lactante",
@@ -43,6 +43,39 @@ export function useGado() {
                 align: "center",
             },
             { text: "Status", value: "status", sortable: true },
+        ]),
+        filterOptions: ref([
+            {
+                text: 'Seca',
+                value: 'seca',
+                selected: false,
+            },
+            {
+                text: 'Lactante',
+                value: 'lactante',
+                selected: false,
+            },
+            {
+                text: 'Grávida',
+                value: 'gravida',
+                selected: false,
+            },
+            {
+                text: 'Sêmen',
+                value: 'semem',
+                childs: [
+                    {
+                        text: '5/8',
+                        value: '5/8',
+                        selected: false,
+                    },
+                    {
+                        text: 'gir',
+                        value: 'gir',
+                        selected: false,
+                    },
+                ],
+            },
         ]),
         isLoading: ref(false),
         isDialogLoading: ref(false),
