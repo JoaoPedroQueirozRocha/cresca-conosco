@@ -1,15 +1,26 @@
 import { reactive, toRefs, ref } from 'vue'
 import funcionarioController from '@/controller/funcionario.js';
 
-export function useFetchs(funcionariodata) {
+export function useFetchs(funcionarioData) {
+
+    const state = reactive({
+        isLoading: false,
+    })
 
     async function getBaseData() {
-        const data = await funcionarioController.getBase();
-        funcionariodata.value = data;
+        state.isLoading = true;
+        try {
+            const data = await funcionarioController.getBase();
+            funcionarioData.value = data;
+        } catch (error) {
+            console.log(error);
+        } finally {
+            state.isLoading = false;
+        }
     }
 
-    return{
-        ...toRefs(funcionariodata),
+    return {
+        ...toRefs(funcionarioData),
         getBaseData
     }
 }

@@ -1,8 +1,8 @@
 import axios from 'axios';
-const APIURL = `${import.meta.env.VITE_API_URL_PROD}despesas`
+const APIURL = `${import.meta.env.VITE_API_URL}/despesas`
 
 function listCosts(period = []) {
-    return axios.post(`${APIURL}`, {period});
+    return axios.post(`${APIURL}/list`, {period});
 }
 
 function getCost(id) {
@@ -10,11 +10,11 @@ function getCost(id) {
 }
 
 function updateCost(id, data) {
-    return axios.put(`${APIURL}/${id}`, { data });
+    return axios.put(`${APIURL}/${id}`, data);
 }
 
 function createCost(data) {
-    return axios.post(APIURL, { data });
+    return axios.post(APIURL, data);
 }
 
 function deleteCost(id) {

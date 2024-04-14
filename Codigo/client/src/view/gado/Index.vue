@@ -3,7 +3,7 @@
 		<div class="w-fullflex flex-col gap-4">
 			<div class="mb-6">
 				<div class="flex flex-row w-full justify-between align-middle mb-4">
-					<h2 class="text-[2.5em] font-bold">Gado</h2>
+					<h2 class="title">Gado</h2>
 					<div class="flex flex-row flex-wrap gap-2 content-center">
 						<Button @click="createDialog">Mais detalhes</Button>
 						<router-link to="/gado/vaca">
@@ -12,9 +12,15 @@
 					</div>
 				</div>
 				<div class="flex items-center justify-between gap-4 flex-wrap">
-					<Input v-model="searchValue" type="search" class="filter-input" placeholder="Pesquisar" />
+					<Input
+						v-model="searchValue"
+						:disabled="isLoading"
+						type="search"
+						class="filter-input"
+						placeholder="Pesquisar"
+					/>
 					<div class="relative filter-holder" ref="filterCard">
-						<Button class="filter-button" rounded @click="showFilter = true">
+						<Button class="filter-button" :disabled="isLoading" rounded @click="showFilter = true">
 							<Icon name="filter_list" class="round-icon" />
 						</Button>
 						<Filter
@@ -206,9 +212,20 @@ export default {
 			const card = this.$refs['card' + index]?.$el;
 			const rect = card.parentElement.getBoundingClientRect();
 
-			card.style.left = rect.left - 100 + 'px';
-			card.style.top = rect.top + 40 + 'px';
 			item.expanded = true;
+			setTimeout(() => {
+				const windowHeight = window.innerHeight;
+				const cardHeight = card.offsetHeight;
+				const height = rect.top + 40 + cardHeight;
+				card.style.left = rect.left - 100 + 'px';
+				if (height > windowHeight) {
+					delete card.style.top;
+					card.style.bottom = 0;
+				} else {
+					card.style.top = rect.top + 40 + 'px';
+				}
+			}, 10);
+
 			this.opendedIndex = index;
 		},
 

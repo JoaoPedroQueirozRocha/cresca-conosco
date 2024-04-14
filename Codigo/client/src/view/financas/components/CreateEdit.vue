@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-between items-center gap-2 mb-8" style="margin-top: 1.5em;">
-        <h2 class="title">{{ title }} despesas</h2>
+        <h2 class="title">{{ title }}</h2>
     </div>
     <Tab v-model="tabIndex" :items="tabItems" disabled v-if="!isEdicao" class="mb-6" />
 
@@ -22,8 +22,8 @@
         </Card>
 
         <div class="flex flex-row flex-wrap gap-2 justify-end ">
-            <Button class="only-border" @click="$router.push('/financas')">Cancelar</Button>
-            <Button @click = "salvar">{{ buttonText }}</Button>
+            <Button class="only-border" :disabled="loading" @click="$router.push('/financas')">Cancelar</Button>
+            <Button @click = "salvar" :loading="loading">{{ buttonText }}</Button>
         </div>
     </div>
 </template>
@@ -44,6 +44,7 @@ export default {
     name: "EditarDespesas",
     props: {
         isEdicao: Boolean,
+        title: String,
         id: String | Number,
     },
     components: { Button, Dialog, Card, Input, Tab, Checkbox, Select, DatePicker },
@@ -85,6 +86,7 @@ export default {
             right: true,
             timeout: 3500,
         });
+        const loading = ref(false);
 
         return {
             dataChecked,
@@ -96,14 +98,11 @@ export default {
             tabIndex,
             selectItems,
             defaultAlert,
+            loading,
         }
     },
 
     computed: {
-        title() {
-            if (this.isEdicao) return 'Editar';
-            return 'Criar';
-        },
         buttonText() {
             if (this.isEdicao) return 'Salvar';
             return 'Criar';
@@ -113,11 +112,11 @@ export default {
     async created() {
         if (this.isEdicao) {
             try {
-                const { data } = await controller.getCost(this.id);
+                const { data } = await controller.getCost(Number(this.id));
                 this.valorDespesa = data.valor;
                 this.descricaoDespesa = data.descricao;
                 this.tipoDespesa = this.selectItems.find((item) => item.value == data.tipo);
-                this.dataDespesa = data.data;
+                this.dataDespesa = new Date(data.updated_at);
 
             } catch (e) {
                 this.$alert({
@@ -138,11 +137,12 @@ export default {
                 return;
             }
 
+            this.loading = true;
             const data = {
                 valor: this.valorDespesa,
                 descricao: this.descricaoDespesa,
                 tipo: this.tipoDespesa.value,
-                data: this.dataChecked ? this.dataDespesa : new Date(),
+                updated_at: this.dataChecked ? this.dataDespesa : new Date(),
             };
 
             try {
@@ -159,11 +159,13 @@ export default {
 				});
 
             } catch (e) {
+                console.log(e)
                 this.$alert({
 					message: `Erro ao salvar despesa. Tente novamente mais tarde`,
 					...this.defaultAlert,
 				});
             } finally {
+                this.loading = false;
                 this.$router.push('/financas');
             }
         },

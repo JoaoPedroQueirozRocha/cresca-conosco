@@ -1,4 +1,6 @@
 export function formatCurrency(value) {
+    if (isNaN(Number(value))) return '$' + (0).toFixed(2);
+    value = Number(value);
     return '$' + value.toFixed(2);
 }
 

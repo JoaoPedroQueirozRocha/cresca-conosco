@@ -3,6 +3,7 @@ import * as despesasController from "../controller/despesasController.js";
 
 const router = express.Router();
 
+router.post("/list", despesasController.listarDespesas);
 /**
  * @swagger
  * tags:
