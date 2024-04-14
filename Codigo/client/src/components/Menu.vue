@@ -11,34 +11,47 @@ export default {
         const isPhone = ref(window.innerWidth <= 768);
         const isExpanded = ref(!isPhone);
         const menu = ref();
+        const options = ref([
+            {
+                text: 'Perfil',
+                value: 'perfil',
+                path: '/perfil',
+                icon: 'account_circle',
+            },
+            {
+                text: 'Gado',
+                value: 'gado',
+                path: '/gado',
+                icon: cow,
+                isImg: true,
+            },
+            {
+                text: 'Finanças',
+                value: 'financas',
+                path: '/financas',
+                icon: 'payments',
+            },
+            {
+                text: 'Funcionários',
+                value: 'funcionarios',
+                path: '/funcionarios',
+                icon: 'supervised_user_circle',
+            },
+        ]);
 
         return {
             isPhone,
             menu,
             isExpanded,
-            options: [
-                {
-                    text: 'Perfil',
-                    value: '/perfil',
-                    icon: 'account_circle',
-                },
-                {
-                    text: 'Gado',
-                    value: '/gado',
-                    icon: cow,
-                    isImg: true,
-                },
-                {
-                    text: 'Finanças',
-                    value: '/financas',
-                    icon: 'payments',
-                },
-                {
-                    text: 'Funcionários',
-                    value: '/funcionarios',
-                    icon: 'supervised_user_circle',
-                },
-            ]
+            options
+        }
+    },
+    computed: {
+        getMenuOption() {
+            if (this.$route.path.includes('financas')) return 'financas';
+            if (this.$route.path.includes('funcionario')) return 'funcionarios';
+            if (this.$route.path.includes('gado')) return 'gado';
+            return 'perfil';
         }
     },
     beforeMount() {
@@ -86,10 +99,10 @@ export default {
                     </div>
                     <router-link
                         class="option"
-                        :class="{'active': $route.path === option.value, 'justify-center': !isExpanded}"
+                        :class="{'active': getMenuOption === option.value, 'justify-center': !isExpanded}"
                         v-for="option in options"
                         :key="option.value"
-                        :to="option.value"
+                        :to="option.path"
                     >
                         <img :src="option.icon" :alt="option.text + ' icon'" v-if="option.isImg" />
                         <Icon :name="option.icon" v-else />
