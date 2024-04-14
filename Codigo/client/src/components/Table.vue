@@ -117,9 +117,6 @@ export default {
             </thead>
             <tbody v-if="loading">
                 <tr v-for="index in 6" :key="index">
-                    <td v-if="enableSelection" class="skeleton-table-cell">
-                        <div class="skeleton-table-div" />
-                    </td>
                     <td v-for="header in (headers.length || 3)" :key="header" class="skeleton-table-cell">
                         <div class="skeleton-table-div" />
                     </td>

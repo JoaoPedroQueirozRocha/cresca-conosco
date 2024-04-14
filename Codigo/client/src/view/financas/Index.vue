@@ -1,7 +1,8 @@
 <script>
 import VueApexCharts from "vue3-apexcharts";
-import { formatCurrency } from "../../util";
+import { formatCurrency, formatDate } from "../../util";
 import { ref } from "vue";
+import Icon from "@/components/Icon.vue";
 import Card from "@/components/Card.vue";
 import Button from "@/components/Button.vue";
 import FinanceDialog from "./components/FinanceDialog.vue";
@@ -12,7 +13,7 @@ import financeController from "@/controller/finance";
 
 export default {
 	name: "Finance",
-	components: { Card, Button, FinanceDialog, GenericTable, apexchart: VueApexCharts },
+	components: { Card, Button, Icon, FinanceDialog, GenericTable, apexchart: VueApexCharts },
     inject: ["Auth"],
 	setup() {
         const chartColors = ['#23b73c', '#ed0000', '#0973f5', '#23b772', '#ed002b', '#09aaf5'];
@@ -21,64 +22,143 @@ export default {
             chartCategories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
             compareCategories: [[1991, 1992], [1993, 1994], [1995, 1996], [1997, 1998], [1999, 2000], [2001, 2002], [2003, 2004], [2005, 2006]]
         });
-        const series = ref([
-            {
-                name: 'Ganhos',
-                type: 'line',
-                data: [23, 45, 70, 60, 80, 95, 100, 120],
+        const series = ref([]);
+        const totals = ref({
+            receita: {
+                name: 'Receita',
+                value: 'profit',
+                total: 0,
             },
-            {
-                name: 'Custos',
-                type: 'line',
-                data: [15, 30, 45, 40, 50, 60, 70, 80],
+            despesas: {
+                name: 'Despesas',
+                value: 'costs',
+                total: 0,
             },
-            {
-                name: 'Lucro Líquido',
-                type: 'line',
-                data: [8, 15, 25, 20, 30, 35, 30, 40],
-            },
-            // {
-            //     name: 'Ganhos',
-            //     type: 'bar',
-            //     data: [23, 45, 70, 60, 80, 95, 100, 120],
-            // },
-            // {
-            //     name: 'Custos',
-            //     type: 'bar',
-            //     data: [15, 30, 45, 40, 50, 60, 70, 80],
-            // },
-            // {
-            //     name: 'Lucro Líquido',
-            //     type: 'bar',
-            //     data: [8, 15, 25, 20, 30, 35, 30, 40],
-            // },
-        ]);
+            roi: {
+                name: 'ROI',
+                value: 'roi',
+                total: 0,
+            }
+        });
+        const showDialog = ref(false);
+        const loading = ref({
+            report: false,
+            profit: false,
+            costs: false,
+        });
+        const defaultAlert = ref({
+            top: true,
+            right: true,
+            timeout: 3500,
+        });
+        const data = ref({
+            profit: [],
+            cost: [],
+        });
 
 		return {
-			defaultAlert: ref({
-				top: true,
-				right: true,
-				timeout: 3500,
-			}),
             series,
-            totals: ref([
-                {
-                    name: 'Ganhos',
-                    value: 'profit',
-                    total: 200,
+            totals,
+            isCompare,
+            chartColors,
+            reportDate,
+            showDialog,
+            loading,
+			defaultAlert,
+            data,
+            formatCurrency,
+		};
+	},
+
+    computed: {
+        chartOptions() {
+            return {
+                chart: {
+                    id: "vuechart-example",
+                    stacked: false
                 },
-                {
-                    name: 'Custos',
-                    value: 'costs',
-                    total: 180,
+                stroke: {
+                    width: 4,
                 },
-                {
-                    name: 'Lucro Líquido',
-                    value: 'receita',
-                    total: 20,
+                markers: {
+                    size: 0,
                 },
-            ]),
-            headers: ref({
+                dataLabels: {
+                    enabled: false,
+                    style: {
+                        colors: this.chartColors,
+                    }
+                },
+                colors: this.chartColors,
+                xaxis: {
+                },
+                yaxis: [
+                    {
+                        title: {
+                            text: 'Valores',
+                        },
+                        labels: {
+                            formatter: function (value) {
+                                return formatCurrency(value);
+                            },
+                        },
+                        axisTicks: {
+                            show: true
+                        },
+                        axisBorder: {
+                            show: true,
+                        },
+                    },
+                ],
+                tooltip: {
+                    enabled: true,
+                    custom: ({ s, seriesIndex, dataPointIndex, w }) => {
+                        const template = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                        const rangeDate = this.series[0].data[dataPointIndex].x;
+                        const compareDate = this.series[3]?.data[dataPointIndex]?.x;
+
+                        return `<div class="custom-tooltip" style="width: max-content">
+                            <div class="date" style="display: flex; justify-content: center; background: #eceff1; padding: 8px 8px;">
+                                ${this.isCompare ? `${rangeDate} - ${compareDate}` : rangeDate}
+                            </div>
+                            <div class="data-tooltip" style="display: grid; gap: 12px; ${this.isCompare ? 'grid-template-columns: 1fr 1fr;' : 'grid-template-columns: 1fr;'}">
+                                <div style="padding: 15px 15px; display: grid; gap: 12px;">
+                                    ${this.series.filter((nothing, index) => index < 3).map((s, index) => `
+                                        <div style="display: flex; flex-direction: row; align-items: center; width: 250px;">
+                                            <span class="tooltip-circle" style="background: ${this.chartColors[index]}; height: 10px; width: 10px; border-radius: 50%; margin-right: 10px;"></span>
+                                            <p style="margin-right: 10px; font-size: 15px; margin-bottom: 0px;">
+                                                ${s.name}:
+                                            </p>
+                                            <p style="font-weight: bold; font-size: 14px; margin-bottom: 0px;">
+                                                ${formatCurrency(s.data[dataPointIndex].y)}
+                                            </p>
+                                        </div>`
+                                    ).join('')}
+                                </div>
+                                ${this.isCompare ? `
+                                    <div style="padding: 15px 15px; display: grid; gap: 12px;">
+                                        ${this.series.filter((nothing, index) => index >= 3).map((s, index) => `
+                                            <div style="display: flex; flex-direction: row; align-items: center; width: 250px;">
+                                                <span class="tooltip-circle" style="background: ${this.chartColors[index + 3]}; height: 10px; width: 10px; border-radius: 50%; margin-right: 10px;"></span>
+                                                <p style="margin-right: 10px; font-size: 15px; margin-bottom: 0px;">
+                                                    ${s.name}:
+                                                </p>
+                                                <p style="font-weight: bold; font-size: 14px; margin-bottom: 0px;">
+                                                    ${formatCurrency(s.data[dataPointIndex].y)}
+                                                </p>
+                                            </div>`
+                                        ).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>`
+                    }
+                },
+            }
+        },
+
+        headers() {
+            return {
                 profit: [
                     {
                         value: 'none',
@@ -141,108 +221,7 @@ export default {
                         align: 'center',
                     },
                 ],
-            }),
-            data: ref({
-                profit: [],
-                cost: [],
-            }),
-            isCompare,
-            chartColors,
-            reportDate,
-            loading: ref({
-                report: false,
-                profit: false,
-                costs: false,
-            }),
-            showDialog: ref(false),
-            formatCurrency,
-		};
-	},
-
-    computed: {
-        chartOptions() {
-            return {
-                chart: {
-                    id: "vuechart-example",
-                    stacked: false
-                },
-                stroke: {
-                    width: 4,
-                },
-                markers: {
-                    size: 0,
-                },
-                dataLabels: {
-                    enabled: false,
-                    style: {
-                        colors: this.chartColors,
-                    }
-                },
-                colors: this.chartColors,
-                xaxis: {
-                    categories: this.reportDate.chartCategories,
-                    overwriteCategories: this.reportDate.compareCategories,
-                },
-                yaxis: [
-                    {
-                        title: {
-                            text: 'Valores',
-                        },
-                        labels: {
-                            formatter: function (value) {
-                                return formatCurrency(value);
-                            },
-                        },
-                        axisTicks: {
-                            show: true
-                        },
-                        axisBorder: {
-                            show: true,
-                        },
-                    },
-                ],
-                tooltip: {
-                    enabled: true,
-                    custom: ({ s, seriesIndex, dataPointIndex, w }) => {
-                        const item = this.isCompare ? this.reportDate.compareCategories[dataPointIndex] : this.reportDate.chartCategories[dataPointIndex];
-                        return `<div class="custom-tooltip" style="width: max-content">
-                            <div class="date" style="display: flex; justify-content: center; background: #eceff1; padding: 8px 8px;">
-                                ${this.isCompare ? `${item[0]} - ${item[1]}` : item}
-                            </div>
-                            <div class="data-tooltip" style="display: grid; gap: 12px; ${this.isCompare ? 'grid-template-columns: 1fr 1fr;' : 'grid-template-columns: 1fr;'}">
-                                <div style="padding: 15px 15px; display: grid; gap: 12px;">
-                                    ${this.series.filter((nothing, index) => index < 3).map((s, index) => `
-                                        <div style="display: flex; flex-direction: row; align-items: center; width: 250px;">
-                                            <span class="tooltip-circle" style="background: ${this.chartColors[index]}; height: 10px; width: 10px; border-radius: 50%; margin-right: 10px;"></span>
-                                            <p style="margin-right: 10px; font-size: 15px; margin-bottom: 0px;">
-                                                ${s.name}:
-                                            </p>
-                                            <p style="font-weight: bold; font-size: 14px; margin-bottom: 0px;">
-                                                ${formatCurrency(s.data[dataPointIndex])}
-                                            </p>
-                                        </div>`
-                                    ).join('')}
-                                </div>
-                                ${this.isCompare ? `
-                                    <div style="padding: 15px 15px; display: grid; gap: 12px;">
-                                        ${this.series.filter((nothing, index) => index >= 3).map((s, index) => `
-                                            <div style="display: flex; flex-direction: row; align-items: center; width: 250px;">
-                                                <span class="tooltip-circle" style="background: ${this.chartColors[index + 3]}; height: 10px; width: 10px; border-radius: 50%; margin-right: 10px;"></span>
-                                                <p style="margin-right: 10px; font-size: 15px; margin-bottom: 0px;">
-                                                    ${s.name}:
-                                                </p>
-                                                <p style="font-weight: bold; font-size: 14px; margin-bottom: 0px;">
-                                                    ${formatCurrency(s.data[dataPointIndex])}
-                                                </p>
-                                            </div>`
-                                        ).join('')}
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>`
-                    }
-                },
-            }
+            };
         }
     },
 
@@ -251,13 +230,32 @@ export default {
     },
 
 	methods: {
-        async generateReport(period = [], period2 = []) {
+        async getAllData() {
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 30);
+            startDate.setHours(0, 0, 0);
+
+            const endDate = new Date();
+            endDate.setHours(23, 59, 0);
+            
+            this.loading.report = true;
+            this.loading.profit = true;
+            this.loading.costs = true;
+            await this.generateReport([startDate, endDate]);
+            await this.getProfits();
+            await this.getCosts();
+        },
+
+        async generateReport(range, compare = []) {
             try {
                 this.showDialog = false;
                 this.loading.report = true;
-                // this.isCompare = !!period.length && !!period2.length;
-                const { data } = await financeController.generateReport(period, period2);
-                // tratar dados
+                this.isCompare = !!compare.length;
+                const { data } = await financeController.generateReport(range, compare);
+
+                this.setTotals(data.totals.range, data.totals.compare);
+                this.setSeries(data.data.range, data.data.compare);
+
             } catch (e) {
                 this.$alert({
 					message: 'Erro ao gerar o relatório de finanças. Tente novamente mais tarde',
@@ -266,12 +264,6 @@ export default {
             } finally {
                 this.loading.report = false;
             }
-        },
-
-        async getAllData() {
-            await this.getProfits();
-            await this.getCosts();
-            await this.generateReport();
         },
 
         async getProfits(period = []) {
@@ -358,6 +350,100 @@ export default {
                 this.loading.costs = false;
             }
         },
+
+        setTotals(range, compare) {
+            Object.keys(range).forEach((key) => {
+                this.totals[key].total = range[key];
+            });
+
+            if (this.isCompare) {
+                Object.keys(compare).forEach((key) => {
+                    this.totals[key].percentage = this.calculatePercentage(compare[key], this.totals[key].total);
+                });
+            }
+        },
+
+        setSeries(range, compare) {
+            const template = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            this.series = [];
+            this.series.push(
+                {
+                    name: 'Receita',
+                    type: 'line',
+                    data: range.map((value) => {
+                        return {
+                            x: formatDate(new Date(value.data), template),
+                            y: value.receita,
+                        }
+                    }),
+                },
+                {
+                    name: 'Despesas',
+                    type: 'line',
+                    data: range.map((value) => {
+                        return {
+                            x: formatDate(new Date(value.data), template),
+                            y: value.despesas,
+                        }
+                    }),
+                },
+                {
+                    name: 'ROI',
+                    type: 'line',
+                    data: range.map((value) => {
+                        return {
+                            x: formatDate(new Date(value.data), template),
+                            y: value.roi,
+                        }
+                    }),
+                },
+            );
+
+            if (this.isCompare) {
+                this.series.push(
+                    {
+                        name: 'Receita a comparar',
+                        type: 'bar',
+                        data: compare.map((value) => {
+                            return {
+                                x: formatDate(new Date(value.data), template),
+                                y: value.receita,
+                            }
+                        }),
+                    },
+                    {
+                        name: 'Despesas a comparar',
+                        type: 'bar',
+                        data: compare.map((value) => {
+                            return {
+                                x: formatDate(new Date(value.data), template),
+                                y: value.despesas,
+                            }
+                        }),
+                    },
+                    {
+                        name: 'ROI a comparar',
+                        type: 'bar',
+                        data: compare.map((value) => {
+                            return {
+                                x: formatDate(new Date(value.data), template),
+                                y: value.roi,
+                            }
+                        }),
+                    },
+                );
+            }
+        },
+
+        calculatePercentage(newValue, oldValue) {
+            return ((newValue - oldValue) / oldValue) * 100;
+        },
+
+        getIcon(value) {
+            if (!value) return 'remove';
+            else if (value > 0) return 'arrow_drop_up';
+            return 'arrow_drop_down';
+        }
 	},
 };
 </script>
@@ -370,7 +456,21 @@ export default {
         <div class="flex flex-wrap gap-4 [&>*]:w-full">
             <Card v-for="total in totals" class="total-card">
                 <div class="skeleton skeleton-card-title" v-if="loading.report" />
-                <h6 v-else>{{ total.name }}</h6>
+                <h6 class="flex item-center gap-1" v-else>
+                    {{ total.name }}
+                    <span
+                        v-if="isCompare"
+                        class="flex items-center text-sm"
+                        :class="{
+                            'text-yellow-500': !total.percentage, 
+                            'text-green-500' : total.percentage > 0, 
+                            'text-red-500': total.percentage < 0
+                        }"
+                    >
+                        <Icon :name="getIcon(total.percentage)" class="text-2xl" />
+                        {{ total.percentage || 0 }}%
+                    </span>
+                </h6>
                 <div class="skeleton skeleton-card-content" v-if="loading.report" />
                 <p :class="total.value" v-else>{{ formatCurrency(total.total) }}</p>
             </Card>
@@ -431,7 +531,7 @@ export default {
     color: $red-strong;
 }
 
-.receita {
+.roi {
     color: $blue-strong;
 }
 
