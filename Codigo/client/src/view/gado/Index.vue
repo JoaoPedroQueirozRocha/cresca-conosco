@@ -34,7 +34,7 @@
 							tabindex="0"
 							@blur="item.expanded = false"
 						>
-							<router-link to="/">
+							<router-link :to="`/gado/vaca${item.nome}`">
                                 <div class="action-option">
                                     <Icon name="edit" />
                                     Editar
@@ -89,7 +89,7 @@
 					</div>
 				</template>
 			</Table>
-			<Dialog v-model="moreDetails" :width="'100%'">
+			<Dialog v-model="moreDetails" width="100%">
 				<DialogTable :headers="headersDialog" :allData="allData" :isDialogLoading="isDialogLoading" />
 			</Dialog>
 		</div>

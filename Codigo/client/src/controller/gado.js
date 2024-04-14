@@ -7,11 +7,11 @@ async function getAll() {
 }
 
 function createGado(gado) {
-    return axios.post(`${APIURL}/gestacoes`, gado);
+    return axios.post(`${APIURL}/animals`, gado);
 }
 
 function updateGado(gado) {
-    return axios.put(`${APIURL}/gestacoes/${gado.id}`, gado);
+    return axios.put(`${APIURL}/animals/${gado.id}`, gado);
 }
 
 async function getBase() {
@@ -19,7 +19,14 @@ async function getBase() {
     return response.data;
 }
 
+function deleteGado(id) {
+    return axios.put(`${APIURL}/animals/${id}`);
+}
+
 export default {
     getAll,
     getBase,
+    createGado,
+    updateGado,
+    deleteGado,
 };

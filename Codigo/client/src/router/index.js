@@ -1,5 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Auth0 from '../auth/index.js'
+import lucroController from '@/controller/profit.js';
+import despesaController from '@/controller/cost.js';
+import { cost, profit } from './financeType.js';
+import Auth0 from '../auth/index.js';
+
 const routes = [
     {
         path: '/perfil',
@@ -18,9 +22,16 @@ const routes = [
     },
     {
         path: '/gado/vaca',
-        name: 'NovaVaca',
+        name: 'CriarVaca',
         props: true,
-        component: () => import('@/view/gado/NovaVaca.vue'),
+        component: () => import('@/view/gado/CreateEdit.vue'),
+        beforeEnter: Auth0.routeGuard
+    },
+    {
+        path: '/gado/vaca/:nome',
+        name: 'EditarVaca',
+        props: true,
+        component: () => import('@/view/gado/CreateEdit.vue'),
         beforeEnter: Auth0.routeGuard
     },
     {
@@ -35,8 +46,10 @@ const routes = [
         name: 'DespesaEditar',
         props: route => ({
             id: route.params.id,
-            isEdicao: true,
-            title: 'Editar Despesa',
+            value: 'despesa',
+            types: cost,
+            callback: despesaController.updateCost,
+            get: despesaController.getCost,
         }),
         component: () => import('@/view/financas/components/CreateEdit.vue'),
         beforeEnter: Auth0.routeGuard
@@ -44,7 +57,27 @@ const routes = [
     {
         path: '/financas/despesa',
         name: 'DespesaCriar',
-        props: { title: 'Criar Despesa' },
+        props: { value: 'despesa', types: cost, callback: despesaController.createCost },
+        component: () => import('@/view/financas/components/CreateEdit.vue'),
+        beforeEnter: Auth0.routeGuard
+    },
+    {
+        path: '/financas/receita/:id',
+        name: 'ReceitaEditar',
+        props: route => ({
+            id: route.params.id,
+            value: 'receita',
+            types: profit,
+            callback: lucroController.updateProfit,
+            get: lucroController.getProfit,
+        }),
+        component: () => import('@/view/financas/components/CreateEdit.vue'),
+        beforeEnter: Auth0.routeGuard
+    },
+    {
+        path: '/financas/receita',
+        name: 'ReceitaCriar',
+        props: { value: 'receita', types: profit, callback: lucroController.createProfit },
         component: () => import('@/view/financas/components/CreateEdit.vue'),
         beforeEnter: Auth0.routeGuard
     },
