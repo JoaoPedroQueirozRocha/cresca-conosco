@@ -86,34 +86,34 @@ export default {
 	},
 	setup() {
 		return {
-            searchValue: ref(''),
-		}
+			searchValue: ref(''),
+		};
 	},
-	
+
 	computed: {
 		filteredDate() {
-            if (!this.searchValue) return this.allData;
+			if (!this.searchValue) return this.allData;
 
 			return this.allData.filter((item) => {
 				return Object.values(item).some((value) => {
-                    const stringValue = String(value);
-                    return stringValue.includes(this.searchValue);
-                });
+					const stringValue = String(value);
+					return stringValue.includes(this.searchValue);
+				});
 			});
-		}
+		},
 	},
 };
 </script>
 
 <style scoped lang="scss">
-@import "../../style/var.scss";
+@import '../../style/var.scss';
 
 .empty-div {
-    @apply flex flex-col items-center justify-center gap-4 p-4;
-    color: $gray-400;
+	@apply flex flex-col items-center justify-center gap-4 p-4;
+	color: $gray-400;
 
-    .material-symbols-rounded {
-        font-size: 100px;
-    }
+	.material-symbols-rounded {
+		font-size: 100px;
+	}
 }
 </style>

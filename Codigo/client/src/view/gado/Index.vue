@@ -12,21 +12,36 @@
 					</div>
 				</div>
 				<div class="flex items-center justify-between gap-4 flex-wrap">
-					<Input v-model="searchValue" :disabled="isLoading" type="search" class="filter-input" placeholder="Pesquisar" />
+					<Input
+						v-model="searchValue"
+						:disabled="isLoading"
+						type="search"
+						class="filter-input"
+						placeholder="Pesquisar"
+					/>
 					<div class="relative filter-holder" ref="filterCard">
-                        <Button class="filter-button" :disabled="isLoading" rounded @click="showFilter = true">
-                            <Icon name="filter_list" class="round-icon" />
-                        </Button>
-                        <Filter v-model="filterOptions" class="top-12 right-0 absolute z-50 filter" v-show="showFilter" />
-                    </div>
+						<Button class="filter-button" :disabled="isLoading" rounded @click="showFilter = true">
+							<Icon name="filter_list" class="round-icon" />
+						</Button>
+						<Filter
+							v-model="filterOptions"
+							class="top-12 right-0 absolute z-50 filter"
+							v-show="showFilter"
+						/>
+					</div>
 				</div>
 			</div>
-			<Table :items="filteredDate" :headers="headers" class="w-full gado-table" :loading="isLoading">
+			<Table
+				:items="filteredData ? filteredData : gadoData"
+				:headers="headers"
+				class="w-full gado-table"
+				:isLoading="isLoading"
+			>
 				<template #actions="{ item, index }">
 					<td class="w-2 cursor-pointer action">
 						<div class="icon-holder" @click="positionCard(item, index)">
-                    		<Icon name="more_vert"  @click="positionCard(item, index)" />
-                        </div>
+							<Icon name="more_vert" @click="positionCard(item, index)" />
+						</div>
 						<Card
 							:ref="'card' + index"
 							class="fixed action-card"
@@ -35,15 +50,15 @@
 							@blur="item.expanded = false"
 						>
 							<router-link to="/">
-                                <div class="action-option">
-                                    <Icon name="edit" />
-                                    Editar
-                                </div>
-                            </router-link>
+								<div class="action-option">
+									<Icon name="edit" />
+									Editar
+								</div>
+							</router-link>
 							<div class="action-option delete" @click="confirmDeletion(item.id)">
-                                <Icon name="delete" />
-                                Deletar
-                            </div>
+								<Icon name="delete" />
+								Deletar
+							</div>
 						</Card>
 					</td>
 				</template>
@@ -65,7 +80,7 @@
 				<template #semen="{ item, index }">
 					<td class="text-center">
 						{{ item.semem }}
-                        <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
+						<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 					</td>
 				</template>
 				<template #lactante="{ item, index }">
@@ -74,7 +89,7 @@
 							:name="item.lactante ? 'done' : 'close'"
 							:class="item.lactante ? 'text-green-500' : 'text-red-500'"
 						/>
-                        <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
+						<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 					</td>
 				</template>
 				<template #status="{ item, index }">
@@ -89,8 +104,28 @@
 					</div>
 				</template>
 			</Table>
-			<Dialog v-model="moreDetails" :width="'100%'">
-				<DialogTable :headers="headersDialog" :allData="allData" :isDialogLoading="isDialogLoading" />
+			<Dialog v-model="moreDetails" :width="'100%'" overflowHidden>
+				<div class="flex flex-col gap-2">
+					<h1 class="title">Mais Detalhes</h1>
+					<div class="flex flex-row justify-between mb-4">
+						<Input v-model="searchValue" type="search" placeholder="Pesquisar" class="filter-input" />
+						<div class="relative filter-holder" ref="filterCard">
+							<Button class="filter-button" rounded @click="showFilter = true">
+								<Icon name="filter_list" class="round-icon" />
+							</Button>
+							<Filter
+								v-model="filterOptions"
+								class="top-12 right-0 absolute z-50 filter"
+								v-show="showFilter"
+							/>
+						</div>
+					</div>
+				</div>
+				<DialogTable
+					:headers="headersDialog"
+					:allData="filteredData ? filteredData : allData"
+					:isDialogLoading="isDialogLoading"
+				/>
 			</Dialog>
 		</div>
 	</div>
@@ -98,7 +133,8 @@
 
 <script>
 import { useGado } from './useGado.js';
-import { ref } from 'vue';
+import { useFilter } from './userFilter.js';
+import { ref, watch } from 'vue';
 import Table from '@/components/Table.vue';
 import Button from '@/components/Button.vue';
 import Input from '@/components/Input.vue';
@@ -120,44 +156,14 @@ export default {
 			headers,
 			isLoading,
 			isDialogLoading,
+			filterOptions,
 			loadBaseData,
 			createDialog,
 			moreDetails,
 		} = useGado();
-        const filterOptions = ref([
-            {
-                text: 'Seca',
-                value: 'seca',
-                selected: false,
-            },
-            {
-                text: 'Lactante',
-                value: 'lactante',
-                selected: false,
-            },
-            {
-                text: 'Grávida',
-                value: 'gravida',
-                selected: false,
-            },
-            {
-                text: 'Sêmen',
-                value: 'semem',
-                childs: [
-                    {
-                        text: '5/8',
-                        value: '5/8',
-                        selected: false,
-                    },
-                    {
-                        text: 'gir',
-                        value: 'gir',
-                        selected: false,
-                    },
-                ]
-            },
-        ]);
 
+		const searchValue = ref('');
+		const { filteredData, getSelected } = useFilter(gadoData, filterOptions, searchValue);
 		return {
 			gadoData,
 			allData,
@@ -165,6 +171,7 @@ export default {
 			headers,
 			isLoading,
 			isDialogLoading,
+			filterOptions,
 			loadBaseData,
 			createDialog,
 			moreDetails,
@@ -172,66 +179,20 @@ export default {
 			filterCard: ref(),
 			showFilter: ref(false),
 			opendedIndex: ref(null),
-            searchValue: ref(''),
+			searchValue,
+			filteredData,
+			getSelected,
 		};
-	},
-
-	computed: {
-		filteredDate() {
-			let filteredData = this.gadoData;
-            if (this.getSelected.length) {
-                filteredData = filteredData.filter((item, index) => {
-                    let returnItem = false;
-                    this.getSelected.forEach((selected) => {
-						if (returnItem) return;
-
-                        if (selected.fatherValue) {
-                            returnItem = item[selected.fatherValue] == selected.value;
-                        }
-                        else if (item[selected.value]) {
-                            returnItem = !!item[selected.value];
-                        }
-                    });
-					if (returnItem) return item;
-                });
-            }
-
-            if (!this.searchValue) return filteredData;
-
-			return filteredData.filter((item) => {
-				return Object.values(item).some((value) => {
-                    const stringValue = String(value);
-                    return stringValue.includes(this.searchValue);
-                });
-			});
-		},
-		
-        getSelected() {
-            const selected = [];
-            this.filterOptions.forEach((option) => {
-                if (option.childs) {
-                    const selectedChilds = option.childs.filter((child) => child.selected).map((child) => {
-                        return {
-                            ...child,
-                            fatherValue: option.value,
-                        };
-                    });
-                    return selected.push(...selectedChilds);
-                }
-                else if (option.selected) return selected.push(option);
-            });
-            return selected;
-        },
 	},
 
 	async beforeMount() {
 		await this.loadBaseData();
-		console.log('gadoData');
+		console.log('gadoData', this.gadoData);
 	},
 
 	mounted() {
 		document.addEventListener('click', this.closeCards);
-        const app = document.querySelector('#app');
+		const app = document.querySelector('#app');
 		app.addEventListener('scroll', this.closeCard);
 		const table = document.querySelector('.gado-table');
 		table.addEventListener('scroll', this.closeCard);
@@ -239,7 +200,7 @@ export default {
 
 	beforeUnmount() {
 		document.removeEventListener('click', this.closeCards);
-        const app = document.querySelector('#app');
+		const app = document.querySelector('#app');
 		app.removeEventListener('scroll', this.closeCard);
 		const table = document.querySelector('.gado-table');
 		table.removeEventListener('scroll', this.closeCard);
@@ -253,17 +214,17 @@ export default {
 
 			item.expanded = true;
 			setTimeout(() => {
-                const windowHeight = window.innerHeight;
-                const cardHeight = card.offsetHeight;
-                const height = rect.top + 40 + cardHeight;
-                card.style.left = rect.left - 100 + 'px';
-                if (height > windowHeight) {
-                    delete card.style.top;
-                    card.style.bottom = 0;
-                } else {
-                    card.style.top = rect.top + 40 + 'px';
-                }
-            }, 10);
+				const windowHeight = window.innerHeight;
+				const cardHeight = card.offsetHeight;
+				const height = rect.top + 40 + cardHeight;
+				card.style.left = rect.left - 100 + 'px';
+				if (height > windowHeight) {
+					delete card.style.top;
+					card.style.bottom = 0;
+				} else {
+					card.style.top = rect.top + 40 + 'px';
+				}
+			}, 10);
 
 			this.opendedIndex = index;
 		},
@@ -291,13 +252,13 @@ export default {
 			this.opendedIndex = null;
 		},
 
-        async confirmDeletion(id) {
-            const result = await this.$confirm({
-                title: 'Tem certeza que deseja deletar esse item?'
-            });
+		async confirmDeletion(id) {
+			const result = await this.$confirm({
+				title: 'Tem certeza que deseja deletar esse item?',
+			});
 			// Tratar dados
-            if (result) ()=>{};
-        }
+			if (result) () => {};
+		},
 	},
 };
 </script>
@@ -306,73 +267,72 @@ export default {
 @import '../../style/var.scss';
 
 .icon-holder {
-    display: flex;
-    align-items: center;
-    width: fit-content;
-    border-radius: 50%;
-    padding: 0.1em;
-    cursor: pointer;
-    color: $gray-500;
-    transition-duration: 0.3s;
+	display: flex;
+	align-items: center;
+	width: fit-content;
+	border-radius: 50%;
+	padding: 0.1em;
+	cursor: pointer;
+	color: $gray-500;
+	transition-duration: 0.3s;
 
-    &:hover {
-        background: $gray-200;
-    }
+	&:hover {
+		background: $gray-200;
+	}
 
-    .material-symbols-rounded {
-        font-size: 30px;
-    }
+	.material-symbols-rounded {
+		font-size: 30px;
+	}
 }
 
-
 .filter-button .material-symbols-rounded {
-    font-size: 30px;
+	font-size: 30px;
 }
 
 .filter-input {
-    min-width: 25em;
+	min-width: 25em;
 }
 
 .empty-div {
-    @apply flex flex-col items-center justify-center gap-4 p-4;
-    color: $gray-400;
+	@apply flex flex-col items-center justify-center gap-4 p-4;
+	color: $gray-400;
 
-    .material-symbols-rounded {
-        font-size: 100px;
-    }
+	.material-symbols-rounded {
+		font-size: 100px;
+	}
 }
 
 .action-card {
-    @apply p-3 flex flex-col gap-2;
+	@apply p-3 flex flex-col gap-2;
 }
 
 .action-option {
-    @apply flex items-center gap-4 cursor-pointer p-2 font-bold;
-    color: $gray-500;
-    border-radius: 8px;
-    
-    &:hover {
-        background: $gray-200;
-    }
+	@apply flex items-center gap-4 cursor-pointer p-2 font-bold;
+	color: $gray-500;
+	border-radius: 8px;
+
+	&:hover {
+		background: $gray-200;
+	}
 }
 
 .action-option.delete {
-    color: $red-strong;
-    
-    &:hover {
-        background: $red-light;
-    }
+	color: $red-strong;
+
+	&:hover {
+		background: $red-light;
+	}
 }
 
 @media screen and (max-width: 768px) {
 	.dialog-div {
-        width: 90vw;
-    }
+		width: 90vw;
+	}
 }
 
 @media screen and (max-width: 488px) {
-    .filter-input {
-        min-width: 100%;
-    }
+	.filter-input {
+		min-width: 100%;
+	}
 }
 </style>
