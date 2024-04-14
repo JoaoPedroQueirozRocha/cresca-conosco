@@ -9,12 +9,12 @@ function getProfit(id) {
     return axios.get(`${APIURL}/${id}`);
 }
 
-function updateProfit(id) {
-    return axios.put(`${APIURL}/${id}`);
+function updateProfit(id, data) {
+    return axios.put(`${APIURL}/${id}`, data);
 }
 
-function createProfit() {
-    return axios.post(APIURL);
+function createProfit(data) {
+    return axios.post(APIURL, data);
 }
 
 function deleteProfit(id) {

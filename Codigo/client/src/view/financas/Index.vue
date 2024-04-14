@@ -240,7 +240,6 @@ export default {
             await this.generateReport([startDate, endDate]);
             await this.getItems([], 'profit');
             await this.getItems([], 'cost');
-            console.log(this.data)
         },
 
         async generateReport(range, compare = []) {

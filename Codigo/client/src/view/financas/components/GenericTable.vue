@@ -70,9 +70,19 @@ export default {
 
             if (!card || !rect) return;
 
-			card.style.left = rect.left - 100 + 'px';
-			card.style.top = rect.top + 40 + 'px';
 			item.expanded = true;
+            setTimeout(() => {
+                const windowHeight = window.innerHeight;
+                const cardHeight = card.offsetHeight;
+                const height = rect.top + 40 + cardHeight;
+                card.style.left = rect.left - 100 + 'px';
+                if (height > windowHeight) {
+                    delete card.style.top;
+                    card.style.bottom = 0;
+                } else {
+                    card.style.top = rect.top + 40 + 'px';
+                }
+            }, 10);
 			this.opendedIndex = index;
 			this.opendedChildIndex = cIndex;
 		},

@@ -23,6 +23,7 @@ async function getDespesaById(req, res) {
 
         res.send(despesa);
     } catch (e) {
+        console.error(e);
         res.status(e.status).send(e.message);
     }
 }
