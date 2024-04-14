@@ -49,12 +49,12 @@
 							tabindex="0"
 							@blur="item.expanded = false"
 						>
-							<router-link to="/">
-								<div class="action-option">
-									<Icon name="edit" />
-									Editar
-								</div>
-							</router-link>
+							<router-link :to="`/gado/vaca${item.nome}`">
+                                <div class="action-option">
+                                    <Icon name="edit" />
+                                    Editar
+                                </div>
+                            </router-link>
 							<div class="action-option delete" @click="confirmDeletion(item.id)">
 								<Icon name="delete" />
 								Deletar
@@ -104,7 +104,7 @@
 					</div>
 				</template>
 			</Table>
-			<Dialog v-model="moreDetails" :width="'100%'" overflowHidden>
+			<Dialog v-model="moreDetails" width="100%" overflowHidden>
 				<div class="flex flex-col gap-2">
 					<h1 class="title">Mais Detalhes</h1>
 					<div class="flex flex-row justify-between mb-4">
