@@ -36,7 +36,7 @@ async function listarDespesas(period) {
 
 async function getDespesaById(id) {
     const result = await pool.query("SELECT * FROM despesas d WHERE d.id = $1", [id]);
-    return result.rows;
+    return result.rows[0];
 }
 
 async function createNewDespesa(body) {
@@ -44,10 +44,10 @@ async function createNewDespesa(body) {
         valor,
         descricao,
         tipo,
-        data
+        updated_at
     } = body;
 
-    const queryResult = await pool.query("INSERT INTO despesas (valor, descricao, tipo, updated_at) VALUES ($1, $2, $3, $4) RETURNING *", [valor, descricao, tipo, data]);
+    const queryResult = await pool.query("INSERT INTO despesas (valor, descricao, tipo, updated_at) VALUES ($1, $2, $3, $4) RETURNING *", [valor, descricao, tipo, updated_at]);
     return queryResult.rows[0];
 }
 

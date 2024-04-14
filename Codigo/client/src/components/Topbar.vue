@@ -28,13 +28,13 @@ export default {
 			this.closeDropdown(
 				event,
 				this.notification?.$el,
-				this.notificationIcon,
+				this.notificationIcon?.$el,
 				"notificationActive"
 			);
 			this.closeDropdown(
 				event,
 				this.perfilDropdown?.$el,
-				this.perfilIcon,
+				this.perfilIcon?.$el,
 				"perfilDropdownActive"
 			);
 		});

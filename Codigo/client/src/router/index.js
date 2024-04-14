@@ -26,15 +26,19 @@ const routes = [
     {
         path: '/financas/despesa/:id',
         name: 'DespesaEditar',
-        props: { isEdicao: true },
-        component: () => import('@/view/financas/components/EditarDespesa.vue'),
+        props: route => ({
+            id: route.params.id,
+            isEdicao: true,
+            title: 'Editar Despesa',
+        }),
+        component: () => import('@/view/financas/components/CreateEdit.vue'),
         beforeEnter: Auth0.routeGuard
     },
     {
         path: '/financas/despesa',
         name: 'DespesaCriar',
-        props: true,
-        component: () => import('@/view/financas/components/EditarDespesa.vue'),
+        props: { title: 'Criar Despesa' },
+        component: () => import('@/view/financas/components/CreateEdit.vue'),
         beforeEnter: Auth0.routeGuard
     },
     {

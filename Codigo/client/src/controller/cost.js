@@ -10,11 +10,11 @@ function getCost(id) {
 }
 
 function updateCost(id, data) {
-    return axios.put(`${APIURL}/${id}`, { data });
+    return axios.put(`${APIURL}/${id}`, data);
 }
 
 function createCost(data) {
-    return axios.post(APIURL, { data });
+    return axios.post(APIURL, data);
 }
 
 function deleteCost(id) {
