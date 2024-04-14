@@ -10,9 +10,9 @@
 				</div>
 
 				<div class="w-full flex items-center justify-between gap-4 flex-wrap mb-8">
-					<Input v-model="searchValue" type="search" class="filter-input" placeholder="Pesquisar" />
+					<Input v-model="searchValue" :disabled="isLoading" type="search" class="filter-input" placeholder="Pesquisar" />
 					<div class="relative filter-holder" ref="filterCard">
-						<Button class="filter-button" rounded @click="showFilter = true">
+						<Button class="filter-button" :disabled="isLoading" rounded @click="showFilter = true">
 							<Icon name="filter_list" class="round-icon" />
 						</Button>
 						<Filter
@@ -24,7 +24,7 @@
 				</div>
 			</div>
 
-			<Table :items="funcionarioData" :headers="headers" class="w-full funcionarios-table">
+			<Table :items="funcionarioData" :headers="headers" class="w-full funcionarios-table" :loading="isLoading">
 				<template #actions="{ item, index }">
 					<td class="w-2 cursos-pointer action">
 						<div class="icon-holder" @click="positionCard(item, index)">
@@ -157,7 +157,7 @@ export default {
             getBaseData,
             headers,
             filterOptions,
-            isLoading
+            isLoading,
 			filterCard: ref(),
 			showFilter: ref(false),
 			opendedIndex: ref(null),
