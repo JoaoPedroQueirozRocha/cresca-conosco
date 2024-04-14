@@ -6,10 +6,11 @@ import Card from '@/components/Card.vue';
 import Dialog from '@/components/Dialog.vue';
 import Button from '@/components/Button.vue';
 import Input from '@/components/Input.vue';
+import Icon from '@/components/Icon.vue';
 
 export default {
 	name: 'Perfil',
-	components: { Card, Dialog, Button, Input },
+	components: { Card, Dialog, Button, Input, Icon },
 	inject: ['Auth'],
 	setup() {
 		return {
@@ -114,7 +115,6 @@ export default {
 					message: 'Error ao alterar a senha. Tente novamente mais tarde',
 					...this.defaultAlert,
 				});
-			} finally {
 			}
 		},
 
@@ -140,14 +140,14 @@ export default {
 		<Card class="w-full flex flex-col gap-4">
 			<div class="actions">
 				<div class="circle-icon" :class="{ active: editing }" @click="editing = !editing">
-					<span class="material-symbols-rounded"> edit </span>
+					<Icon name="edit" />
 				</div>
 				<div class="circle-icon" @click="handleDelete">
-					<span class="material-symbols-rounded"> delete </span>
+					<Icon name="delete" />
 				</div>
 			</div>
 			<div class="photo-name">
-				<span class="material-symbols-rounded"> account_circle </span>
+				<Icon name="account_circle" />
 				<input v-model="userData.name" class="name-input" :disabled="!editing" :class="{ active: editing }" />
 			</div>
 			<div class="flex flex-col gap-4">
