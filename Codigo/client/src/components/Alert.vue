@@ -8,9 +8,15 @@ export default {
     components: { Icon },
     setup() {
         return {
+            title: ref(''),
+            message: ref(''),
             hidden: ref(true),
             show: ref(false),
-            type: ref('error')
+            top: ref(false),
+            bottom: ref(false),
+            left: ref(false),
+            right: ref(false),
+            type: ref('error'),
         }
     },
     mounted() {
