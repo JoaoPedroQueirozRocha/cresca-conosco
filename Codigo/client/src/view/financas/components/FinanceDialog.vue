@@ -24,12 +24,12 @@ export default {
         model: ref(false),
         isCompare: ref(false),
         isDateOpened: ref({
-          date1: false,
-          date2: false,
+          range: false,
+          compare: false,
         }),
         periods: ref({
-          p1: [],
-          p2: [],
+          range: [],
+          compare: [],
         }),
       };
     },
@@ -45,10 +45,27 @@ export default {
         this.$emit("update:modelValue", this.model);
       },
       generateReport() {
-        this.$emit('generateReport', this.periods.p1, this.periods.p2);
-        this.periods.p1 = [];
-        this.periods.p2 = [];
+        if (!this.isValid()) {
+            this.$alert({
+              message: 'Preencha todos os dados para gerar o relatório',
+              top: true,
+              right: true,
+              timeout: 3500,
+            });
+            return;
+        }
+
+        this.$emit('generateReport', this.periods.range, this.periods.compare);
+        this.periods.range = [];
+        this.periods.compare = [];
         this.isCompare = false;
+      },
+      isValid() {
+        return this.periods.range.length == 2 &&
+          (
+            !this.isCompare ||
+            (this.isCompare && this.periods.compare.length == 2)
+          );
       }
     },
 };
@@ -58,7 +75,7 @@ export default {
   <Dialog v-model="model" @update:model-value="changeModel" no-overflow>
     <div
         class="dialog-div"
-        :class="{ bigger: isDateOpened.date1 || isDateOpened.date2 }"
+        :class="{ bigger: isDateOpened.range || isDateOpened.compare }"
     >
         <div class="flex justify-between">
             <h1 class="title" style="margin: 0">Campos do relatório</h1>
@@ -68,22 +85,22 @@ export default {
         </div>
         <div class="flex flex-wrap gap-4 w-full">
             <DatePicker
-                v-model="periods.p1"
+                v-model="periods.range"
                 is-compare
                 :max-date="new Date()"
                 class="w-full"
                 label="Período 1"
-                v-model:expanded="isDateOpened.date1"
+                v-model:expanded="isDateOpened.range"
             >
                 Selecionar período
             </DatePicker>
             <DatePicker
-                v-model="periods.p2"
+                v-model="periods.compare"
                 is-compare
                 :max-date="new Date()"
                 class="w-full"
-                label="Período 2"
-                v-model:expanded="isDateOpened.date2"
+                label="Período a Comparar"
+                v-model:expanded="isDateOpened.compare"
                 v-if="isCompare"
             >
                 Selecionar período
