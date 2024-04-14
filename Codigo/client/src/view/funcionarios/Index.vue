@@ -1,69 +1,73 @@
 <template>
-    <div class="flex flex-col w-full mt-[3em]">
-        <div class="w-fullflex flex-col gap-3">
-            <div class="mb-3">
-                <div class="flex flex-row w-full justify-between items-center align-middle mb-8">
-                    <h2 class="title">Funcionários</h2>  
-                    <router-link to="/funcionario">
-                        <Button>Adicionar</Button>
-                    </router-link>
-                </div>
+	<div class="flex flex-col w-full mt-[3em]">
+		<div class="w-fullflex flex-col gap-3">
+			<div class="mb-3">
+				<div class="flex flex-row w-full justify-between items-center align-middle mb-8">
+					<h2 class="title">Funcionários</h2>
+					<router-link to="/funcionario">
+						<Button>Adicionar</Button>
+					</router-link>
+				</div>
 
-                <div class="w-full flex items-center justify-between gap-4 flex-wrap mb-8">
+				<div class="w-full flex items-center justify-between gap-4 flex-wrap mb-8">
 					<Input v-model="searchValue" type="search" class="filter-input" placeholder="Pesquisar" />
-                    <div class="relative filter-holder" ref="filterCard">
-                        <Button class="filter-button" rounded @click="showFilter = true">
-                            <Icon name="filter_list" class="round-icon" />
-                        </Button>
-                        <Filter v-model="filterOptions" class="top-12 right-0 absolute z-50 filter" v-show="showFilter" />
-                    </div>
-                </div>
-            </div>
+					<div class="relative filter-holder" ref="filterCard">
+						<Button class="filter-button" rounded @click="showFilter = true">
+							<Icon name="filter_list" class="round-icon" />
+						</Button>
+						<Filter
+							v-model="filterOptions"
+							class="top-12 right-0 absolute z-50 filter"
+							v-show="showFilter"
+						/>
+					</div>
+				</div>
+			</div>
 
-            <Table :items="funcionarioData" :headers="headers" class="w-full funcionarios-table">
-                <template #actions="{item,index}">
-                <td class="w-2 cursos-pointer action">
-                    <div class="icon-holder" @click="positionCard(item, index)">
-                        <Icon name="more_vert"  @click="positionCard(item, index)" />
-                    </div>
-                    <Card
-                        :ref="'card' + index"
-                        class="fixed action-card"
-                        v-show="item.expanded"
-                        tabindex="0"
-                        @blur="item.expanded = false"
-                    >
-                        <router-link :to="`/funcionario/${item.id}`">
-                            <div class="action-option">
-                                <Icon name="edit" />
-                                Editar
-                            </div>
-                        </router-link>
-                        <div class="action-option delete" @click="confirmDeletion(item.id)">
-                            <Icon name="delete" />
-                            Deletar
-                        </div>
-                    </Card>
-                </td>
-                </template>
-                <template #nome="{item,index}">
-                    <td> {{ item.nome }} </td>
-                </template>
+			<Table :items="funcionarioData" :headers="headers" class="w-full funcionarios-table">
+				<template #actions="{ item, index }">
+					<td class="w-2 cursos-pointer action">
+						<div class="icon-holder" @click="positionCard(item, index)">
+							<Icon name="more_vert" @click="positionCard(item, index)" />
+						</div>
+						<Card
+							:ref="'card' + index"
+							class="fixed action-card"
+							v-show="item.expanded"
+							tabindex="0"
+							@blur="item.expanded = false"
+						>
+							<router-link :to="`/funcionario/${item.id}`">
+								<div class="action-option">
+									<Icon name="edit" />
+									Editar
+								</div>
+							</router-link>
+							<div class="action-option delete" @click="confirmDeletion(item.id)">
+								<Icon name="delete" />
+								Deletar
+							</div>
+						</Card>
+					</td>
+				</template>
+				<template #nome="{ item, index }">
+					<td>{{ item.nome }}</td>
+				</template>
 
-                <template #salario="{item,index}">
-                    <td> {{ item.salario }} </td>
-                </template>
+				<template #salario="{ item, index }">
+					<td>{{ item.salario }}</td>
+				</template>
 
-                <template #cargo="item,index">
-                    <td>{{ item.cargo }}</td>
-                </template>
+				<template #cargo="item, index">
+					<td>{{ item.cargo }}</td>
+				</template>
 
-                <template #clt="{item,index}">
-                    <td>
-                        <Icon name="check" class="text-green-500" v-if="item.clt" />
-                        <Icon name="close" class="text-red-500" v-else />
-                    </td>
-                </template>
+				<template #clt="{ item, index }">
+					<td>
+						<Icon name="check" class="text-green-500" v-if="item.clt" />
+						<Icon name="close" class="text-red-500" v-else />
+					</td>
+				</template>
 
 				<template #empty-state>
 					<div class="empty-div">
@@ -71,9 +75,9 @@
 						<p>Sem dados para exibir</p>
 					</div>
 				</template>
-            </Table>
-        </div>
-    </div>
+			</Table>
+		</div>
+	</div>
 </template>
 <script>
 import { ref } from "vue";
@@ -92,9 +96,9 @@ export default {
     components:{
         Button, Card, Input, Table, Icon, Checkbox, Filter
     },
-    setup(){  
+    setup(){
         const funcionarioData = ref([]);
-        const { getBaseData } = useFetchs(funcionarioData);
+        const { getBaseData, isLoading } = useFetchs(funcionarioData);
         const headers = ref([
             {
                 text: 'Nome',
@@ -153,13 +157,14 @@ export default {
             getBaseData,
             headers,
             filterOptions,
+            isLoading
 			filterCard: ref(),
 			showFilter: ref(false),
 			opendedIndex: ref(null),
             searchValue: ref(''),
         };
     },
-    
+
 	computed: {
 		filteredDate() {
             let filteredData = this.funcionarioData;
@@ -270,72 +275,70 @@ export default {
 };
 </script>
 
-
 <style lang="scss" scoped>
 @import '../../style/var.scss';
 
 .icon-holder {
-    display: flex;
-    align-items: center;
-    width: fit-content;
-    border-radius: 50%;
-    padding: 0.1em;
-    cursor: pointer;
-    color: $gray-500;
-    transition-duration: 0.3s;
+	display: flex;
+	align-items: center;
+	width: fit-content;
+	border-radius: 50%;
+	padding: 0.1em;
+	cursor: pointer;
+	color: $gray-500;
+	transition-duration: 0.3s;
 
-    &:hover {
-        background: $gray-200;
-    }
+	&:hover {
+		background: $gray-200;
+	}
 
-    .material-symbols-rounded {
-        font-size: 30px;
-    }
+	.material-symbols-rounded {
+		font-size: 30px;
+	}
 }
 
-
 .filter-button .material-symbols-rounded {
-    font-size: 30px;
+	font-size: 30px;
 }
 
 .filter-input {
-    min-width: 25em;
+	min-width: 25em;
 }
 
 .empty-div {
-    @apply flex flex-col items-center justify-center gap-4 p-4;
-    color: $gray-400;
+	@apply flex flex-col items-center justify-center gap-4 p-4;
+	color: $gray-400;
 
-    .material-symbols-rounded {
-        font-size: 100px;
-    }
+	.material-symbols-rounded {
+		font-size: 100px;
+	}
 }
 
 .action-card {
-    @apply p-3 flex flex-col gap-2;
+	@apply p-3 flex flex-col gap-2;
 }
 
 .action-option {
-    @apply flex items-center gap-4 cursor-pointer p-2 font-bold;
-    color: $gray-500;
-    border-radius: 8px;
-    
-    &:hover {
-        background: $gray-200;
-    }
+	@apply flex items-center gap-4 cursor-pointer p-2 font-bold;
+	color: $gray-500;
+	border-radius: 8px;
+
+	&:hover {
+		background: $gray-200;
+	}
 }
 
 .action-option.delete {
-    color: $red-strong;
-    
-    &:hover {
-        background: $red-light;
-    }
+	color: $red-strong;
+
+	&:hover {
+		background: $red-light;
+	}
 }
 
 @media screen and (max-width: 488px) {
-    .filter-input {
-        min-width: 100%;
-    }
+	.filter-input {
+		min-width: 100%;
+	}
 }
 </style>
