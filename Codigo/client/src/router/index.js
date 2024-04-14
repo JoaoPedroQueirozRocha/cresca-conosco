@@ -17,7 +17,7 @@ const routes = [
         beforeEnter: Auth0.routeGuard
     },
     {
-        path: '/gado',
+        path: '/gado/vaca',
         name: 'NovaVaca',
         props: true,
         component: () => import('@/view/gado/NovaVaca.vue'),
@@ -33,22 +33,26 @@ const routes = [
     {
         path: '/financas/despesa/:id',
         name: 'DespesaEditar',
-        props: { isEdicao: true },
-        component: () => import('@/view/financas/components/EditarDespesa.vue'),
+        props: route => ({
+            id: route.params.id,
+            isEdicao: true,
+            title: 'Editar Despesa',
+        }),
+        component: () => import('@/view/financas/components/CreateEdit.vue'),
         beforeEnter: Auth0.routeGuard
     },
     {
         path: '/financas/despesa',
         name: 'DespesaCriar',
-        props: true,
-        component: () => import('@/view/financas/components/EditarDespesa.vue'),
+        props: { title: 'Criar Despesa' },
+        component: () => import('@/view/financas/components/CreateEdit.vue'),
         beforeEnter: Auth0.routeGuard
     },
     {
         path: '/funcionarios',
         name: 'Funcionários',
         props: true,
-        // component: () => import('@/App.vue'),
+        component: () => import('@/view/funcionarios/Index.vue'),
         beforeEnter: Auth0.routeGuard
     },
 ];

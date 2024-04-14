@@ -1,14 +1,22 @@
 <script>
 import event from "@/util/event";
 import { ref } from 'vue';
+import Icon from './Icon.vue';
 
 export default {
     name: 'Alert',
+    components: { Icon },
     setup() {
         return {
+            title: ref(''),
+            message: ref(''),
             hidden: ref(true),
             show: ref(false),
-            type: ref('error')
+            top: ref(false),
+            bottom: ref(false),
+            left: ref(false),
+            right: ref(false),
+            type: ref('error'),
         }
     },
     mounted() {
@@ -60,17 +68,13 @@ export default {
         :class="[type, {'top-3': top, 'bottom-3': bottom, 'left': left, 'right': right, 'hidden': hidden}]"
     >
         <div class="flex gap-2 items-center">
-            <span class="material-symbols-rounded text-2xl">
-                {{ icon }}
-            </span>
+            <Icon class="text-2xl" :name="icon" />
             <div>
                 <h6 v-if="title" class="font-bold text-lg">{{ title }}</h6>
                 <p class="text-base">{{ message }}</p>
             </div>
         </div>
-        <span class="material-symbols-rounded cursor-pointer text-2xl" @click="closeAlert">
-            close
-        </span>
+        <Icon class="cursor-pointer text-2xl" name="close" @click="closeAlert" />
     </div>
 </template>
 

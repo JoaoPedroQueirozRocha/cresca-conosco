@@ -3,28 +3,29 @@
 		<div class="w-fullflex flex-col gap-4">
 			<div class="mb-6">
 				<div class="flex flex-row w-full justify-between align-middle mb-4">
-					<h2 class="text-[2.5em] font-bold">Gado</h2>
+					<h2 class="title">Gado</h2>
 					<div class="flex flex-row flex-wrap gap-2 content-center">
 						<Button @click="createDialog">Mais detalhes</Button>
-						<router-link to="/gado/NovaVaca">
+						<router-link to="/gado/vaca">
 							<Button>Adicionar</Button>
 						</router-link>
 					</div>
 				</div>
 				<div class="flex items-center justify-between gap-4 flex-wrap">
-					<Input v-model="searchValue" type="search" class="filter-input" placeholder="Pesquisar" />
-					<Button class="filter-button" rounded>
-						<span class="material-symbols-rounded">
-							filter_list
-						</span>
-					</Button>
+					<Input v-model="searchValue" :disabled="isLoading" type="search" class="filter-input" placeholder="Pesquisar" />
+					<div class="relative filter-holder" ref="filterCard">
+                        <Button class="filter-button" :disabled="isLoading" rounded @click="showFilter = true">
+                            <Icon name="filter_list" class="round-icon" />
+                        </Button>
+                        <Filter v-model="filterOptions" class="top-12 right-0 absolute z-50 filter" v-show="showFilter" />
+                    </div>
 				</div>
 			</div>
-			<Table :items="filteredDate" :headers="headers" class="w-full gado-table" :isLoading="isLoading">
+			<Table :items="filteredDate" :headers="headers" class="w-full gado-table" :loading="isLoading">
 				<template #actions="{ item, index }">
 					<td class="w-2 cursor-pointer action">
 						<div class="icon-holder" @click="positionCard(item, index)">
-							<span class="material-symbols-rounded" @click="positionCard(item, index)"> more_vert </span>
+                    		<Icon name="more_vert"  @click="positionCard(item, index)" />
                         </div>
 						<Card
 							:ref="'card' + index"
@@ -61,19 +62,19 @@
 						{{ item.prev_parto ? new Date(item.prev_parto).toLocaleDateString() : '-' }}
 					</td>
 				</template>
-				<template #semem="{ item, index }">
-					<td>
+				<template #semen="{ item, index }">
+					<td class="text-center">
 						{{ item.semem }}
+                        <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 					</td>
 				</template>
 				<template #lactante="{ item, index }">
-					<td class="flex flex-row justify-center items-center">
-						<span
-							class="material-symbols-rounded"
+					<td class="text-center">
+						<Icon
+							:name="item.lactante ? 'done' : 'close'"
 							:class="item.lactante ? 'text-green-500' : 'text-red-500'"
-						>
-							{{ item.lactante ? 'done' : 'close' }}
-						</span>
+						/>
+                        <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 					</td>
 				</template>
 				<template #status="{ item, index }">
@@ -96,20 +97,20 @@
 </template>
 
 <script>
-import { useFetchs } from './useFetchs.js';
 import { useGado } from './useGado.js';
-import { reactive, ref } from 'vue';
-import Table from '../../components/Table.vue';
-import Button from '../../components/Button.vue';
-import Input from '../../components/Input.vue';
-import Card from '../../components/Card.vue';
-import Icon from '../../components/Icon.vue';
-import Dialog from '../../components/Dialog.vue';
+import { ref } from 'vue';
+import Table from '@/components/Table.vue';
+import Button from '@/components/Button.vue';
+import Input from '@/components/Input.vue';
+import Card from '@/components/Card.vue';
+import Icon from '@/components/Icon.vue';
+import Filter from '@/components/Filter.vue';
+import Dialog from '@/components/Dialog.vue';
 import DialogTable from './DialogTable.vue';
 
 export default {
 	name: 'Gado',
-	components: { Table, Button, Input, Dialog, DialogTable, Card, Icon },
+	components: { Table, Button, Input, Dialog, DialogTable, Card, Icon, Filter },
 	inject: ['Auth'],
 	setup() {
 		const {
@@ -123,6 +124,39 @@ export default {
 			createDialog,
 			moreDetails,
 		} = useGado();
+        const filterOptions = ref([
+            {
+                text: 'Seca',
+                value: 'seca',
+                selected: false,
+            },
+            {
+                text: 'Lactante',
+                value: 'lactante',
+                selected: false,
+            },
+            {
+                text: 'Grávida',
+                value: 'gravida',
+                selected: false,
+            },
+            {
+                text: 'Sêmen',
+                value: 'semem',
+                childs: [
+                    {
+                        text: '5/8',
+                        value: '5/8',
+                        selected: false,
+                    },
+                    {
+                        text: 'gir',
+                        value: 'gir',
+                        selected: false,
+                    },
+                ]
+            },
+        ]);
 
 		return {
 			gadoData,
@@ -134,6 +168,9 @@ export default {
 			loadBaseData,
 			createDialog,
 			moreDetails,
+			filterOptions,
+			filterCard: ref(),
+			showFilter: ref(false),
 			opendedIndex: ref(null),
             searchValue: ref(''),
 		};
@@ -141,15 +178,50 @@ export default {
 
 	computed: {
 		filteredDate() {
-            if (!this.searchValue) return this.gadoData;
+			let filteredData = this.gadoData;
+            if (this.getSelected.length) {
+                filteredData = filteredData.filter((item, index) => {
+                    let returnItem = false;
+                    this.getSelected.forEach((selected) => {
+						if (returnItem) return;
 
-			return this.gadoData.filter((item) => {
+                        if (selected.fatherValue) {
+                            returnItem = item[selected.fatherValue] == selected.value;
+                        }
+                        else if (item[selected.value]) {
+                            returnItem = !!item[selected.value];
+                        }
+                    });
+					if (returnItem) return item;
+                });
+            }
+
+            if (!this.searchValue) return filteredData;
+
+			return filteredData.filter((item) => {
 				return Object.values(item).some((value) => {
                     const stringValue = String(value);
                     return stringValue.includes(this.searchValue);
                 });
 			});
-		}
+		},
+		
+        getSelected() {
+            const selected = [];
+            this.filterOptions.forEach((option) => {
+                if (option.childs) {
+                    const selectedChilds = option.childs.filter((child) => child.selected).map((child) => {
+                        return {
+                            ...child,
+                            fatherValue: option.value,
+                        };
+                    });
+                    return selected.push(...selectedChilds);
+                }
+                else if (option.selected) return selected.push(option);
+            });
+            return selected;
+        },
 	},
 
 	async beforeMount() {
@@ -158,7 +230,7 @@ export default {
 	},
 
 	mounted() {
-		document.addEventListener('click', this.closeCard);
+		document.addEventListener('click', this.closeCards);
         const app = document.querySelector('#app');
 		app.addEventListener('scroll', this.closeCard);
 		const table = document.querySelector('.gado-table');
@@ -166,7 +238,7 @@ export default {
 	},
 
 	beforeUnmount() {
-		document.removeEventListener('click', this.closeCard);
+		document.removeEventListener('click', this.closeCards);
         const app = document.querySelector('#app');
 		app.removeEventListener('scroll', this.closeCard);
 		const table = document.querySelector('.gado-table');
@@ -179,9 +251,20 @@ export default {
 			const card = this.$refs['card' + index]?.$el;
 			const rect = card.parentElement.getBoundingClientRect();
 
-			card.style.left = rect.left - 100 + 'px';
-			card.style.top = rect.top + 40 + 'px';
 			item.expanded = true;
+			setTimeout(() => {
+                const windowHeight = window.innerHeight;
+                const cardHeight = card.offsetHeight;
+                const height = rect.top + 40 + cardHeight;
+                card.style.left = rect.left - 100 + 'px';
+                if (height > windowHeight) {
+                    delete card.style.top;
+                    card.style.bottom = 0;
+                } else {
+                    card.style.top = rect.top + 40 + 'px';
+                }
+            }, 10);
+
 			this.opendedIndex = index;
 		},
 
@@ -189,6 +272,16 @@ export default {
 			const cardParent = this.$refs['card' + this.opendedIndex]?.$el?.parentElement;
 			if (this.opendedIndex == null || (cardParent && event.target.closest('.action') === cardParent)) return;
 			this.setExpanded();
+		},
+
+		closeCards(event) {
+			this.closeCard(event);
+			this.closeFilterCard(event);
+		},
+
+		closeFilterCard(event) {
+			if (this.filterCard == event.target.closest('.filter-holder') || event.target.closest('.filter')) return;
+			this.showFilter = false;
 		},
 
 		setExpanded() {

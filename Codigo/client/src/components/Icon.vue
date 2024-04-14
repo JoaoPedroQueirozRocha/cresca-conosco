@@ -8,9 +8,7 @@ export default {
 </script>
 
 <template>
-    <span
-        class="material-symbols-rounded"
-    >
+    <span class="material-symbols-rounded">
         {{ name }}
     </span>
 </template>

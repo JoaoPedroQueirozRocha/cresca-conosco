@@ -63,8 +63,10 @@ export default {
             <slot v-else />
         </template>
         <template #item>
-            <div v-for="(item, index) in items" :key="index" class="items-holder">
+            <div class="items-holder">
                 <div
+                    v-for="(item, index) in items"
+                    :key="index"
                     class="item"
                     :class="{'active': item == model}"
                     @click="changeModel(item)"
@@ -84,13 +86,14 @@ export default {
     @apply divide-y-[.1em] divide-gray-100;
     display: flex;
     flex-direction: column;
+    max-height: 10em;
     overflow-y: auto;
 }
 
 .item {
-    @apply w-full flex justify-center items-center cursor-pointer;
+    @apply w-full flex justify-center items-center cursor-pointer text-center;
     color: $gray-500;
-    padding: 0.1em 0.5em;
+    padding: 0.3em 0.5em;
     font-size: 16px;
 
     &:hover {
