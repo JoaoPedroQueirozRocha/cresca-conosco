@@ -15,7 +15,7 @@ export default {
         headers: Array,
         loading: Boolean,
         title: String,
-        addRoute: String
+        addRoute: String,
     },
 	components: { Table, Button, Input, DatePicker, Icon, Card },
     emits: ['filterData', 'deleteItem'],
@@ -58,7 +58,7 @@ export default {
                     return stringValue.includes(this.searchValue);
                 });
             });
-        }
+        },
     },
 
     methods: {
@@ -96,17 +96,17 @@ export default {
 		},
 
         async filterDate() {
-            if (this.filteredDate.length > 1) {
+            if (this.filteredDate.length > 1 || !this.filteredDate.length) {
                 this.expandedDate = false;
                 await this.$emit('filterData', this.filteredDate)
             }
         },
 
-        async confirmDeletion(date, id) {
+        async confirmDeletion(index, cIndex, id) {
             const result = await this.$confirm({
                 title: 'Tem certeza que deseja deletar esse item?'
             });
-            if (result) await this.$emit('deleteItem', date, id);
+            if (result) await this.$emit('deleteItem', index, cIndex, id);
         }
     },
 };
@@ -118,9 +118,7 @@ export default {
             <h1 class="title" style="margin: 0;">{{ title }}</h1>
             <router-link :to="addRoute" :class="{'pointer-events-none': loading}">
                 <Button rounded :disabled="loading">
-                    <span class="material-symbols-rounded">
-                        add
-                    </span>
+                    <Icon name="add" />
                 </Button>
             </router-link>
         </div>
@@ -139,15 +137,13 @@ export default {
         </div>
         <Table :headers="headers" :items="filteredData" :loading="loading" class="finance-table">
             <template v-for="(header, index) in headers" :key="index" v-slot:[header.value]="{ item }">
-                <td v-if="item[header.value] instanceof Date">
-                    {{ upperCaseFirstLetter(formatDate(item[header.value], { month: 'long' })) }}/{{ formatDate(item[header.value], { year: 'numeric' }) }}
+                <td v-if="header.value == 'updated_at' && item[header.value]">
+                    {{ upperCaseFirstLetter(formatDate(new Date(item[header.value]), { month: 'long' })) }}/{{ formatDate(new Date(item[header.value]), { year: 'numeric' }) }}
                 </td>
-                <td v-else-if="typeof item[header.value] == 'number'" class="text-center">
+                <td v-else-if="typeof item[header.value.replace(' ', '_')] == 'number'" class="text-center">
                     <div class="flex items-center justify-center">
-                        {{ formatCurrency(item[header.value]) }}
-                        <span class="material-symbols-rounded text-xl ml-2 opacity-0">
-                            arrow_upward
-                        </span>
+                        {{ formatCurrency(item[header.value.replace(' ', '_')]) }}
+                        <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
                     </div>
                 </td>
                 <td v-else-if="header.value == 'none'" class="w-2">
@@ -155,7 +151,7 @@ export default {
                         <Icon name="arrow_drop_down" />
                     </div>
                 </td>
-                <td v-else>{{ item[header.value] }}</td>
+                <td v-else>{{ item[header.value.replace(' ', '_')] }}</td>
             </template>
             <template #actions></template>
             <template #childs="{ item, index }">
@@ -168,23 +164,19 @@ export default {
                         v-for="(header, hIndex) in headers"
                         :key="hIndex"
                         class="border-gray-200 border-t-[.1em]"
-                        :class="{'text-center': header.value != 'date'}"
+                        :class="{'text-center': !header.value.includes('data')}"
                     >
-                        <template v-if="child.type == header.value">
+                        <template v-if="child.tipo == header.value">
                             <Icon name="check" class="text-green-500" />
-                            <span class="material-symbols-rounded text-xl ml-2 opacity-0">
-                                arrow_upward
-                            </span>
+                            <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
                         </template>
-                        <template v-else-if="header.value == 'date' && child.date instanceof Date">
-                            {{ formatDate(child.date, { year: 'numeric', month: '2-digit', day: '2-digit' }) }}
+                        <template v-else-if="header.value.includes('data')">
+                            {{ child[header.value] }}
                         </template>
-                        <template v-else-if="header.value == 'total' && typeof child.value == 'number'">
+                        <template v-else-if="header.value == 'total' && typeof child.valor == 'number'">
                             <div class="flex items-center justify-center">
-                                {{ formatCurrency(child.value) }}
-                                <span class="material-symbols-rounded text-xl ml-2 opacity-0">
-                                    arrow_upward
-                                </span>
+                                {{ formatCurrency(child.valor) }}
+                                <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
                             </div>
                         </template>
                     </td>
@@ -205,7 +197,7 @@ export default {
                                     Editar
                                 </div>
                             </router-link>
-							<div class="action-option delete" @click="confirmDeletion(item.date, child.id)">
+							<div class="action-option delete" @click="confirmDeletion(index, cIndex, child.id)">
                                 <Icon name="delete" />
                                 Deletar
                             </div>

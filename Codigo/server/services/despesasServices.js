@@ -5,6 +5,35 @@ const router = express.Router();
 
 router.use(express.json());
 
+async function listarDespesas(period) {
+    const where = period.length ? 'WHERE updated_at BETWEEN $1 AND $2' : '';
+    const whereSub = period.length ? 'AND d.updated_at BETWEEN $1 AND $2' : '';
+
+    const data = await pool.query(`
+        SELECT 
+            DATE_TRUNC('month', updated_at) + INTERVAL '1 month' - INTERVAL '1 day' AS updated_at,
+            SUM(valor) AS total,
+            SUM(CASE WHEN tipo = 'compras' THEN valor ELSE 0 END) AS compras,
+            SUM(CASE WHEN tipo = 'despesas trabalhistas' THEN valor ELSE 0 END) AS despesas_trabalhistas,
+            SUM(CASE WHEN tipo = 'diversos' THEN valor ELSE 0 END) AS diversos,
+            COALESCE(ARRAY(
+                SELECT 
+                    json_build_object(
+                        'id', id,
+                        'updated_at', updated_at,
+                        'tipo', tipo,
+                        'valor', valor
+                    ) 
+                FROM despesas AS d 
+                WHERE DATE_TRUNC('month', d.updated_at) = DATE_TRUNC('month', updated_at) ${whereSub}
+            ), ARRAY[]::json[]) AS childs
+        FROM despesas
+        ${where}    
+        GROUP BY DATE_TRUNC('month', updated_at);
+    `, period);
+    return data.rows;
+}
+
 async function getDespesaById(id) {
     const result = await pool.query("SELECT * FROM despesas d WHERE d.id = $1", [id]);
     return result.rows;
@@ -18,7 +47,7 @@ async function createNewDespesa(body) {
         data
     } = body;
 
-    const queryResult = await pool.query("INSERT INTO despesas (valor, descricao, tipo, data) VALUES ($1, $2, $3, $4) RETURNING *", [valor, descricao, tipo, data]);
+    const queryResult = await pool.query("INSERT INTO despesas (valor, descricao, tipo, updated_at) VALUES ($1, $2, $3, $4) RETURNING *", [valor, descricao, tipo, data]);
     return queryResult.rows[0];
 }
 
@@ -44,5 +73,6 @@ export {
     getDespesaById,
     createNewDespesa,
     updateDespesaById,
-    deleteDespesaById
+    deleteDespesaById,
+    listarDespesas
 }

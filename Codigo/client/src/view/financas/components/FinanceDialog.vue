@@ -4,6 +4,7 @@ import Button from "@/components/Button.vue";
 import Checkbox from "@/components/Checkbox.vue";
 import DatePicker from "@/components/DatePicker.vue";
 import Dialog from "@/components/Dialog.vue";
+import Icon from "@/components/Icon.vue";
 
 export default {
     name: "FinanceDialog",
@@ -15,6 +16,7 @@ export default {
       Dialog,
       DatePicker,
       Checkbox,
+      Icon,
     },
     inject: ["Auth"],
     setup() {
@@ -61,9 +63,7 @@ export default {
         <div class="flex justify-between">
             <h1 class="title" style="margin: 0">Campos do relatório</h1>
             <div class="close-dialog">
-            <span class="material-symbols-rounded" @click="changeModel(false)">
-                close
-            </span>
+              <Icon name="close" @click="changeModel(false)" />
             </div>
         </div>
         <div class="flex flex-wrap gap-4 w-full">

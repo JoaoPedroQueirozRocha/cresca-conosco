@@ -1,8 +1,10 @@
 <script>
 import { ref } from 'vue';
+import Icon from './Icon.vue';
 
 export default {
     name: 'Table',
+    components: { Icon },
     props: {
         headers: {
             type: Array,
@@ -78,7 +80,7 @@ export default {
 
 <template>
     <div class="table-holder overflow-auto" :style="{'max-height': maxHeight}">
-        <table class="rounded-2xl" :class="{'overflow-hidden': !items.length && !loading}">
+        <table class="rounded-t-2xl" :class="{'overflow-hidden': !items.length && !loading}">
             <thead v-if="loading">
                 <tr>
                     <th v-for="header in (headers.length || 3)" :key="header" class="skeleton-table-cell pointer-events-none">
@@ -106,9 +108,7 @@ export default {
                                 class="h-fit w-fit flex items-center transition-transform ease-in-out duration-300 icon"
                                 :class="{'rotate-180': sortDesc[header.value], 'icon-active': header.value === sortByName}"
                             >
-                                <span class="material-symbols-rounded text-xl">
-                                    arrow_upward
-                                </span>
+                                <Icon name="arrow_upward" class="text-xl" />
                             </span>
                         </div>
                     </th>
