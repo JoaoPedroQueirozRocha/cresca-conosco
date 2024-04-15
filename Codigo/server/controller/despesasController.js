@@ -17,7 +17,7 @@ async function listarDespesas(req, res) {
 async function getDespesaById(req, res) {
     try {
         const { id } = req.params;
-        const despesa = await despesasServices.deleteDespesaById(id);
+        const despesa = await despesasServices.getDespesaById(id);
 
         if (!despesa) throw new Error("Despesa não encontrada");
 
