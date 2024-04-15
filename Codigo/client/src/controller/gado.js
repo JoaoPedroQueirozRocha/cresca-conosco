@@ -10,6 +10,10 @@ function createGado(gado) {
     return axios.post(`${APIURL}/animals`, gado);
 }
 
+function getGado(id) {
+    return axios.get(`${APIURL}/animals/${id}`);
+}
+
 function updateGado(gado) {
     return axios.put(`${APIURL}/animals/${gado.id}`, gado);
 }
@@ -20,7 +24,7 @@ async function getBase() {
 }
 
 function deleteGado(id) {
-    return axios.put(`${APIURL}/animals/${id}`);
+    return axios.delete(`${APIURL}/animals/${id}`);
 }
 
 export default {
@@ -29,4 +33,5 @@ export default {
     createGado,
     updateGado,
     deleteGado,
+    getGado,
 };

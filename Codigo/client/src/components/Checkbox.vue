@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 
 export default {
-    name: 'Input',
+    name: 'Checkbox',
     props: {
         modelValue: Boolean,
         disabled: Boolean,

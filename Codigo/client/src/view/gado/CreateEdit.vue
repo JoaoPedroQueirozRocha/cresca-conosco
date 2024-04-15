@@ -85,13 +85,13 @@ export default {
     async created() {
         if (this.nome) {
             try {
-                const { data } = await gadoController.getGado(Number(this.nome));
+                const { data } = await gadoController.getGado(this.nome);
                 this.data = data;
                 this.situacao = this.situacoesItems.find((item) => item.value == data.situacao);
 
             } catch (e) {
                 this.$alert({
-					message: `Erro ao requisitar a ${this.value}`,
+					message: `Erro ao requisitar a vaca`,
 					...this.defaultAlert,
 				});
             }

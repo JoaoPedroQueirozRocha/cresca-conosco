@@ -5,7 +5,7 @@ import Checkbox from './Checkbox.vue';
 import Card from './Card.vue';
 
 export default {
-    name: 'SelectContainer',
+    name: 'Filter',
     components: { Icon, Checkbox, Card },
     props: {
         modelValue: {

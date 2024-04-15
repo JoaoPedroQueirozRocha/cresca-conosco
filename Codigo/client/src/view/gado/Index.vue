@@ -49,7 +49,7 @@
 							tabindex="0"
 							@blur="item.expanded = false"
 						>
-							<router-link :to="`/gado/vaca${item.nome}`">
+							<router-link :to="`/gado/vaca/${item.nome}`">
                                 <div class="action-option">
                                     <Icon name="edit" />
                                     Editar
@@ -94,7 +94,10 @@
 				</template>
 				<template #status="{ item, index }">
 					<td>
-						{{ item.status }}
+						<div class="flex justify-center">
+							<Tag :color="getColor(item.status)" :text="item.status" />
+							<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
+						</div>
 					</td>
 				</template>
 				<template #empty-state>
@@ -134,7 +137,7 @@
 <script>
 import { useGado } from './useGado.js';
 import { useFilter } from './userFilter.js';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import Table from '@/components/Table.vue';
 import Button from '@/components/Button.vue';
 import Input from '@/components/Input.vue';
@@ -142,11 +145,12 @@ import Card from '@/components/Card.vue';
 import Icon from '@/components/Icon.vue';
 import Filter from '@/components/Filter.vue';
 import Dialog from '@/components/Dialog.vue';
+import Tag from '@/components/Tag.vue';
 import DialogTable from './DialogTable.vue';
 
 export default {
 	name: 'Gado',
-	components: { Table, Button, Input, Dialog, DialogTable, Card, Icon, Filter },
+	components: { Table, Button, Input, Dialog, DialogTable, Card, Icon, Filter, Tag },
 	inject: ['Auth'],
 	setup() {
 		const {
@@ -258,6 +262,19 @@ export default {
 			});
 			// Tratar dados
 			if (result) () => {};
+		},
+
+		getColor(status) {
+			switch(status) {
+				case 'falha':
+					return 'red';
+				case 'pendente':
+					return 'yellow';
+				case 'confirmada':
+					return 'blue';
+				case 'concluida':
+					return 'green';
+			}
 		},
 	},
 };

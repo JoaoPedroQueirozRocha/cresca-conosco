@@ -42,7 +42,7 @@ export function useGado() {
                 sortable: true,
                 align: "center",
             },
-            { text: "Status", value: "status", sortable: true },
+            { text: "Status", value: "status", align: "center", sortable: true },
         ]),
         filterOptions: ref([
             {
