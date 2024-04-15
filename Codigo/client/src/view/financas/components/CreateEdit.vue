@@ -2,22 +2,22 @@
     <div class="flex justify-between items-center gap-2 mb-8" style="margin-top: 1.5em;">
         <h2 class="title">{{ title }}</h2>
     </div>
-    <Tab v-model="tabIndex" :items="tabItems" disabled v-if="!isEdicao" class="mb-6" />
+    <Tab v-model="tabIndex" :items="tabItems" disabled v-if="!id" class="mb-6" />
 
     <div>
         <Card class="flex flex-col gap-4 mb-4">
-            <Input type="text" label="Descrição" v-model="descricaoDespesa" placeholder="Digite aqui"></Input>
+            <Input type="text" label="Descrição" v-model="data.descricao" placeholder="Digite aqui"></Input>
 
-            <div class="flex gap-6">
-                <Input class="w-[50%]" type="number" label="Valor" placeholder="Digite aqui" v-model="valorDespesa" />
-                <Select class="tipo-holder" v-model="tipoDespesa" :items="selectItems" label="Tipo">
+            <div class="flex gap-6 flex-wrap">
+                <Input class="md:w-[49%] w-full" type="number" label="Valor" placeholder="Digite aqui" v-model="data.valor" />
+                <Select class="tipo-holder md:w-[49%] w-full" v-model="tipo" :items="types" label="Tipo">
                     Selecione
                 </Select>
             </div>
 
             <Checkbox v-model="dataChecked">Selecionar data</Checkbox>
 
-            <DatePicker v-if="dataChecked" label="Selecione a data" v-model="dataDespesa" />
+            <DatePicker v-if="dataChecked" label="Selecione a data" v-model="data.updated_at" />
 
         </Card>
 
@@ -38,24 +38,29 @@ import Tab from "@/components/Tab.vue";
 import Checkbox from "@/components/Checkbox.vue";
 import Select from "@/components/Select.vue";
 import DatePicker from "@/components/DatePicker.vue";
-import controller from "@/controller/cost.js";
+import { upperCaseFirstLetter } from "@/util";
 
 export default {
-    name: "EditarDespesas",
+    name: "CreateEdit",
     props: {
-        isEdicao: Boolean,
-        title: String,
         id: String | Number,
+        value: String,
+        types: Array,
+        callback: Function,
+        get: Function,
     },
     components: { Button, Dialog, Card, Input, Tab, Checkbox, Select, DatePicker },
     inject: ["Auth"],
 
     setup() {
+        const data = ref({
+            descricao: '',
+            valor: 0,
+            tipo: '',
+            updated_at: '',
+        });
         const dataChecked = ref(false)
-        const descricaoDespesa = ref("")
-        const valorDespesa = ref(0)
-        const tipoDespesa = ref("")
-        const dataDespesa = ref("")
+        const tipo = ref("")
         const tabItems = ref([
             {
                 text: 'Criação',
@@ -67,20 +72,6 @@ export default {
             },
         ]);
         const tabIndex = ref(0);
-        const selectItems = ref([
-            {
-                label: 'Compras',
-                value: 'compras'
-            },
-            {
-                label: 'Despesas trabalhistas',
-                value: 'despesas trabalhistas'
-            },
-            {
-                label: 'Diversos',
-                value: 'diverso'
-            },
-        ]);
         const defaultAlert = ref({
             top: true,
             right: true,
@@ -89,38 +80,37 @@ export default {
         const loading = ref(false);
 
         return {
+            data,
             dataChecked,
-            descricaoDespesa,
-            valorDespesa,
-            tipoDespesa,
-            dataDespesa,
+            tipo,
             tabItems,
             tabIndex,
-            selectItems,
             defaultAlert,
             loading,
         }
     },
 
     computed: {
+        title() {
+            if (this.id) return 'Editar ' + upperCaseFirstLetter(this.value);
+            return 'Criar ' + upperCaseFirstLetter(this.value);
+        },
         buttonText() {
-            if (this.isEdicao) return 'Salvar';
+            if (this.id) return 'Salvar';
             return 'Criar';
         }
     },
 
     async created() {
-        if (this.isEdicao) {
+        if (this.id) {
             try {
-                const { data } = await controller.getCost(Number(this.id));
-                this.valorDespesa = data.valor;
-                this.descricaoDespesa = data.descricao;
-                this.tipoDespesa = this.selectItems.find((item) => item.value == data.tipo);
-                this.dataDespesa = new Date(data.updated_at);
+                const { data } = await this.get(Number(this.id));
+                this.data = data;
+                this.tipo = this.types.find((item) => item.value == data.tipo);
 
             } catch (e) {
                 this.$alert({
-					message: `Erro ao requisitar essa despesa`,
+					message: `Erro ao requisitar a ${this.value}`,
 					...this.defaultAlert,
 				});
             }
@@ -129,39 +119,35 @@ export default {
 
     methods: {
         async salvar() {
+            this.data.tipo = this.tipo.value;
             if (!this.isValid()) {
                 this.$alert({
-					message: `Preencha todos os dados para salvar a despesa`,
+					message: `Preencha todos os dados para salvar a ${this.value}`,
 					...this.defaultAlert,
 				});
                 return;
             }
 
             this.loading = true;
-            const data = {
-                valor: this.valorDespesa,
-                descricao: this.descricaoDespesa,
-                tipo: this.tipoDespesa.value,
-                updated_at: this.dataChecked ? this.dataDespesa : new Date(),
-            };
+            if (!this.dataChecked && !this.id) this.data.updated_at = new Date();
 
             try {
-                if (this.isEdicao) {
-                    await controller.updateCost(this.id, data);
+                if (this.id) {
+                    await this.callback(this.id, this.data);
                 } else {
-                    await controller.createCost(data);
+                    await this.callback(this.data);
                 }
 
                 this.$alert({
                     type: 'success',
-					message: `Despesa salva com sucesso`,
+					message: `${upperCaseFirstLetter(this.value)} salva com sucesso`,
 					...this.defaultAlert,
 				});
 
             } catch (e) {
                 console.log(e)
                 this.$alert({
-					message: `Erro ao salvar despesa. Tente novamente mais tarde`,
+					message: `Erro ao salvar a ${this.value}. Tente novamente mais tarde`,
 					...this.defaultAlert,
 				});
             } finally {
@@ -172,10 +158,10 @@ export default {
 
         isValid() {
             let valid = 
-                this.valorDespesa > 0 &&
-                this.descricaoDespesa &&
-                this.tipoDespesa.value &&
-                (!this.dataChecked || (this.dataChecked && this.dataDespesa));
+                this.data.valor > 0 &&
+                this.data.descricao &&
+                this.data.tipo &&
+                (!this.dataChecked || (this.dataChecked && this.data.updated_at));
             
             return valid;
         }

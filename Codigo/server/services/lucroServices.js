@@ -40,17 +40,25 @@ async function getLucro(id){
 
 async function createLucro(body){
     const result = await pool.query('INSERT INTO receita (descricao, tipo, valor, updated_at) VALUES ($1, $2, $3, $4)', [body.descricao, body.tipo, body.valor, body.data || new Date()])
-    return result;
+    return result.rows[0];
 }
 
-async function updateLucro(body){
-    const result = await pool.query('UPDATE receita SET descricao = $2, tipo = $3, valor = $4, updated_at = $5  WHERE id = $1', [body.id, body.descricao, body.tipo, body.valor,  body.data])
-    return result;
+async function updateLucro(id, updates){
+    const receita = await getLucro(id);
+    if (!receita) throw new Error("Receita não encontrada");
+    const fields = Object.keys(updates)
+        .map(((field, index) => `${field} = $${index + 1}`))
+        .join(", ");
+
+    const values = Object.values(updates);
+    const query = `UPDATE receita SET ${fields} WHERE id = $${values.length + 1} RETURNING *`;
+    const result = await pool.query(query, [...values, id]);
+    return result.rows[0];
 }
 
 async function deleteLucro(id){
     const result = await pool.query('DELETE FROM receita WHERE id = $1',[id])
-    return result;
+    return result.rows[0];
 }
 
 export { getLucro, createLucro, updateLucro, deleteLucro, listarLucro }

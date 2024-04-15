@@ -44,7 +44,7 @@ export default {
                     }"
                 >
                     <Icon :name="getIcon(total.percentage)" class="text-2xl" />
-                    {{ total.percentage || 0 }}%
+                    {{ (total.percentage || 0).toFixed(2) }}%
                 </span>
             </h6>
             <div class="skeleton skeleton-card-content" v-if="loading" />
