@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import Icon from './Icon.vue';
 
 export default {
-    name: 'Input',
+    name: 'Tab',
     components: { Icon },
     props: {
         modelValue: Number,

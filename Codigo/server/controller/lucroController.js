@@ -70,10 +70,11 @@ async function createLucro(req, res){
  * Função para atualizar um lucro
  */
 async function updateLucro(req, res){
-    try{
-        const body = req.body
-        const lucro = await lucroServices.updateLucro(body)
-        res.json(lucro)
+    try {
+        const { id } = req.params;
+        const body = req.body;
+        const lucro = await lucroServices.updateLucro(id, body);
+        res.json(lucro);
 
     } catch(error) {
         console.error(error);

@@ -328,7 +328,7 @@ export default {
 				});
 			} catch (e) {
 				this.$alert({
-					message: 'Erro ao deletar item. Tente novamente mais tarde ' + e,
+					message: 'Erro ao deletar item. Tente novamente mais tarde',
 					...this.defaultAlert,
 				});
 			} finally {
@@ -449,7 +449,7 @@ export default {
 	/>
 	<GenericTable
 		title="Despesas"
-		type="costs"
+		type="cost"
 		:headers="headers.cost"
 		:items="data.cost"
 		:loading="loading.cost"
