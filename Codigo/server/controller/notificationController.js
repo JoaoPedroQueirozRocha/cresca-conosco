@@ -2,7 +2,8 @@ import * as notificationServices from '../services/notificationServices.js'
 
 async function getNotification(req,res) {
     try {
-        const notification = await notificationServices.getNotificationBy()
+        const { id } = req.params; 
+        const notification = await notificationServices.getNotificationById(id)
 
         if (!notification) throw new Error('Notificação não encontrada')
 
@@ -14,6 +15,20 @@ async function getNotification(req,res) {
     }
 }
 
+
+async function getAllNotifications(req,res) {
+    try { 
+        const notifications = await notificationServices.getAllNotifications()
+
+        if (!notifications) throw new Error('Notificações não encontradas')
+
+        res.json(notifications)
+
+    } catch (error) {
+        console.error(error)
+        res.status(error.status).send('Erro ao fazer query' + error.message)
+    }
+}
 
 async function createNewNotification(req,res) {
     try{
@@ -27,10 +42,10 @@ async function createNewNotification(req,res) {
 
 }
 
-async function deleteNotification() {
+async function deleteNotificationById(req,res) {
     try{
-        const body = req.body
-        const notification = await notificationServices.deleteNotification(body)
+        const { id } = req.params
+        const notification = await notificationServices.deleteNotificationById(id)
         res.json(notification) 
     }catch (error){
         console.error(error);
@@ -38,4 +53,4 @@ async function deleteNotification() {
     }   
 }
 
-export {getNotification,createNewNotification,deleteNotification}
+export {getNotification,createNewNotification,deleteNotificationById, getAllNotifications}

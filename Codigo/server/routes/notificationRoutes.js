@@ -4,7 +4,8 @@ import *  as notificationController from '../controller/notificationController.j
 const router = express.Router()
 
 router.post("/", notificationController.createNewNotification)
-router.get("/", notificationController.getNotification)
-router.delete("/", notificationController.deleteNotification)
+router.get("/:id", notificationController.getNotification)
+router.get("/list", notificationController.getAllNotifications)
+router.delete("/:id", notificationController.deleteNotificationById)
 
 export default router

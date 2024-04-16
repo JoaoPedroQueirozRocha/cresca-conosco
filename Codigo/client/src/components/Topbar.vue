@@ -4,7 +4,7 @@ import Card from "./Card.vue";
 import Notification from "./Notification.vue";
 import Button from "./Button.vue";
 import NotificationController from "../controller/notification"
-import GadoController from "../controller/gado"
+
 
 export default {
 	name: "Topbar",
@@ -14,15 +14,17 @@ export default {
 		return {
 			notificationActive: ref(false),
 			perfilDropdownActive: ref(false),
-			notifications: ref([{
-				title: "Teste",
-				description: "Teste"
-			}]),
+			notifications: ref([]),
 			notification: ref(),
 			notificationIcon: ref(),
 			perfilDropdown: ref(),
 			perfilIcon: ref(),
 			userData: ref(),
+			defaultAlert: ref({
+				top: true,
+				right: true,
+				timeout: 3500,
+			}),
 		};
 	},
 
@@ -61,24 +63,26 @@ export default {
 		});
 	},
 
-	async created(){
+	async created() {
 		await this.setNotifications();
 	},
 
 	methods: {
 
 		async setNotifications() {
-			let c = await NotificationController.getAll()
-			console.log(c);
-			this.notification = [{
+			try {
+				const notificationArray = await NotificationController.getAll()
+				this.notifications = notificationArray || [];
 
-			}]
+			} catch (error) {
+
+			}
 		},
 
 		async activate(activateNotication, activateUser) {
 			this.notificationActive = activateNotication;
 			this.perfilDropdownActive = activateUser;
-			
+
 		},
 
 		closeDropdown(event, dropdown, icon, key) {
@@ -91,7 +95,25 @@ export default {
 			this.Auth.logout();
 			this.$route.push({ path: "/" });
 		},
-		async deleteNotification(item) { },
+		async deleteNotification(item, index) {
+			try{
+				console.log(item);
+				await NotificationController.deleteNotification(item.id)
+				this.notifications.splice(index,1);
+				this.$alert({
+					message: 'Notificação deletada com sucesso',
+					type: 'success',
+					...this.defaultAlert,
+				});
+			}
+			catch(error){
+				this.$alert({
+					message: 'Erro ao deletar notificação. Tente novamente mais tarde',
+					...this.defaultAlert,
+				});
+				
+			}
+		},
 	},
 };
 </script>
@@ -119,13 +141,13 @@ export default {
 							Sem notificações
 						</div>
 					</template>
-					<template #item="{ item }">
+					<template #item="{ item, index }">
 						<div class="flex justify-between items-start gap-2 px-2 py-1">
 							<div class="flex flex-col gap-2">
-								<h5 class="text-xl font-bold">{{ item.title }}</h5>
-								<p class="description">{{ item.description }}</p>
+								<h5 class="text-xl font-bold">{{ item.titulo }}</h5>
+								<p class="description">{{ item.descricao }}</p>
 							</div>
-							<span class="material-symbols-rounded delete-icon" @click="deleteNotification(item)">
+							<span class="material-symbols-rounded delete-icon" @click="deleteNotification(item, index)">
 								delete
 							</span>
 						</div>
