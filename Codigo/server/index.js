@@ -23,6 +23,8 @@ app.use(express.json())
             origin: [
                 "http://localhost:5173",
                 "https://cresca-conosco.queirozrocha.com",
+                "https://cresca-conosco-staging.onrender.com",
+                "http://localhost:3000"
             ],
             credentials: true,
         })

@@ -6,7 +6,6 @@ const components = {
                 nome: { type: "string" },
                 crias: { type: "number" },
                 num_insem: { type: "number" },
-                dias_parida: { type: "number" },
                 lactante: { type: "boolean" },
                 primeira_ia: { type: "date" }
             },
