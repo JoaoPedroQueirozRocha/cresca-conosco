@@ -15,7 +15,6 @@
 					<Input class="md:w-[49%] w-full" v-model="data.num_insem" label="N° Inseminaçes" type="number" />
 				</div>
 				<div class="w-full flex flex-col gap-4 flex-wrap">
-					<DatePicker v-if="!nome" v-model="data.primeira_ia" label="Data 1ª inseminação artificial" />
 					<Checkbox v-model="data.lactante">Lactante</Checkbox>
 				</div>
 			</Card>
@@ -63,25 +62,6 @@ export default {
 			right: true,
 			timeout: 3500,
 		});
-		const situacoesItems = ref([
-			{
-				label: 'Pendente',
-				value: 'pendente',
-			},
-			{
-				label: 'Confirmada',
-				value: 'confirmada',
-			},
-			{
-				label: 'Concluída',
-				value: 'conclunomea',
-			},
-			{
-				label: 'Falhou',
-				value: 'falhou',
-			},
-		]);
-		const status = ref('');
 		const data = ref({});
 		const loading = ref(false);
 		const pageTitle = ref('');
@@ -90,9 +70,7 @@ export default {
 			tabItems,
 			tabIndex,
 			defaultAlert,
-			situacoesItems,
 			data,
-			status,
 			loading,
 			pageTitle,
 		};
@@ -126,8 +104,6 @@ export default {
 
 	methods: {
 		async salveVaca() {
-			this.data.status = this.status.value;
-
 			if (!this.isValnome()) {
 				this.$alert({
 					message: 'Preencha todos os campos para salvar a vaca',
@@ -140,7 +116,7 @@ export default {
 
 			try {
 				if (this.id) await animalController.updateAnimal(this.id, this.data);
-				else await animalController.createGado(this.data);
+				else await animalController.createAnimal(this.data);
 
 				this.$alert({
 					message: 'Vaca salva com sucesso',
@@ -148,18 +124,20 @@ export default {
 					...this.defaultAlert,
 				});
 			} catch (e) {
+				console.error(e);
 				this.$alert({
 					message: 'Erro ao salvar vaca. Tente novamente mais tarde',
 					...this.defaultAlert,
 				});
 			} finally {
 				this.loading = false;
-				this.$router.push('/gado');
+
+				// this.$router.push('/gado');
 			}
 		},
 
 		isValnome() {
-			return this.data.nome && this.data.crias >= 0 && this.data.num_insem && this.data.lactante;
+			return this.data.nome && this.data.crias >= 0 && this.data.num_insem >= 0;
 		},
 
 		async getNomeAnimal(id) {

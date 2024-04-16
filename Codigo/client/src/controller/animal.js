@@ -2,7 +2,7 @@ import axios from "axios";
 const APIURL = `${import.meta.env.VITE_API_URL}/animals`
 
 function createAnimal(animal) {
-    return axios.post(`${APIURL}/animals`, animal);
+    return axios.post(`${APIURL}/`, animal);
 }
 
 async function getAnimal(id) {

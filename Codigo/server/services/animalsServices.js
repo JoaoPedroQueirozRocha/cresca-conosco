@@ -17,13 +17,11 @@ async function getAnimalById(id) {
 
 async function createNewAnimal(body) {
     const result = await pool.query(
-        "INSERT INTO animais(nome, crias, primeira_ia, num_insem, lactante) VALUES ($1, $2, $3, $4, $5, $6)",
+        "INSERT INTO animais(nome, crias, num_insem, lactante) VALUES ($1, $2, $3, $4)",
         [
             body.nome,
             body.crias,
-            body.primeira_ia,
             body.num_insem,
-            body.dias_parida,
             body.lactante,
         ]
     );

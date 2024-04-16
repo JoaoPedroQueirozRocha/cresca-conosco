@@ -20,6 +20,7 @@ async function createNewAnimal(req, res) {
         const animal = await animalsServices.createNewAnimal(body);
         res.json(animal);
     } catch (error) {
+        console.error(error);
         res.status(error.status).send("Erro ao executar a query " + error.message);
     }
 }
