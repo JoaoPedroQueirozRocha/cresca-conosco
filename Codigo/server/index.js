@@ -15,20 +15,21 @@ import financeRoutes from './routes/financeRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3002;
-app.use(express.json())
-    .use(cors())
-    .use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs))
-    .use(
+app.use(
         cors({
             origin: [
                 "http://localhost:5173",
                 "https://cresca-conosco.queirozrocha.com",
                 "https://cresca-conosco-staging.onrender.com",
-                "http://localhost:3000"
+                "https://cresca-conosco.onrender.com",
+                "http://localhost:3000",
+                "https://cresca-conosco-develop.vercel.app"
             ],
             credentials: true,
         })
     )
+    .use(express.json())
+    .use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs))
     .use("/user", userRouter)
     .use("/auth", authRouter)
     .use("/animals", animalsRouter)
