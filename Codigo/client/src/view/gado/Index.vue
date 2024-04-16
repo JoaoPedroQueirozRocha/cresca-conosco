@@ -135,7 +135,7 @@
 				/>
 			</Dialog>
 			<DialogInsem
-				:dialogModel="showInsemDialog"
+				v-model="showInsemDialog"
 				:animalData="animalData"
 				:isDialogLoading="isDialogLoading"
 			></DialogInsem>

@@ -12,7 +12,7 @@ async function getAnimalById(id) {
     );
     if (!queryResult.rows.length) throw new Error("Animal não encontrado");
 
-    return queryResult.rows;
+    return queryResult.rows[0];
 }
 
 async function createNewAnimal(body) {
