@@ -3,10 +3,11 @@ import { ref } from "vue";
 import Card from "./Card.vue";
 import Notification from "./Notification.vue";
 import Button from "./Button.vue";
+import Icon from './Icon.vue';
 
 export default {
 	name: "Topbar",
-	components: { Card, Notification, Button },
+	components: { Card, Notification, Button, Icon },
 	inject: ["Auth"],
 	setup() {
 		return {
@@ -17,21 +18,23 @@ export default {
 			notificationIcon: ref(),
 			perfilDropdown: ref(),
 			perfilIcon: ref(),
+			userData: ref(),
 		};
 	},
 
 	beforeMount() {
+		this.userData = JSON.parse(window.sessionStorage.getItem('user'));
 		document.addEventListener("click", (event) => {
 			this.closeDropdown(
 				event,
 				this.notification?.$el,
-				this.notificationIcon,
+				this.notificationIcon?.$el,
 				"notificationActive"
 			);
 			this.closeDropdown(
 				event,
 				this.perfilDropdown?.$el,
-				this.perfilIcon,
+				this.perfilIcon?.$el,
 				"perfilDropdownActive"
 			);
 		});
@@ -79,24 +82,22 @@ export default {
 	<div class="top-holder">
 		<div class="relative flex gap-2">
 			<div>
-				<span
-					class="material-symbols-rounded top-icon"
+				<Icon
+					class="top-icon"
+					name="circle_notifications"
 					ref="notificationIcon"
 					:class="{ active: notificationActive }"
 					@click="activate(!notificationActive, false)"
-				>
-					circle_notifications
-				</span>
+				/>
 			</div>
 			<div>
-				<span
-					class="material-symbols-rounded top-icon"
+				<Icon
+					class="top-icon"
+					name="account_circle"
 					ref="perfilIcon"
 					:class="{ active: perfilDropdownActive }"
 					@click="activate(false, !perfilDropdownActive)"
-				>
-					account_circle
-				</span>
+				/>
 			</div>
 			<div class="absolute right-0 top-14">
 				<Notification
@@ -106,7 +107,7 @@ export default {
 				>
 					<template #empty-state>
 						<div class="empty-state">
-							<span class="material-symbols-rounded"> notifications </span>
+							<Icon name="notifications" />
 							Sem notificações
 						</div>
 					</template>
@@ -116,12 +117,11 @@ export default {
 								<h5 class="text-xl font-bold">{{ item.title }}</h5>
 								<p class="description">{{ item.description }}</p>
 							</div>
-							<span
-								class="material-symbols-rounded delete-icon"
+							<Icon
+								class="delete-icon"
+								name="delete"
 								@click="deleteNotification(item)"
-							>
-								delete
-							</span>
+							/>
 						</div>
 					</template>
 				</Notification>
@@ -130,7 +130,7 @@ export default {
 					ref="perfilDropdown"
 					class="flex flex-col items-center gap-4 w-fit"
 				>
-					<h3 class="user-name">Teste</h3>
+					<h3 class="user-name">{{ userData.name }}</h3>
 					<div class="flex flex-col gap-2">
 						<router-link to="/perfil" @click="activate(false, false)">
 							<Button class="whitespace-nowrap">Editar Perfil</Button>
