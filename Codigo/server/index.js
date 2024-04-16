@@ -25,7 +25,8 @@ app.use(express.json())
                 "https://cresca-conosco.queirozrocha.com",
                 "https://cresca-conosco-staging.onrender.com",
                 "https://cresca-conosco.onrender.com",
-                "http://localhost:3000"
+                "http://localhost:3000",
+                "https://cresca-conosco-develop.vercel.app/"
             ],
             credentials: true,
         })
