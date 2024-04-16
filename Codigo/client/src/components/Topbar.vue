@@ -3,6 +3,8 @@ import { ref } from "vue";
 import Card from "./Card.vue";
 import Notification from "./Notification.vue";
 import Button from "./Button.vue";
+import NotificationController from "../controller/notification"
+import GadoController from "../controller/gado"
 
 export default {
 	name: "Topbar",
@@ -12,7 +14,10 @@ export default {
 		return {
 			notificationActive: ref(false),
 			perfilDropdownActive: ref(false),
-			notifications: ref([]),
+			notifications: ref([{
+				title: "Teste",
+				description: "Teste"
+			}]),
 			notification: ref(),
 			notificationIcon: ref(),
 			perfilDropdown: ref(),
@@ -56,10 +61,24 @@ export default {
 		});
 	},
 
+	async created(){
+		await this.setNotifications();
+	},
+
 	methods: {
-		activate(activateNotication, activateUser) {
+
+		async setNotifications() {
+			let c = await NotificationController.getAll()
+			console.log(c);
+			this.notification = [{
+
+			}]
+		},
+
+		async activate(activateNotication, activateUser) {
 			this.notificationActive = activateNotication;
 			this.perfilDropdownActive = activateUser;
+			
 		},
 
 		closeDropdown(event, dropdown, icon, key) {
@@ -72,7 +91,7 @@ export default {
 			this.Auth.logout();
 			this.$route.push({ path: "/" });
 		},
-		async deleteNotification(item) {},
+		async deleteNotification(item) { },
 	},
 };
 </script>
@@ -81,31 +100,19 @@ export default {
 	<div class="top-holder">
 		<div class="relative flex gap-2">
 			<div>
-				<span
-					class="material-symbols-rounded top-icon"
-					ref="notificationIcon"
-					:class="{ active: notificationActive }"
-					@click="activate(!notificationActive, false)"
-				>
+				<span class="material-symbols-rounded top-icon" ref="notificationIcon"
+					:class="{ active: notificationActive }" @click="activate(!notificationActive, false)">
 					circle_notifications
 				</span>
 			</div>
 			<div>
-				<span
-					class="material-symbols-rounded top-icon"
-					ref="perfilIcon"
-					:class="{ active: perfilDropdownActive }"
-					@click="activate(false, !perfilDropdownActive)"
-				>
+				<span class="material-symbols-rounded top-icon" ref="perfilIcon"
+					:class="{ active: perfilDropdownActive }" @click="activate(false, !perfilDropdownActive)">
 					account_circle
 				</span>
 			</div>
 			<div class="absolute right-0 top-14">
-				<Notification
-					v-if="notificationActive"
-					ref="notification"
-					:items="notifications"
-				>
+				<Notification v-if="notificationActive" ref="notification" :items="notifications">
 					<template #empty-state>
 						<div class="empty-state">
 							<span class="material-symbols-rounded"> notifications </span>
@@ -118,20 +125,14 @@ export default {
 								<h5 class="text-xl font-bold">{{ item.title }}</h5>
 								<p class="description">{{ item.description }}</p>
 							</div>
-							<span
-								class="material-symbols-rounded delete-icon"
-								@click="deleteNotification(item)"
-							>
+							<span class="material-symbols-rounded delete-icon" @click="deleteNotification(item)">
 								delete
 							</span>
 						</div>
 					</template>
 				</Notification>
-				<Card
-					v-else-if="perfilDropdownActive"
-					ref="perfilDropdown"
-					class="flex flex-col items-center gap-4 w-fit"
-				>
+				<Card v-else-if="perfilDropdownActive" ref="perfilDropdown"
+					class="flex flex-col items-center gap-4 w-fit">
 					<h3 class="user-name">{{ userData.name }}</h3>
 					<div class="flex flex-col gap-2">
 						<router-link to="/perfil" @click="activate(false, false)">
@@ -194,7 +195,7 @@ export default {
 
 .top-icon {
 	background: $gray-200;
-    border-radius: 50%;
+	border-radius: 50%;
 }
 
 h5 {

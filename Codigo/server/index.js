@@ -8,6 +8,7 @@ import gestacaoRouter from "./routes/gestacaoRoutes.js";
 import workerRouter from './routes/workerRoutes.js';
 import gadoRouter from './routes/gadoRoutes.js';
 import despesasRouter from './routes/despesasRoutes.js';
+import NotificationRouter from './routes/'
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -15,7 +16,7 @@ app
     .use(express.json())
     .use(cors())
     .use(cors({
-        origin: ['http://localhost:5173', 'https://cresca-conosco.queirozrocha.com'],
+        origin: ['http://localhost:5173', 'http://localhost:3000', 'https://cresca-conosco.queirozrocha.com'],
         credentials: true
     }))
     .use("/user", userRouter)
