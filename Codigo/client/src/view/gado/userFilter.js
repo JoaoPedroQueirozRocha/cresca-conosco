@@ -10,7 +10,6 @@ export function useFilter(gadoData, filterOptions, searchValue) {
     });
 
     const getSelected = computed(() => {
-        console.log("getSelected");
         const selected = [];
         state.filterOptions.forEach((option) => {
             if (option.childs) {

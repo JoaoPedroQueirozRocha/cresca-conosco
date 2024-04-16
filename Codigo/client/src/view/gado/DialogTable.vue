@@ -6,9 +6,7 @@
 			</td>
 		</template>
 		<template #crias="{ item, index }">
-			<td>
-				{{ item.crias}} 2
-			</td>
+			<td>{{ item.crias }} 2</td>
 		</template>
 		<template #dp="{ item, index }">
 			<td>
@@ -88,10 +86,6 @@ export default {
 		return {
 			searchValue: ref(''),
 		};
-	},
-
-	mounted() {
-		console.log('this.allData', this.allData);
 	},
 
 	computed: {

@@ -55,6 +55,10 @@
 									Editar
 								</div>
 							</router-link>
+							<div class="action-option" @click="openInsemDialog(item.id)">
+								<Icon name="edit" />
+								Inseminar
+							</div>
 							<div class="action-option delete" @click="confirmDeletion(item.id)">
 								<Icon name="delete" />
 								Deletar
@@ -130,6 +134,11 @@
 					:isDialogLoading="isDialogLoading"
 				/>
 			</Dialog>
+			<DialogInsem
+				:dialogModel="showInsemDialog"
+				:animalData="animalData"
+				:isDialogLoading="isDialogLoading"
+			></DialogInsem>
 		</div>
 	</div>
 </template>
@@ -148,15 +157,17 @@ import Filter from '@/components/Filter.vue';
 import Dialog from '@/components/Dialog.vue';
 import Tag from '@/components/Tag.vue';
 import DialogTable from './DialogTable.vue';
+import DialogInsem from './DialogInsem.vue';
 
 export default {
 	name: 'Gado',
-	components: { Table, Button, Input, Dialog, DialogTable, Card, Icon, Filter, Tag },
+	components: { Table, Button, Input, Dialog, DialogTable, DialogInsem, Card, Icon, Filter, Tag },
 	inject: ['Auth'],
 	setup() {
 		const {
 			gadoData,
 			allData,
+			animalData,
 			headersDialog,
 			headers,
 			isLoading,
@@ -164,7 +175,9 @@ export default {
 			filterOptions,
 			loadBaseData,
 			createDialog,
+			openInsemDialog,
 			moreDetails,
+			showInsemDialog,
 		} = useGado();
 
 		const searchValue = ref('');
@@ -172,6 +185,7 @@ export default {
 		return {
 			gadoData,
 			allData,
+			animalData,
 			headersDialog,
 			headers,
 			isLoading,
@@ -179,7 +193,9 @@ export default {
 			filterOptions,
 			loadBaseData,
 			createDialog,
+			openInsemDialog,
 			moreDetails,
+			showInsemDialog,
 			filterOptions,
 			filterCard: ref(),
 			showFilter: ref(false),
@@ -193,7 +209,6 @@ export default {
 
 	async beforeMount() {
 		await this.loadBaseData();
-		console.log('gadoData', this.gadoData);
 	},
 
 	mounted() {

@@ -20,7 +20,6 @@ async function getBaseData(req, res) {
         if (!gado) throw new Error('Nenhum gado encontrado');
 
         res.status(200).json(gado);
-
     } catch (e) {
         console.log(e);
         res.status(e.status).send(e.message);

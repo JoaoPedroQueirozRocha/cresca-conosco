@@ -5,8 +5,9 @@ function createAnimal(animal) {
     return axios.post(`${APIURL}/animals`, animal);
 }
 
-function getAnimal(id) {
-    return axios.get(`${APIURL}/${id}`);
+async function getAnimal(id) {
+    const response = await axios.get(`${APIURL}/${id}`);
+    return response.data;
 }
 
 function updateAnimal(id, animal) {

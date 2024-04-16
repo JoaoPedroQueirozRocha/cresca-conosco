@@ -1,5 +1,6 @@
 import { reactive, toRefs, ref } from 'vue'
 import gadoController from '../../controller/gado.js';
+import animalsController from '../../controller/animal.js';
 
 
 export function useFetchs() {
@@ -11,14 +12,19 @@ export function useFetchs() {
 
     async function getAllData() {
         const data = await gadoController.getAll();
-        console.log("fetch all data", data);
         return data;
 
     }
 
+    async function getAnimal(id) {
+        const data = await animalsController.getAnimal(id);
+        return data;
+    }
+
     return {
         getBaseData,
-        getAllData
+        getAllData,
+        getAnimal
     }
 }
 

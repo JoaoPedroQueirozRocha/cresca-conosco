@@ -7,7 +7,7 @@ async function getAnimalById(req, res) {
 
         if (!animal) throw new Error("Animal não encontrado");
 
-        res.json(animal);
+        res.status(200).json(animal);
     } catch (error) {
         console.error(error);
         res.status(error.status).send("Erro ao executar a query " + error.message);

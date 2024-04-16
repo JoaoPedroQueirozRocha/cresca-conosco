@@ -3,10 +3,11 @@ import { useFetchs } from "./useFetchs.js";
 
 export function useGado() {
 
-    const { getAllData, getBaseData } = useFetchs();
+    const { getAllData, getBaseData, getAnimal } = useFetchs();
 
     const state = reactive({
         moreDetails: ref(false),
+        showInsemDialog: ref(false),
         headersDialog: ref([
             { text: "Nome", value: "nome", sortable: true },
             { text: "Crias", value: "crias", sortable: true },
@@ -81,6 +82,7 @@ export function useGado() {
         isDialogLoading: ref(false),
         allData: ref([]),
         gadoData: ref([]),
+        animalData: ref([]),
     })
 
     async function loadBaseData() {
@@ -99,13 +101,24 @@ export function useGado() {
             state.isDialogLoading = true;
             state.moreDetails = true;
             state.allData = await getAllData();
-            console.log("state.allData", state.allData);
         } catch (e) {
             console.error(e);
         } finally {
             state.isDialogLoading = false;
         }
+    }
 
+    async function openInsemDialog(id) {
+        try {
+            state.isDialogLoading = true;
+            state.showInsemDialog = true;
+            state.animalData = await getAnimal(id);
+            console.log("open dialog", state.animalData);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isDialogLoading = false;
+        }
     }
 
 
@@ -113,6 +126,7 @@ export function useGado() {
         ...toRefs(state),
         createDialog,
         loadBaseData,
+        openInsemDialog,
     }
 }
 

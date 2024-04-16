@@ -12,7 +12,7 @@ async function getAnimalById(id) {
     );
     if (!queryResult.rows.length) throw new Error("Animal não encontrado");
 
-    return queryResult.rows[0];
+    return queryResult.rows;
 }
 
 async function createNewAnimal(body) {
@@ -53,7 +53,7 @@ async function deleteAnimalByName(id) {
     if (!animal) throw new Error("Animal não encontrado");
 
     const result = await pool.query("DELETE FROM animais WHERE id = $1", [
-        name,
+        id,
     ]);
 
     return result.rows[0];
