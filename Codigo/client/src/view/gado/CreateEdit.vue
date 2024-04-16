@@ -2,7 +2,7 @@
 	<div class="flex flex-col w-full">
 		<div class="w-full flex flex-col gap-4">
 			<div class="mb-6">
-				<div class="flex flex-row w-full justify-between align-mnomedle mb-4">
+				<div class="flex flex-row w-full justify-between align-middle mb-4">
 					<h2 class="title">{{ pageTitle }}</h2>
 				</div>
 				<Tab v-model="tabIndex" :items="tabItems" disabled v-if="!nome" />
