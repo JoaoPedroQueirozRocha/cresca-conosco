@@ -1,9 +1,9 @@
 import * as animalsServices from "../services/animalsServices.js";
 
-async function getAnimalByName(req, res) {
+async function getAnimalById(req, res) {
     try {
-        const nome = req.params.nome;
-        const animal = await animalsServices.getAnimalByName(nome);
+        const { id } = req.params
+        const animal = await animalsServices.getAnimalById(id);
 
         if (!animal) throw new Error("Animal não encontrado");
 
@@ -24,11 +24,11 @@ async function createNewAnimal(req, res) {
     }
 }
 
-async function updateAnimalByName(req, res) {
+async function updateAnimalById(req, res) {
     try {
         const body = req.body;
-        const nome = req.params.nome;
-        const animal = await animalsServices.updateAnimalByName(nome, body);
+        const { id } = req.params
+        const animal = await animalsServices.updateAnimalById(id, body);
 
         if (!animal) throw new Error('Animal não encontrado');
 
@@ -53,8 +53,8 @@ async function deleteAnimalByName(req, res) {
 
 
 export {
-    getAnimalByName,
+    getAnimalById,
     createNewAnimal,
-    updateAnimalByName,
+    updateAnimalById,
     deleteAnimalByName,
 };

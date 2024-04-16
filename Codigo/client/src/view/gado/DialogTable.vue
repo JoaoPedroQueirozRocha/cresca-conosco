@@ -12,7 +12,7 @@
 		</template>
 		<template #dp="{ item, index }">
 			<td>
-				{{ item.dias_parida }}
+				{{ item.dias_parida ? item.dias_parida : '-' }}
 			</td>
 		</template>
 		<template #proxInseminacao="{ item, index }">
@@ -88,6 +88,10 @@ export default {
 		return {
 			searchValue: ref(''),
 		};
+	},
+
+	mounted() {
+		console.log('this.allData', this.allData);
 	},
 
 	computed: {

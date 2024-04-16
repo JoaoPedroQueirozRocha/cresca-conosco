@@ -12,12 +12,12 @@ export function useGado() {
             { text: "Crias", value: "crias", sortable: true },
             { text: "DP", value: "dp", sortable: true },
             {
-                text: "Prox.Inseminação",
-                value: "proxInseminacao",
+                text: "Data.Insem",
+                value: "dataInseminacao",
                 sortable: true,
             },
             { text: "Prev.Parto", value: "prevParto", sortable: true },
-            { text: "Sêmem", value: "semem", sortable: true },
+            { text: "Touro", value: "touro", sortable: true },
             {
                 text: "Lactante",
                 value: "lactante",
@@ -30,12 +30,12 @@ export function useGado() {
         headers: ref([
             { text: "Nome", value: "nome", sortable: true },
             {
-                text: "Prox.Inseminação",
-                value: "proxInseminacao",
+                text: "Data.Insem",
+                value: "dataInsem",
                 sortable: true,
             },
             { text: "Prev.Parto", value: "prevParto", sortable: true },
-            { text: "Sêmen", value: "semen", align: "center", sortable: true },
+            { text: "Touro", value: "touro", align: "center", sortable: true },
             {
                 text: "Lactante",
                 value: "lactante",
@@ -99,6 +99,7 @@ export function useGado() {
             state.isDialogLoading = true;
             state.moreDetails = true;
             state.allData = await getAllData();
+            console.log("state.allData", state.allData);
         } catch (e) {
             console.error(e);
         } finally {

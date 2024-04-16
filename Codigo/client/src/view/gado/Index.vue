@@ -49,12 +49,12 @@
 							tabindex="0"
 							@blur="item.expanded = false"
 						>
-							<router-link :to="`/gado/vaca/${item.nome}`">
-                                <div class="action-option">
-                                    <Icon name="edit" />
-                                    Editar
-                                </div>
-                            </router-link>
+							<router-link :to="`/gado/vaca/${item.id}`">
+								<div class="action-option">
+									<Icon name="edit" />
+									Editar
+								</div>
+							</router-link>
 							<div class="action-option delete" @click="confirmDeletion(item.id)">
 								<Icon name="delete" />
 								Deletar
@@ -67,19 +67,19 @@
 						{{ item.nome }}
 					</td>
 				</template>
-				<template #proxInseminacao="{ item, index }">
+				<template #dataInsem="{ item, index }">
 					<td>
-						{{ item.proxima_insem ? item.proxima_insem : '-' }}
+						{{ item.data_insem ? formatDate(new Date(item.data_insem)) : '-' }}
 					</td>
 				</template>
 				<template #prevParto="{ item, index }">
 					<td>
-						{{ item.prev_parto ? new Date(item.prev_parto).toLocaleDateString() : '-' }}
+						{{ item.prev_parto ? formatDate(new Date(item.prev_parto)) : '-' }}
 					</td>
 				</template>
-				<template #semen="{ item, index }">
+				<template #touro="{ item, index }">
 					<td class="text-center">
-						{{ item.semem }}
+						{{ item.touro }}
 						<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 					</td>
 				</template>
@@ -136,6 +136,7 @@
 
 <script>
 import { useGado } from './useGado.js';
+import { formatDate } from '../../util';
 import { useFilter } from './userFilter.js';
 import { ref } from 'vue';
 import Table from '@/components/Table.vue';
@@ -186,6 +187,7 @@ export default {
 			searchValue,
 			filteredData,
 			getSelected,
+			formatDate,
 		};
 	},
 
@@ -265,7 +267,7 @@ export default {
 		},
 
 		getColor(status) {
-			switch(status) {
+			switch (status) {
 				case 'falha':
 					return 'red';
 				case 'pendente':

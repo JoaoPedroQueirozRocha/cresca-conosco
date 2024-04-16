@@ -22,6 +22,7 @@ async function getBaseData(req, res) {
         res.status(200).json(gado);
 
     } catch (e) {
+        console.log(e);
         res.status(e.status).send(e.message);
     }
 }
@@ -78,7 +79,7 @@ async function getByAnimal(req, res) {
     try {
         const { animal } = req.params;
 
-        const animal_exists = await animalServices.getAnimalByName(animal);
+        const animal_exists = await animalServices.getAnimalById(animal);
         if (!animal_exists) throw new Error('Animal não encontrado');
 
         const gado = await gadoServices.getByAnimal(animal);

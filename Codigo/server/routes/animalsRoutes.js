@@ -9,24 +9,24 @@ const router = express.Router();
  *   - name: Animais
  *     description: Rotas para realizar operações na tabela de animais
  * 
- * /animals/{nome}:
+ * /animals/{id}:
  *   get:
  *     tags: 
  *       - Animais
- *     description: Retorna as informações pelo nome do animal
- *     summary: Retorna as informações pelo nome do animal
+ *     description: Retorna as informações pelo id do animal
+ *     summary: Retorna as informações pelo id do animal
  *     parameters:
  *       - in: path
- *         name: nome
+ *         name: id
  *         schema:
  *           type: string
- *         description: Nome do animal
+ *         description: id do animal
  *         required: true
  *     responses:
  *       200:
  *         description: Retorna as informações do animal
  */
-router.get("/:nome", animalsController.getAnimalByName);
+router.get("/:id", animalsController.getAnimalById);
 
 /**
  * @swagger
@@ -50,16 +50,16 @@ router.post("/", animalsController.createNewAnimal);
 
 /**
  * @swagger
- * /animals/{nome}:
+ * /animals/{id}:
  *  put:
  *   summary: Atualiza as informaçes daquele animal específico
  *   tags: [Animais]
  *   parameters:
  *    - in: path
- *      name: nome
+ *      name: id
  *      schema:
  *       type: string
- *      description: Nome do animal
+ *      description: id do animal
  *      required: true
  *   requestBody:
  *    required: true
@@ -71,25 +71,25 @@ router.post("/", animalsController.createNewAnimal);
  *    200:
  *     description: Animal atualizado
  */
-router.put("/:nome", animalsController.updateAnimalByName);
+router.put("/:id", animalsController.updateAnimalById);
 
 /**
  * @swagger
- * /animals/{nome}:
+ * /animals/{id}:
  *  delete:
  *   summary: Deleta um animal
  *   tags: [Animais]
  *  parameters:
  *    - in: path
- *      name: nome
+ *      name: id
  *      required: true
  *      schema:
  *       type: string
- *      description: Nome do animal
+ *      description: id do animal
  *  responses:
  *   200:
  *    description: Animal deletado
  */
-router.delete("/:nome", animalsController.deleteAnimalByName);
+router.delete("/:id", animalsController.deleteAnimalByName);
 
 export default router;
