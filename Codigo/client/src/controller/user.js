@@ -1,5 +1,5 @@
 import axios from 'axios';
-const APIURL = `${import.meta.env.VITE_API_URL}/user`
+const APIURL = `${import.meta.env.VITE_API_URL_PROD}/user`
 
 function getUser(id) {
     return axios.get(`${APIURL}/${id}`);
