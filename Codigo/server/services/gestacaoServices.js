@@ -6,10 +6,10 @@ const router = express.Router();
 
 router.use(express.json());
 
-async function getGestacaoByAnimal(animal) {
+async function getGestacaoById(animal_id) {
     const queryResult = await pool.query(
-        "SELECT * FROM gestacoes WHERE nome_animal = $1",
-        [animal]
+        "SELECT * FROM gestacoes WHERE animal_id = $1",
+        [animal_id]
     );
     return queryResult.rows[0];
 }
@@ -40,4 +40,4 @@ async function deleteGestacao(animal_id) {
     return result.rows[0];
 }
 
-export { getGestacaoByAnimal, createGestacao, updateGestacao, deleteGestacao };
+export { getGestacaoById, createGestacao, updateGestacao, deleteGestacao };

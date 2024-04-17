@@ -1,6 +1,9 @@
 import axios from "axios";
 const APIURL = `${import.meta.env.VITE_API_URL}/gestacoes`
 
+async function getGestacao(animal_id) {
+    return await axios.get(`${APIURL}/${animal_id}`);
+}
 
 function salvarGestacao(gestacao) {
     return axios.post(`${APIURL}/`, gestacao);

@@ -31,7 +31,7 @@ const router = express.Router();
  *               schema: 
  *                  $ref: '#components/schemas/Gestacao'
  */
-router.get("/:animal_id", gestacaoController.getGestacaoByAnimal);
+router.get("/:animal_id", gestacaoController.getGestacaoById);
 
 /**
  * @swagger
