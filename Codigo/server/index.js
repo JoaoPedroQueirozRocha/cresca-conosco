@@ -12,6 +12,7 @@ import gadoRouter from './routes/gadoRoutes.js';
 import despesasRouter from './routes/despesasRoutes.js';
 import lucroRouter from './routes/lucroRoutes.js';
 import financeRoutes from './routes/financeRoutes.js';
+import NotificationRouter from './routes/notificationRoutes.js'
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -39,6 +40,7 @@ app.use(
     .use('/despesas', despesasRouter)
     .use('/lucro', lucroRouter)
     .use('/finance', financeRoutes)
+    .use('/notification', NotificationRouter)
 
 app.listen(PORT, () => {
     console.log(process.env.POSTGRES_USER);
