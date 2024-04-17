@@ -2,8 +2,8 @@
 	<div class="flex flex-col w-full mt-[3em]">
 		<div class="w-fullflex flex-col gap-4">
 			<div class="mb-6">
-				<div class="flex flex-row w-full justify-between align-middle mb-4">
-					<h2 class="title">Gado</h2>
+				<div class="flex flex-row w-full justify-between align-middle my-4">
+					<h2 class="title mt-0">Gado</h2>
 					<div class="flex flex-row items-center flex-wrap gap-2 content-center">
 						<Button @click="createDialog">Mais detalhes</Button>
 						<router-link to="/gado/vaca">

@@ -48,7 +48,8 @@ export function useGado() {
         filterOptions: ref([
             {
                 text: 'Seca',
-                value: 'seca',
+                fatherValue: 'lactante',
+                value: false,
                 selected: false,
             },
             {
@@ -57,8 +58,9 @@ export function useGado() {
                 selected: false,
             },
             {
-                text: 'Grávida',
-                value: 'gravida',
+                text: 'Prenha',
+                value: 'confirmada',
+                fatherValue: 'status',
                 selected: false,
             },
             {
