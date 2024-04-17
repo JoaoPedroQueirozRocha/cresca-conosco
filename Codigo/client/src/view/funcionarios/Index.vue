@@ -78,7 +78,7 @@
 			</Table>
 			<div class="flex flex-row w-full justify-between items-center align-middle my-4">
 					<h2 class="title mt-0"></h2>
-						<Button @click="downloadImage">Download Tabela</Button>
+						<Button @click="downloadCSV">Download Tabela</Button>
 				</div>
 		</div>
 	</div>
@@ -94,7 +94,7 @@ import Checkbox from "@/components/Checkbox.vue";
 import Filter from "@/components/Filter.vue";
 import { useFetchs } from "./useFetchs.js";
 
-import html2canvas from 'html2canvas';
+import { saveAs } from 'file-saver';
 
 
 export default {
@@ -158,16 +158,19 @@ export default {
             },
         ]);
 
-		const downloadImage = () => {
-      const table = document.querySelector('.funcionarios-table');
-      html2canvas(table).then(canvas => {
-        const imgData = canvas.toDataURL('image/jpeg');
-        const link = document.createElement('a');
-        link.href = imgData;
-        link.download = 'funcionarios.jpg';
-        link.click();
+		const convertToCSV = (data) => {
+      let csv = '';
+      data.forEach((row) => {
+        csv += `${row.nome},${row.salario},${row.cargo},${row.clt}\n`;
       });
-    };
+      return csv;
+	  
+    	};
+	const downloadCSV = () => {
+      const csv = convertToCSV(funcionarioData.value);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      saveAs(blob, 'funcionarios.csv');
+    	};
 
         return {
             funcionarioData,
@@ -179,7 +182,7 @@ export default {
 			showFilter: ref(false),
 			opendedIndex: ref(null),
             searchValue: ref(''),
-			downloadImage,
+			downloadCSV,
         };
     },
 
