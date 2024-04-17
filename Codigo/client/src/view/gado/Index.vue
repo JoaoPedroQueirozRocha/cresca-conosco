@@ -2,9 +2,9 @@
 	<div class="flex flex-col w-full mt-[3em]">
 		<div class="w-fullflex flex-col gap-4">
 			<div class="mb-6">
-				<div class="flex flex-row w-full justify-between align-middle mb-4">
-					<h2 class="title">Gado</h2>
-					<div class="flex flex-row flex-wrap gap-2 content-center">
+				<div class="flex flex-row w-full justify-between align-middle my-4">
+					<h2 class="title mt-0">Gado</h2>
+					<div class="flex flex-row items-center flex-wrap gap-2 content-center">
 						<Button @click="createDialog">Mais detalhes</Button>
 						<router-link to="/gado/vaca">
 							<Button>Adicionar</Button>
@@ -25,7 +25,7 @@
 						</Button>
 						<Filter
 							v-model="filterOptions"
-							class="top-12 right-0 absolute z-50 filter"
+							class="top-12 md:left-auto md:right-0 left-0 absolute z-50 filter"
 							v-show="showFilter"
 						/>
 					</div>
@@ -35,7 +35,7 @@
 				:items="filteredData ? filteredData : gadoData"
 				:headers="headers"
 				class="w-full gado-table"
-				:isLoading="isLoading"
+				:loading="isLoading"
 			>
 				<template #actions="{ item, index }">
 					<td class="w-2 cursor-pointer action">
@@ -49,13 +49,29 @@
 							tabindex="0"
 							@blur="item.expanded = false"
 						>
-							<router-link :to="`/gado/vaca/${item.nome}`">
-                                <div class="action-option">
-                                    <Icon name="edit" />
-                                    Editar
-                                </div>
-                            </router-link>
-							<div class="action-option delete" @click="confirmDeletion(item.id)">
+							<router-link :to="`/gado/vaca/${item.id}`">
+								<div class="action-option">
+									<Icon name="edit" />
+									Editar
+								</div>
+							</router-link>
+							<div class="action-option" @click="openInsemDialog(item.id, true)">
+								<Icon name="vaccines" />
+								Inseminar
+							</div>
+                            <div class="action-option" @click="openInsemDialog(item.id)">
+								<Icon name="edit" />
+								Editar Gestão Atual
+							</div>
+							<div class="action-option" @click="parirAnimal(item.id)">
+								<Icon name="heart_check" />
+								Parir
+							</div>
+							<div class="action-option" @click="secarAnimal(item.id)">
+								<Icon name="menstrual_health" />
+								Secar
+							</div>
+							<div class="action-option delete" @click="confirmDeletion(item.id, index)">
 								<Icon name="delete" />
 								Deletar
 							</div>
@@ -67,19 +83,19 @@
 						{{ item.nome }}
 					</td>
 				</template>
-				<template #proxInseminacao="{ item, index }">
+				<template #dataInsem="{ item, index }">
 					<td>
-						{{ item.proxima_insem ? item.proxima_insem : '-' }}
+						{{ item.data_insem ? formatDate(new Date(item.data_insem)) : '-' }}
 					</td>
 				</template>
 				<template #prevParto="{ item, index }">
 					<td>
-						{{ item.prev_parto ? new Date(item.prev_parto).toLocaleDateString() : '-' }}
+						{{ item.prev_parto ? formatDate(new Date(item.prev_parto)) : '-' }}
 					</td>
 				</template>
-				<template #semen="{ item, index }">
+				<template #touro="{ item, index }">
 					<td class="text-center">
-						{{ item.semem }}
+						{{ item.touro }}
 						<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 					</td>
 				</template>
@@ -95,7 +111,7 @@
 				<template #status="{ item, index }">
 					<td>
 						<div class="flex justify-center">
-							<Tag :color="getColor(item.status)" :text="item.status" />
+							<Tag :color="getColor(item.status)" :text="item.status || 'Não inseminada'" />
 							<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 						</div>
 					</td>
@@ -130,12 +146,20 @@
 					:isDialogLoading="isDialogLoading"
 				/>
 			</Dialog>
+			<DialogInsem
+				v-model="showInsemDialog"
+				:animalData="animalData"
+				:isDialogLoading="isDialogLoading"
+                :isEdit="isEdit"
+                @change="loadBaseData"
+			></DialogInsem>
 		</div>
 	</div>
 </template>
 
 <script>
 import { useGado } from './useGado.js';
+import { formatDate } from '../../util';
 import { useFilter } from './userFilter.js';
 import { ref } from 'vue';
 import Table from '@/components/Table.vue';
@@ -147,15 +171,18 @@ import Filter from '@/components/Filter.vue';
 import Dialog from '@/components/Dialog.vue';
 import Tag from '@/components/Tag.vue';
 import DialogTable from './DialogTable.vue';
+import DialogInsem from './DialogInsem.vue';
+import animalController from "@/controller/animal";
 
 export default {
 	name: 'Gado',
-	components: { Table, Button, Input, Dialog, DialogTable, Card, Icon, Filter, Tag },
+	components: { Table, Button, Input, Dialog, DialogTable, DialogInsem, Card, Icon, Filter, Tag },
 	inject: ['Auth'],
 	setup() {
 		const {
 			gadoData,
 			allData,
+			animalData,
 			headersDialog,
 			headers,
 			isLoading,
@@ -163,14 +190,27 @@ export default {
 			filterOptions,
 			loadBaseData,
 			createDialog,
+			openInsemDialog,
 			moreDetails,
+			showInsemDialog,
+			parirAnimal,
+			secarAnimal,
+			deletarAnimal,
+            confirmarGestacao,
+            isEdit
 		} = useGado();
 
 		const searchValue = ref('');
 		const { filteredData, getSelected } = useFilter(gadoData, filterOptions, searchValue);
+        const defaultAlert = ref({
+			top: true,
+			right: true,
+			timeout: 3500,
+		});
 		return {
 			gadoData,
 			allData,
+			animalData,
 			headersDialog,
 			headers,
 			isLoading,
@@ -178,7 +218,9 @@ export default {
 			filterOptions,
 			loadBaseData,
 			createDialog,
+			openInsemDialog,
 			moreDetails,
+			showInsemDialog,
 			filterOptions,
 			filterCard: ref(),
 			showFilter: ref(false),
@@ -186,12 +228,18 @@ export default {
 			searchValue,
 			filteredData,
 			getSelected,
+			formatDate,
+			parirAnimal,
+			secarAnimal,
+			deletarAnimal,
+            confirmarGestacao,
+            defaultAlert,
+            isEdit,
 		};
 	},
 
 	async beforeMount() {
 		await this.loadBaseData();
-		console.log('gadoData', this.gadoData);
 	},
 
 	mounted() {
@@ -221,7 +269,7 @@ export default {
 				const windowHeight = window.innerHeight;
 				const cardHeight = card.offsetHeight;
 				const height = rect.top + 40 + cardHeight;
-				card.style.left = rect.left - 100 + 'px';
+				card.style.left = rect.left - 200 + 'px';
 				if (height > windowHeight) {
 					delete card.style.top;
 					card.style.bottom = 0;
@@ -256,17 +304,32 @@ export default {
 			this.opendedIndex = null;
 		},
 
-		async confirmDeletion(id) {
+		async confirmDeletion(id, index) {
 			const result = await this.$confirm({
 				title: 'Tem certeza que deseja deletar esse item?',
 			});
-			// Tratar dados
-			if (result) () => {};
+			if (result) {
+                try {
+                    await animalController.deletarAnimal(id);
+                    this.gadoData.splice(index, 1);
+                    this.$alert({
+                        message: 'Vaca deletada com sucesso',
+                        type: 'success',
+                        ...this.defaultAlert,
+                    });
+                } catch (error) {
+                    console.log(error)
+                    this.$alert({
+                        message: 'Erro ao deletar a vaca. Tente novamente mais tarde',
+                        ...this.defaultAlert,
+                    });
+                }
+            }
 		},
 
 		getColor(status) {
-			switch(status) {
-				case 'falha':
+			switch (status) {
+				case 'falhou':
 					return 'red';
 				case 'pendente':
 					return 'yellow';
@@ -274,6 +337,8 @@ export default {
 					return 'blue';
 				case 'concluida':
 					return 'green';
+                default:
+                    return 'gray';
 			}
 		},
 	},

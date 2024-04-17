@@ -6,13 +6,11 @@
 			</td>
 		</template>
 		<template #crias="{ item, index }">
-			<td>
-				{{ item.crias }}
-			</td>
+			<td>{{ item.crias }}</td>
 		</template>
 		<template #dp="{ item, index }">
 			<td>
-				{{ item.dias_parida }}
+				{{ item.dias_parida ? item.dias_parida : '-' }}
 			</td>
 		</template>
 		<template #proxInseminacao="{ item, index }">
