@@ -4,7 +4,7 @@
 			<div>
 				<h1 class="title">{{ animalData.nome }}</h1>
 			</div>
-			<div class="w-[100%] flex flex-col gap-4 mt-4">
+			<div class="w-[100%] flex flex-col gap-4">
 				<div class="flex md:flex-row flex-col gap-4">
 					<Select class="flex-1" label="Status" @update:model-value="changeDisabled" v-model="gestacaoData.status" :items="options" />
 					<Select class="flex-1" label="Touro (semem)" v-model="gestacaoData.touro" :items="optionsTouro" />
