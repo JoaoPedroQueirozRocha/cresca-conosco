@@ -27,6 +27,11 @@ export function useFetchs() {
         return data;
     }
 
+    async function confirmar(animal_id){
+        const data = await gestacaoController.confirmarGestacao(animal_id);
+        return data;
+    }
+
     async function secar(id) {
         const data = await animalsController.secar(id);
         return data;
@@ -44,7 +49,8 @@ export function useFetchs() {
         getAnimal,
         parir,
         secar,
-        deletar
+        deletar,
+        confirmar
     }
 }
 

@@ -3,11 +3,12 @@ import { useFetchs } from "./useFetchs.js";
 
 export function useGado() {
 
-    const { getAllData, getBaseData, getAnimal, parir, secar, deletar } = useFetchs();
+    const { getAllData, getBaseData, getAnimal, parir, secar, deletar, confirmar } = useFetchs();
 
     const state = reactive({
         moreDetails: ref(false),
         showInsemDialog: ref(false),
+        isEdit: ref(false),
         headersDialog: ref([
             { text: "Nome", value: "nome", sortable: true },
             { text: "Crias", value: "crias", sortable: true },
@@ -115,11 +116,13 @@ export function useGado() {
         }
     }
 
-    async function openInsemDialog(id) {
+    async function openInsemDialog(id, isNew) {
         try {
             state.isDialogLoading = true;
             state.showInsemDialog = true;
-            state.animalData = await getAnimal(id);
+            state.isEdit = !isNew;
+            state.animalData = isNew ? await getAnimal(id) : state.gadoData.find((item) => item.id == id);
+            console.log("open dialog", state.animalData);
         } catch (e) {
             console.error(e);
         } finally {
@@ -150,6 +153,18 @@ export function useGado() {
         }
     }
 
+    async function confirmarGestacao(id){
+        try{
+            await confirmar(id);
+            state.isLoading = true;
+            state.gadoData = await getBaseData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isLoading = false;
+        }
+    }
+
     async function deletarAnimal(id) {
         try {
             await deletar(id);
@@ -171,7 +186,8 @@ export function useGado() {
         openInsemDialog,
         parirAnimal,
         secarAnimal,
-        deletarAnimal
+        deletarAnimal,
+        confirmarGestacao
     }
 }
 

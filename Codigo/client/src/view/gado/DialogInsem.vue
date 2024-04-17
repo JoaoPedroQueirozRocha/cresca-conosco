@@ -1,25 +1,26 @@
 <template>
-	<Dialog v-model="model" @update:model-value="changeModel" width="60%" height="fit-content" noOverflow>
-		<div class="">
+	<Dialog v-model="model" @update:model-value="cancelar" width="70%" height="fit-content" :noOverflow="!(dateOpened.data_insem || dateOpened.prev_parto)">
+		<div class="dialog-div" :class="{ bigger: dateOpened.data_insem || dateOpened.prev_parto }">
 			<div>
 				<h1 class="title">{{ animalData.nome }}</h1>
-				<Tab></Tab>
 			</div>
-			<div class="w-[100%] flex flex-col gap-4 mt-4">
+			<div class="w-[100%] flex flex-col gap-4">
 				<div class="flex md:flex-row flex-col gap-4">
-					<Select class="flex-1" label="Status" v-model="gestacaoData.status" :items="options" />
+					<Select class="flex-1" label="Status" @update:model-value="changeDisabled" v-model="gestacaoData.status" :items="options" />
 					<Select class="flex-1" label="Touro (semem)" v-model="gestacaoData.touro" :items="optionsTouro" />
 				</div>
-				<DatePicker label="Data Inseminação" v-model="gestacaoData.data_insem" />
+				<DatePicker label="Data Inseminação" v-model:expanded="dateOpened.data_insem" :max-date="new Date()" v-model="gestacaoData.data_insem" />
 				<DatePicker
 					label="Previsão parto"
+                    v-model:expanded="dateOpened.prev_parto"
+                    :min-date="new Date()"
 					v-model="gestacaoData.prev_parto"
-					:disabled="gestacaoData.status !== 'confirmada'"
+					:disabled="isDisabled"
 				/>
 			</div>
 			<div class="flex flex-row gap-4 justify-end">
-				<Button @click="changeModel">Cancelar</Button>
-				<Button @click="salvarGestacao()">Salvar</Button>
+				<Button @click="cancelar" only-border :disabled="loading">Cancelar</Button>
+				<Button @click="salvarGestacao()" :loading="loading">Salvar</Button>
 			</div>
 		</div>
 	</Dialog>
@@ -47,9 +48,23 @@ export default {
 			type: Boolean,
 			required: false,
 		},
+        isEdit: Boolean,
 	},
 	emits: ['update:modelValue', 'change'],
 	watch: {
+        animalData() {
+            if (this.animalData.status) {
+				this.gestacaoData = {
+                    animal_id: this.animalData.id,
+                    status: this.animalData.status,
+                    touro: this.animalData.touro,
+                    data_insem: this.animalData.data_insem ? new Date(this.animalData.data_insem) : null,
+                    prev_parto: this.animalData.prev_parto ? new Date(this.animalData.prev_parto) : null,
+                }
+			} else {
+                this.gestacaoData.animal_id = this.animalData.id;
+            }
+        },
 		modelValue() {
 			this.model = this.modelValue;
 		},
@@ -67,23 +82,18 @@ export default {
 		const options = ref(['pendente', 'confirmada', 'falhou', 'concluida']);
 		const optionsTouro = ref(['5/8', 'gir', 'boi']);
 		const gestacaoData = reactive({
-			animal_id: 31,
+			animal_id: 0 || null,
 			status: '',
 			touro: '',
 			data_insem: '',
 			prev_parto: '' || null,
 		});
-
-		watch(
-			() => gestacaoData.status,
-			(newStatus) => {
-				if (newStatus === 'confirmada' && gestacaoData.data_insem) {
-					const insemDate = new Date(gestacaoData.data_insem);
-					const prevPartoDate = insemDate.setDate(insemDate.getDate() + 283);
-					gestacaoData.prev_parto = prevPartoDate;
-				}
-			}
-		);
+        const loading = ref(false);
+        const isDisabled = ref(false);
+        const dateOpened = ref({
+            data_insem: false,
+            prev_parto: false,
+        });
 
 		const defaultAlert = ref({
 			top: true,
@@ -96,14 +106,14 @@ export default {
 			optionsTouro,
 			gestacaoData,
 			defaultAlert,
+            loading,
+            dateOpened,
+            isDisabled,
 		};
 	},
 
 	mounted() {
 		this.model = this.dialogModel;
-		if (this.animalData.status === 'confirmada') {
-			this.prev;
-		}
 	},
 
 	methods: {
@@ -111,6 +121,16 @@ export default {
 			this.model = value;
 			this.$emit('update:modelValue', this.model);
 		},
+        cancelar() {
+            this.changeModel(false);
+            this.gestacaoData = {
+                animal_id: null,
+                status: '',
+                touro: '',
+                data_insem: '',
+                prev_parto: '' || null,
+            };
+        },
 		async salvarGestacao() {
 			if (!this.validateData()) {
 				this.$alert({
@@ -118,13 +138,27 @@ export default {
 					...this.defaultAlert,
 				});
 			} else {
+                this.loading = true;
 				try {
-					const result = await gestacaoController.salvarGestacao(this.gestacaoData);
-					this.model = false;
-					return result;
+					console.log('salvarGestacao', this.gestacaoData);
+                    if (this.isEdit) await gestacaoController.editarGestacao(this.gestacaoData.animal_id, this.gestacaoData);
+					else await gestacaoController.salvarGestacao(this.gestacaoData);
+					this.$alert({
+                        message: 'Gestação salva com sucesso',
+                        type: 'success',
+                        ...this.defaultAlert,
+                    });
 				} catch (error) {
 					console.error(error);
-				}
+					this.$alert({
+                        message: 'Erro ao salvar gestação. Tente novamente mais tarde',
+                        ...this.defaultAlert,
+                    });
+				} finally {
+					this.cancelar();
+                    this.$emit('change');
+                    this.loading = false;
+                }
 			}
 		},
 		validateData() {
@@ -139,6 +173,37 @@ export default {
 				return this.gestacaoData.data_insem && this.gestacaoData.touro && this.gestacaoData.status;
 			}
 		},
+        changeDisabled(value) {
+            this.isDisabled = value != 'confirmada';
+            if (value === 'confirmada' && this.gestacaoData.data_insem) {
+                const insemDate = new Date(this.gestacaoData.data_insem);
+                const prevPartoDate = new Date(insemDate);
+                prevPartoDate.setDate(prevPartoDate.getDate() + 283);
+                this.gestacaoData.prev_parto = prevPartoDate;
+            }else if(value !== 'confirmada' && this.gestacaoData.prev_parto){
+                this.gestacaoData.prev_parto = null;
+            }
+        }
 	},
 };
 </script>
+<style scoped lang="scss">
+.dialog-div {
+  display: flex;
+  flex-direction: column;
+  min-height: 290px;
+  gap: 2em;
+  padding: 1em;
+  transition-duration: 1s;
+}
+
+.dialog-div.bigger {
+  min-height: 90vh;
+}
+
+@media screen and (max-width: 768px) {
+  .dialog-div {
+    width: 90vw;
+  }
+}
+</style>

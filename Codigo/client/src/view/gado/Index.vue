@@ -35,7 +35,7 @@
 				:items="filteredData ? filteredData : gadoData"
 				:headers="headers"
 				class="w-full gado-table"
-				:isLoading="isLoading"
+				:loading="isLoading"
 			>
 				<template #actions="{ item, index }">
 					<td class="w-2 cursor-pointer action">
@@ -55,9 +55,13 @@
 									Editar
 								</div>
 							</router-link>
-							<div class="action-option" @click="openInsemDialog(item.id)">
+							<div class="action-option" @click="openInsemDialog(item.id, true)">
 								<Icon name="vaccines" />
 								Inseminar
+							</div>
+                            <div class="action-option" @click="openInsemDialog(item.id)">
+								<Icon name="edit" />
+								Editar Gestão Atual
 							</div>
 							<div class="action-option" @click="parirAnimal(item.id)">
 								<Icon name="heart_check" />
@@ -67,7 +71,7 @@
 								<Icon name="menstrual_health" />
 								Secar
 							</div>
-							<div class="action-option delete" @click="confirmDeletion(item.id)">
+							<div class="action-option delete" @click="confirmDeletion(item.id, index)">
 								<Icon name="delete" />
 								Deletar
 							</div>
@@ -107,7 +111,7 @@
 				<template #status="{ item, index }">
 					<td>
 						<div class="flex justify-center">
-							<Tag :color="getColor(item.status)" :text="item.status" />
+							<Tag :color="getColor(item.status)" :text="item.status || 'Não inseminada'" />
 							<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 						</div>
 					</td>
@@ -146,6 +150,8 @@
 				v-model="showInsemDialog"
 				:animalData="animalData"
 				:isDialogLoading="isDialogLoading"
+                :isEdit="isEdit"
+                @change="loadBaseData"
 			></DialogInsem>
 		</div>
 	</div>
@@ -166,6 +172,7 @@ import Dialog from '@/components/Dialog.vue';
 import Tag from '@/components/Tag.vue';
 import DialogTable from './DialogTable.vue';
 import DialogInsem from './DialogInsem.vue';
+import animalController from "@/controller/animal";
 
 export default {
 	name: 'Gado',
@@ -189,10 +196,17 @@ export default {
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
+            confirmarGestacao,
+            isEdit
 		} = useGado();
 
 		const searchValue = ref('');
 		const { filteredData, getSelected } = useFilter(gadoData, filterOptions, searchValue);
+        const defaultAlert = ref({
+			top: true,
+			right: true,
+			timeout: 3500,
+		});
 		return {
 			gadoData,
 			allData,
@@ -218,6 +232,9 @@ export default {
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
+            confirmarGestacao,
+            defaultAlert,
+            isEdit,
 		};
 	},
 
@@ -252,7 +269,7 @@ export default {
 				const windowHeight = window.innerHeight;
 				const cardHeight = card.offsetHeight;
 				const height = rect.top + 40 + cardHeight;
-				card.style.left = rect.left - 100 + 'px';
+				card.style.left = rect.left - 200 + 'px';
 				if (height > windowHeight) {
 					delete card.style.top;
 					card.style.bottom = 0;
@@ -287,19 +304,32 @@ export default {
 			this.opendedIndex = null;
 		},
 
-		async confirmDeletion(id) {
+		async confirmDeletion(id, index) {
 			const result = await this.$confirm({
 				title: 'Tem certeza que deseja deletar esse item?',
 			});
-			if (result)
-				async () => {
-					await deletarAnimal(id);
-				};
+			if (result) {
+                try {
+                    await animalController.deletarAnimal(id);
+                    this.gadoData.splice(index, 1);
+                    this.$alert({
+                        message: 'Vaca deletada com sucesso',
+                        type: 'success',
+                        ...this.defaultAlert,
+                    });
+                } catch (error) {
+                    console.log(error)
+                    this.$alert({
+                        message: 'Erro ao deletar a vaca. Tente novamente mais tarde',
+                        ...this.defaultAlert,
+                    });
+                }
+            }
 		},
 
 		getColor(status) {
 			switch (status) {
-				case 'falha':
+				case 'falhou':
 					return 'red';
 				case 'pendente':
 					return 'yellow';
@@ -307,6 +337,8 @@ export default {
 					return 'blue';
 				case 'concluida':
 					return 'green';
+                default:
+                    return 'gray';
 			}
 		},
 	},
