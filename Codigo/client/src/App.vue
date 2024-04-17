@@ -37,7 +37,7 @@ export default {
 	<div class="grid-template" :class="{ small: expanded && !isPhone, 'is-phone': isPhone }">
 		<Menu @update:is-menu-opened="changeExpanded" />
 		<Topbar />
-		<div class="md:mt-14 mt-20 w-full h-fit md:px-8 content pb-4">
+		<div class="md:mt-14 mt-20 w-full h-fit md:px-8 content pb-8">
 			<router-view />
 		</div>
 	</div>

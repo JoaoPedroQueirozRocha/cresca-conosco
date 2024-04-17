@@ -2,8 +2,8 @@
 	<div class="flex flex-col w-full mt-[3em]">
 		<div class="w-fullflex flex-col gap-3">
 			<div class="mb-3">
-				<div class="flex flex-row w-full justify-between items-center align-middle mb-8">
-					<h2 class="title">Funcionários</h2>
+				<div class="flex flex-row w-full justify-between items-center align-middle my-4">
+					<h2 class="title mt-0">Funcionários</h2>
 					<router-link to="/funcionario">
 						<Button>Adicionar</Button>
 					</router-link>
@@ -17,7 +17,7 @@
 						</Button>
 						<Filter
 							v-model="filterOptions"
-							class="top-12 right-0 absolute z-50 filter"
+							class="top-12 md:left-auto md:right-0 left-0 absolute z-50 filter"
 							v-show="showFilter"
 						/>
 					</div>
@@ -168,22 +168,21 @@ export default {
 	computed: {
 		filteredDate() {
             let filteredData = this.funcionarioData;
-            if (this.getSelected.length) {
-                filteredData = filteredData.filter((item) => {
-                    let returnItem = false;
-                    this.getSelected.forEach((selected) => {
-						if (returnItem) return;
-
-                        if (selected.fatherValue) {
-                            returnItem = item[selected.fatherValue] == selected.value;
-                        }
-                        else if (item[selected.value]) {
-                            returnItem = !!item[selected.value];
-                        }
-                    });
-					if (returnItem) return item;
-                });
-            }
+			if (getSelected.value.length) {
+				filteredData = filteredData.filter((item) => {
+					const returnItem = {};
+		
+					getSelected.value.forEach((selected) => {
+						if (selected.fatherValue) {
+							returnItem[selected.fatherValue] = returnItem[selected.fatherValue] || item[selected.fatherValue] == selected.value
+						} else {
+							returnItem[selected.value] =  !!item[selected.value];
+						}
+					});
+					const keys = Object.keys(returnItem).filter((key) => returnItem[key]);
+					if (keys.length == Object.keys(returnItem).length) return item;
+				});
+			}
 
             if (!this.searchValue) return filteredData;
 

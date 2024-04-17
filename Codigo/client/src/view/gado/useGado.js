@@ -3,51 +3,53 @@ import { useFetchs } from "./useFetchs.js";
 
 export function useGado() {
 
-    const { getAllData, getBaseData } = useFetchs();
+    const { getAllData, getBaseData, getAnimal, parir, secar, deletar, confirmar } = useFetchs();
 
     const state = reactive({
         moreDetails: ref(false),
+        showInsemDialog: ref(false),
+        isEdit: ref(false),
         headersDialog: ref([
             { text: "Nome", value: "nome", sortable: true },
             { text: "Crias", value: "crias", sortable: true },
-            { text: "DP", value: "dp", sortable: true },
             {
-                text: "Prox.Inseminação",
-                value: "proxInseminacao",
+                text: "Data.Insem",
+                value: "dataInsem",
                 sortable: true,
             },
             { text: "Prev.Parto", value: "prevParto", sortable: true },
-            { text: "Sêmem", value: "semem", sortable: true },
+            { text: "Touro", value: "touro", sortable: true },
             {
                 text: "Lactante",
                 value: "lactante",
                 sortable: true,
                 align: "center",
             },
-            { text: "Num.Insem", value: "numInsem", sortable: true },
+            // { text: "Num.Insem", value: "numInsem", sortable: true },
             { text: "Status", value: "status", sortable: true },
         ]),
         headers: ref([
             { text: "Nome", value: "nome", sortable: true },
             {
-                text: "Prox.Inseminação",
-                value: "proxInseminacao",
+                text: "Data.Insem",
+                value: "dataInsem",
                 sortable: true,
             },
             { text: "Prev.Parto", value: "prevParto", sortable: true },
-            { text: "Sêmen", value: "semen", align: "center", sortable: true },
+            { text: "Touro", value: "touro", align: "center", sortable: true },
             {
                 text: "Lactante",
                 value: "lactante",
                 sortable: true,
                 align: "center",
             },
-            { text: "Status", value: "status", sortable: true },
+            { text: "Status", value: "status", align: "center", sortable: true },
         ]),
         filterOptions: ref([
             {
                 text: 'Seca',
-                value: 'seca',
+                fatherValue: 'lactante',
+                value: false,
                 selected: false,
             },
             {
@@ -56,13 +58,14 @@ export function useGado() {
                 selected: false,
             },
             {
-                text: 'Grávida',
-                value: 'gravida',
+                text: 'Prenha',
+                value: 'confirmada',
+                fatherValue: 'status',
                 selected: false,
             },
             {
                 text: 'Sêmen',
-                value: 'semem',
+                value: 'touro',
                 childs: [
                     {
                         text: '5/8',
@@ -74,6 +77,11 @@ export function useGado() {
                         value: 'gir',
                         selected: false,
                     },
+                    {
+                        text: 'Touro',
+                        value: 'touro',
+                        selected: false,
+                    },
                 ],
             },
         ]),
@@ -81,6 +89,7 @@ export function useGado() {
         isDialogLoading: ref(false),
         allData: ref([]),
         gadoData: ref([]),
+        animalData: ref([]),
     })
 
     async function loadBaseData() {
@@ -104,14 +113,80 @@ export function useGado() {
         } finally {
             state.isDialogLoading = false;
         }
-
     }
+
+    async function openInsemDialog(id, isNew) {
+        try {
+            state.isDialogLoading = true;
+            state.showInsemDialog = true;
+            state.isEdit = !isNew;
+            state.animalData = isNew ? await getAnimal(id) : state.gadoData.find((item) => item.id == id);
+            console.log("open dialog", state.animalData);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isDialogLoading = false;
+        }
+    }
+
+    async function parirAnimal(id) {
+        try {
+            await parir(id);
+            state.isLoading = true;
+            state.gadoData = await getBaseData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isLoading = false;
+        }
+    }
+    async function secarAnimal(id) {
+        try {
+            await secar(id);
+            state.isLoading = true;
+            state.gadoData = await getBaseData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isLoading = false;
+        }
+    }
+
+    async function confirmarGestacao(id){
+        try{
+            await confirmar(id);
+            state.isLoading = true;
+            state.gadoData = await getBaseData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isLoading = false;
+        }
+    }
+
+    async function deletarAnimal(id) {
+        try {
+            await deletar(id);
+            state.isLoading = true;
+            state.gadoData = await getBaseData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isLoading = false;
+        }
+    }
+
 
 
     return {
         ...toRefs(state),
         createDialog,
         loadBaseData,
+        openInsemDialog,
+        parirAnimal,
+        secarAnimal,
+        deletarAnimal,
+        confirmarGestacao
     }
 }
 

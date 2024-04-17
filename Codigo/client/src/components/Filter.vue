@@ -5,7 +5,7 @@ import Checkbox from './Checkbox.vue';
 import Card from './Card.vue';
 
 export default {
-    name: 'SelectContainer',
+    name: 'Filter',
     components: { Icon, Checkbox, Card },
     props: {
         modelValue: {
@@ -81,7 +81,7 @@ export default {
 @import "../style/var.scss";
 
 .filter-holder {
-    @apply flex flex-col p-0 overflow-hidden divide-y-[.1em] divide-gray-100;
+    @apply flex flex-col p-0 overflow-hidden divide-y-[.1em] divide-gray-100 min-w-[10em];
 }
 
 .have-childs-card {
