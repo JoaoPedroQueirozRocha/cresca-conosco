@@ -1,13 +1,13 @@
 import * as animalsServices from "../services/animalsServices.js";
 
-async function getAnimalByName(req, res) {
+async function getAnimalById(req, res) {
     try {
-        const nome = req.params.nome;
-        const animal = await animalsServices.getAnimalByName(nome);
+        const { id } = req.params
+        const animal = await animalsServices.getAnimalById(id);
 
         if (!animal) throw new Error("Animal não encontrado");
 
-        res.json(animal);
+        res.status(200).json(animal);
     } catch (error) {
         console.error(error);
         res.status(error.status).send("Erro ao executar a query " + error.message);
@@ -20,15 +20,16 @@ async function createNewAnimal(req, res) {
         const animal = await animalsServices.createNewAnimal(body);
         res.json(animal);
     } catch (error) {
+        console.error(error);
         res.status(error.status).send("Erro ao executar a query " + error.message);
     }
 }
 
-async function updateAnimalByName(req, res) {
+async function updateAnimalById(req, res) {
     try {
         const body = req.body;
-        const nome = req.params.nome;
-        const animal = await animalsServices.updateAnimalByName(nome, body);
+        const { id } = req.params
+        const animal = await animalsServices.updateAnimalById(id, body);
 
         if (!animal) throw new Error('Animal não encontrado');
 
@@ -38,23 +39,24 @@ async function updateAnimalByName(req, res) {
     }
 }
 
-async function deleteAnimalByName(req, res) {
+async function deleteAnimalById(req, res) {
     try {
-        const nome = req.params.nome;
-        const animal = await animalsServices.deleteAnimalByName(nome);
+        const id = req.params.id;
+        const animal = await animalsServices.deleteAnimalById(id);
 
         if (!animal) throw new Error('Animal não encontrado');
 
         res.json(animal);
     } catch (error) {
+        console.error(error);
         res.status(error.status).send("Erro ao executar a query " + error.message);
     }
 }
 
 
 export {
-    getAnimalByName,
+    getAnimalById,
     createNewAnimal,
-    updateAnimalByName,
-    deleteAnimalByName,
+    updateAnimalById,
+    deleteAnimalById,
 };

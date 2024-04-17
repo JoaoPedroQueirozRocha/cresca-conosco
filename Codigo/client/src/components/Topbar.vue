@@ -3,12 +3,13 @@ import { ref } from "vue";
 import Card from "./Card.vue";
 import Notification from "./Notification.vue";
 import Button from "./Button.vue";
+import Icon from './Icon.vue';
 import NotificationController from "../controller/notification"
 
 
 export default {
 	name: "Topbar",
-	components: { Card, Notification, Button },
+	components: { Card, Notification, Button, Icon },
 	inject: ["Auth"],
 	setup() {
 		return {
@@ -34,13 +35,13 @@ export default {
 			this.closeDropdown(
 				event,
 				this.notification?.$el,
-				this.notificationIcon,
+				this.notificationIcon?.$el,
 				"notificationActive"
 			);
 			this.closeDropdown(
 				event,
 				this.perfilDropdown?.$el,
-				this.perfilIcon,
+				this.perfilIcon?.$el,
 				"perfilDropdownActive"
 			);
 		});
@@ -122,22 +123,28 @@ export default {
 	<div class="top-holder">
 		<div class="relative flex gap-2">
 			<div>
-				<span class="material-symbols-rounded top-icon" ref="notificationIcon"
-					:class="{ active: notificationActive }" @click="activate(!notificationActive, false)">
-					circle_notifications
-				</span>
+				<Icon
+					class="top-icon"
+					name="circle_notifications"
+					ref="notificationIcon"
+					:class="{ active: notificationActive }"
+					@click="activate(!notificationActive, false)"
+				/>
 			</div>
 			<div>
-				<span class="material-symbols-rounded top-icon" ref="perfilIcon"
-					:class="{ active: perfilDropdownActive }" @click="activate(false, !perfilDropdownActive)">
-					account_circle
-				</span>
+				<Icon
+					class="top-icon"
+					name="account_circle"
+					ref="perfilIcon"
+					:class="{ active: perfilDropdownActive }"
+					@click="activate(false, !perfilDropdownActive)"
+				/>
 			</div>
 			<div class="absolute right-0 top-14">
 				<Notification v-if="notificationActive" ref="notification" :items="notifications">
 					<template #empty-state>
 						<div class="empty-state">
-							<span class="material-symbols-rounded"> notifications </span>
+							<Icon name="notifications" />
 							Sem notificações
 						</div>
 					</template>
@@ -147,9 +154,11 @@ export default {
 								<h5 class="text-xl font-bold">{{ item.titulo }}</h5>
 								<p class="description">{{ item.descricao }}</p>
 							</div>
-							<span class="material-symbols-rounded delete-icon" @click="deleteNotification(item, index)">
-								delete
-							</span>
+							<Icon
+								class="delete-icon"
+								name="delete"
+								@click="deleteNotification(item, index)"
+							/>
 						</div>
 					</template>
 				</Notification>

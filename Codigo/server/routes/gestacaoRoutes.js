@@ -3,9 +3,101 @@ import * as gestacaoController from "../controller/gestacaoController.js";
 
 const router = express.Router();
 
-router.get("/:nome_animal", gestacaoController.getGestacaoByAnimal);
+/**
+ * @swagger
+ * tags:
+ *  - name: Gestacao
+ *    description: Rotas para realizar operaçes na tabela de gestaçoes
+ */
+
+/**
+ * @swagger
+ * /gestacao/{animal_id}:
+ *  get:
+ *   summary: Retorna as informaçes daquele animal específico]
+ *   tags: [Gestacao]
+ *   parameters: 
+ *    - in: path
+ *      name: animal_id
+ *      required: true
+ *      schema:
+ *          type: string
+ *      description: id do animal específico
+ *   responses:
+ *      200:
+ *          description: Gestacao encontrada
+ *          content: 
+ *              application/json:
+ *               schema: 
+ *                  $ref: '#components/schemas/Gestacao'
+ */
+router.get("/:animal_id", gestacaoController.getGestacaoByAnimal);
+
+/**
+ * @swagger
+ * /gestacao/:
+ *   post:
+ *     summary: Cria uma gestação
+ *     tags: [Gestacao]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Gestacao'
+ *     responses:
+ *       201:
+ *         description: Gestação criada
+ */
+
 router.post("/", gestacaoController.createGestacao);
-router.put("/:nome_animal", gestacaoController.updateGestacao);
+
+/**
+ * @swagger
+ * /gestacao/{animal_id}:
+ *  put:
+ *   summary: Atualiza as informaçes daquele animal específico
+ *   tags: [Gestacao]
+ *   parameters: 
+ *    - in: path
+ *      name: animal_id
+ *      required: true
+ *      schema:
+ *          type: animal_id
+ *      description: nome do animal específico
+ *   requestBody:
+ *    required: true
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#components/schemas/Gestacao'
+ *   responses:
+ *      200:
+ *          description: Gestacao encontrada
+ *          content: 
+ *              application/json:
+ *               schema: 
+ *                  $ref: '#components/schemas/Gestacao'
+ */
+router.put("/:animal_id", gestacaoController.updateGestacao);
+
+/**
+ * @swagger
+ * /gestacao/{animal_id}:
+ *  delete:
+ *   summary: Deleta uma gestação
+ *   tags: [Gestacao]
+ *   parameters: 
+ *    - in: path
+ *      name: animal_id
+ *      required: true
+ *      schema:
+ *          type: string
+ *      description: id do animal específico
+ *  responses:
+ *      200:
+ *          description: Gestacao deletada
+ */
 router.delete("/:nome_animal", gestacaoController.deleteGestacao);
 
 export default router;
