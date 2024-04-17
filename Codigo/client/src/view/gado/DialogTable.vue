@@ -6,16 +6,11 @@
 			</td>
 		</template>
 		<template #crias="{ item, index }">
-			<td>{{ item.crias }}</td>
+			<td>{{ item.crias ? item.crias : 0 }}</td>
 		</template>
-		<template #dp="{ item, index }">
+		<template #dataInsem="{ item, index }">
 			<td>
-				{{ item.dias_parida ? item.dias_parida : '-' }}
-			</td>
-		</template>
-		<template #proxInseminacao="{ item, index }">
-			<td>
-				{{ item.proxima_insem ? item.proxima_insem : '-' }}
+				{{ item.data_insem ? new Date(item.data_insem).toLocaleDateString() : '-' }}
 			</td>
 		</template>
 		<template #prevParto="{ item, index }">
@@ -23,9 +18,9 @@
 				{{ item.prev_parto ? new Date(item.prev_parto).toLocaleDateString() : '-' }}
 			</td>
 		</template>
-		<template #semem="{ item, index }">
+		<template #touro="{ item, index }">
 			<td class="text-center">
-				{{ item.semem }}
+				{{ item.touro }}
 				<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 			</td>
 		</template>
@@ -38,14 +33,14 @@
 				<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 			</td>
 		</template>
-		<template #numInsem="{ item, index }">
+		<!-- <template #numInsem="{ item, index }">
 			<td>
 				{{ item.num_insem }}
 			</td>
-		</template>
+		</template> -->
 		<template #status="{ item, index }">
 			<td>
-				{{ item.status }}
+                <Tag :color="getColor(item.status)" :text="item.status || 'Não inseminada'" />
 			</td>
 		</template>
 		<template #empty-state>
@@ -60,6 +55,7 @@
 <script>
 import Table from '@/components/Table.vue';
 import Icon from '@/components/Icon.vue';
+import Tag from '@/components/Tag.vue';
 import { ref } from 'vue';
 
 export default {
@@ -81,6 +77,7 @@ export default {
 	components: {
 		Table,
 		Icon,
+        Tag
 	},
 	setup() {
 		return {
@@ -100,6 +97,24 @@ export default {
 			});
 		},
 	},
+
+    methods: {
+
+		getColor(status) {
+			switch (status) {
+				case 'falhou':
+					return 'red';
+				case 'pendente':
+					return 'yellow';
+				case 'confirmada':
+					return 'blue';
+				case 'concluida':
+					return 'green';
+                default:
+                    return 'gray';
+			}
+		},
+    }
 };
 </script>
 

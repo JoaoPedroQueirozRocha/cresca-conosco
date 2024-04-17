@@ -12,10 +12,9 @@ export function useGado() {
         headersDialog: ref([
             { text: "Nome", value: "nome", sortable: true },
             { text: "Crias", value: "crias", sortable: true },
-            { text: "DP", value: "dp", sortable: true },
             {
                 text: "Data.Insem",
-                value: "dataInseminacao",
+                value: "dataInsem",
                 sortable: true,
             },
             { text: "Prev.Parto", value: "prevParto", sortable: true },
@@ -26,7 +25,7 @@ export function useGado() {
                 sortable: true,
                 align: "center",
             },
-            { text: "Num.Insem", value: "numInsem", sortable: true },
+            // { text: "Num.Insem", value: "numInsem", sortable: true },
             { text: "Status", value: "status", sortable: true },
         ]),
         headers: ref([
