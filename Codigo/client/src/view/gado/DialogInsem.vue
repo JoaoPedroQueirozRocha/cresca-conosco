@@ -1,6 +1,6 @@
 <template>
-	<Dialog v-model="model" @update:model-value="changeModel" width="60%" height="fit-content" noOverflow>
-		<div class="">
+	<Dialog v-model="model" @update:model-value="changeModel" width="70%" height="fit-content" :noOverflow="!(dateOpened.data_insem || dateOpened.prev_parto)">
+		<div class="dialog-div" :class="{ bigger: dateOpened.data_insem || dateOpened.prev_parto }">
 			<div>
 				<h1 class="title">{{ animalData.nome }}</h1>
 				<Tab></Tab>
@@ -10,16 +10,18 @@
 					<Select class="flex-1" label="Status" v-model="gestacaoData.status" :items="options" />
 					<Select class="flex-1" label="Touro (semem)" v-model="gestacaoData.touro" :items="optionsTouro" />
 				</div>
-				<DatePicker label="Data Inseminação" v-model="gestacaoData.data_insem" />
+				<DatePicker label="Data Inseminação"v-model:expanded="dateOpened.data_insem" :max-date="new Date()" v-model="gestacaoData.data_insem" />
 				<DatePicker
 					label="Previsão parto"
+                    v-model:expanded="dateOpened.prev_parto"
+                    :min-date="new Date()"
 					v-model="gestacaoData.prev_parto"
 					:disabled="gestacaoData.status !== 'confirmada'"
 				/>
 			</div>
 			<div class="flex flex-row gap-4 justify-end">
-				<Button @click="changeModel">Cancelar</Button>
-				<Button @click="salvarGestacao()">Salvar</Button>
+				<Button @click="changeModel" only-border :disabled="loading">Cancelar</Button>
+				<Button @click="salvarGestacao()" :loading="loading">Salvar</Button>
 			</div>
 		</div>
 	</Dialog>
@@ -73,6 +75,11 @@ export default {
 			data_insem: '',
 			prev_parto: '' || null,
 		});
+        const loading = ref(false);
+        const dateOpened = ref({
+            data_insem: false,
+            prev_parto: false,
+        }); 
 
 		watch(
 			() => gestacaoData.status,
@@ -96,6 +103,8 @@ export default {
 			optionsTouro,
 			gestacaoData,
 			defaultAlert,
+            loading,
+            dateOpened,
 		};
 	},
 
@@ -118,14 +127,25 @@ export default {
 					...this.defaultAlert,
 				});
 			} else {
+                this.loading = true;
 				try {
 					console.log('salvarGestacao', this.gestacaoData);
 					const result = await gestacaoController.salvarGestacao(this.gestacaoData);
-					this.model = false;
-					return result;
+					this.$alert({
+                        message: 'Inseminação feita com sucesso',
+                        type: 'success',
+                        ...this.defaultAlert,
+                    });
 				} catch (error) {
 					console.error(error);
-				}
+					this.$alert({
+                        message: 'Erro ao inseminar a vaca. Tente novamente mais tarde',
+                        ...this.defaultAlert,
+                    });
+				} finally {
+					this.model = false;
+                    this.loading = false;
+                }
 			}
 		},
 		validateData() {
@@ -143,3 +163,23 @@ export default {
 	},
 };
 </script>
+<style scoped lang="scss">
+.dialog-div {
+  display: flex;
+  flex-direction: column;
+  min-height: 290px;
+  gap: 2em;
+  padding: 1em;
+  transition-duration: 1s;
+}
+
+.dialog-div.bigger {
+  min-height: 90vh;
+}
+
+@media screen and (max-width: 768px) {
+  .dialog-div {
+    width: 90vw;
+  }
+}
+</style>

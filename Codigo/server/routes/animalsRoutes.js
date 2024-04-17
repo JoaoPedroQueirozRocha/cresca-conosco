@@ -90,6 +90,6 @@ router.put("/:id", animalsController.updateAnimalById);
  *   200:
  *    description: Animal deletado
  */
-router.delete("/:id", animalsController.deleteAnimalByName);
+router.delete("/:id", animalsController.deleteAnimalById);
 
 export default router;

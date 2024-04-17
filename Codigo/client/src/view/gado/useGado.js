@@ -3,7 +3,7 @@ import { useFetchs } from "./useFetchs.js";
 
 export function useGado() {
 
-    const { getAllData, getBaseData, getAnimal, parir, secar, deletar } = useFetchs();
+    const { getAllData, getBaseData, getAnimal, parir, secar, deletar, confirmar } = useFetchs();
 
     const state = reactive({
         moreDetails: ref(false),
@@ -151,6 +151,18 @@ export function useGado() {
         }
     }
 
+    async function confirmarGestacao(id){
+        try{
+            await confirmar(id);
+            state.isLoading = true;
+            state.gadoData = await getBaseData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isLoading = false;
+        }
+    }
+
     async function deletarAnimal(id) {
         try {
             await deletar(id);
@@ -172,7 +184,8 @@ export function useGado() {
         openInsemDialog,
         parirAnimal,
         secarAnimal,
-        deletarAnimal
+        deletarAnimal,
+        confirmarGestacao
     }
 }
 

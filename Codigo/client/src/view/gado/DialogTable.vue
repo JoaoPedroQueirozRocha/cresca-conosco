@@ -6,7 +6,7 @@
 			</td>
 		</template>
 		<template #crias="{ item, index }">
-			<td>{{ item.crias }} 2</td>
+			<td>{{ item.crias }}</td>
 		</template>
 		<template #dp="{ item, index }">
 			<td>

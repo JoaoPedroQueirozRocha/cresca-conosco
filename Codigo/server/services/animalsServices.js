@@ -45,7 +45,7 @@ async function updateAnimalById(id, updates) {
     return result.rows[0];
 }
 
-async function deleteAnimalByName(id) {
+async function deleteAnimalById(id) {
     const animal = await getAnimalById(id);
 
     if (!animal) throw new Error("Animal não encontrado");
@@ -54,12 +54,12 @@ async function deleteAnimalByName(id) {
         id,
     ]);
 
-    return result.rows[0];
+    return result.rowCount;
 }
 
 export {
     getAnimalById,
     createNewAnimal,
     updateAnimalById,
-    deleteAnimalByName,
+    deleteAnimalById,
 };

@@ -10,9 +10,13 @@ async function parir(id) {
     return await axios.put(`${APIURL}/${id}`, { status: 'concluida' });
 }
 
+async function confirmarGestacao(id) {
+    return await axios.put(`${APIURL}/${id}`, { status: 'confirmada' });
+}
+
 async function deletarGestacao(id) {
     return await axios.delete(`${APIURL}/${id}`);
 }
 
-export default { salvarGestacao, parir, deletarGestacao };
+export default { salvarGestacao, parir, confirmarGestacao, deletarGestacao };
 

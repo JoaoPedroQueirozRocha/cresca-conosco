@@ -35,7 +35,7 @@
 				:items="filteredData ? filteredData : gadoData"
 				:headers="headers"
 				class="w-full gado-table"
-				:isLoading="isLoading"
+				:loading="isLoading"
 			>
 				<template #actions="{ item, index }">
 					<td class="w-2 cursor-pointer action">
@@ -59,6 +59,10 @@
 								<Icon name="vaccines" />
 								Inseminar
 							</div>
+                            <!-- <div class="action-option" @click="confirmarGestacao(item.id)">
+								<Icon name="heart_check" />
+								Confirmar
+							</div> -->
 							<div class="action-option" @click="parirAnimal(item.id)">
 								<Icon name="heart_check" />
 								Parir
@@ -67,7 +71,7 @@
 								<Icon name="menstrual_health" />
 								Secar
 							</div>
-							<div class="action-option delete" @click="confirmDeletion(item.id)">
+							<div class="action-option delete" @click="confirmDeletion(item.id, index)">
 								<Icon name="delete" />
 								Deletar
 							</div>
@@ -107,7 +111,7 @@
 				<template #status="{ item, index }">
 					<td>
 						<div class="flex justify-center">
-							<Tag :color="getColor(item.status)" :text="item.status" />
+							<Tag :color="getColor(item.status)" :text="item.status || 'Não inseminada'" />
 							<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 						</div>
 					</td>
@@ -166,6 +170,7 @@ import Dialog from '@/components/Dialog.vue';
 import Tag from '@/components/Tag.vue';
 import DialogTable from './DialogTable.vue';
 import DialogInsem from './DialogInsem.vue';
+import animalController from "@/controller/animal";
 
 export default {
 	name: 'Gado',
@@ -189,10 +194,16 @@ export default {
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
+            confirmarGestacao
 		} = useGado();
 
 		const searchValue = ref('');
 		const { filteredData, getSelected } = useFilter(gadoData, filterOptions, searchValue);
+        const defaultAlert = ref({
+			top: true,
+			right: true,
+			timeout: 3500,
+		});
 		return {
 			gadoData,
 			allData,
@@ -218,6 +229,8 @@ export default {
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
+            confirmarGestacao,
+            defaultAlert,
 		};
 	},
 
@@ -287,14 +300,27 @@ export default {
 			this.opendedIndex = null;
 		},
 
-		async confirmDeletion(id) {
+		async confirmDeletion(id, index) {
 			const result = await this.$confirm({
 				title: 'Tem certeza que deseja deletar esse item?',
 			});
-			if (result)
-				async () => {
-					await deletarAnimal(id);
-				};
+			if (result) {
+                try {
+                    await animalController.deletarAnimal(id);
+                    this.gadoData.splice(index, 1);
+                    this.$alert({
+                        message: 'Vaca deletada com sucesso',
+                        type: 'success',
+                        ...this.defaultAlert,
+                    });
+                } catch (error) {
+                    console.log(error)
+                    this.$alert({
+                        message: 'Erro ao deletar a vaca. Tente novamente mais tarde',
+                        ...this.defaultAlert,
+                    });
+                }
+            }
 		},
 
 		getColor(status) {
@@ -307,6 +333,8 @@ export default {
 					return 'blue';
 				case 'concluida':
 					return 'green';
+                default:
+                    return 'gray';
 			}
 		},
 	},

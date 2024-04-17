@@ -39,15 +39,16 @@ async function updateAnimalById(req, res) {
     }
 }
 
-async function deleteAnimalByName(req, res) {
+async function deleteAnimalById(req, res) {
     try {
-        const nome = req.params.nome;
-        const animal = await animalsServices.deleteAnimalByName(nome);
+        const id = req.params.id;
+        const animal = await animalsServices.deleteAnimalById(id);
 
         if (!animal) throw new Error('Animal não encontrado');
 
         res.json(animal);
     } catch (error) {
+        console.error(error);
         res.status(error.status).send("Erro ao executar a query " + error.message);
     }
 }
@@ -57,5 +58,5 @@ export {
     getAnimalById,
     createNewAnimal,
     updateAnimalById,
-    deleteAnimalByName,
+    deleteAnimalById,
 };
