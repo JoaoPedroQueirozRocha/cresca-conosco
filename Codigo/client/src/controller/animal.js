@@ -15,7 +15,6 @@ function updateAnimal(id, animal) {
 }
 
 async function secar(animal_id) {
-    console.log("secar", animal_id);
     return await axios.put(`${APIURL}/${animal_id}`, { lactante: false });
 }
 

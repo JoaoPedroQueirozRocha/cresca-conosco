@@ -80,7 +80,7 @@ export default {
 	},
 	setup() {
 		const options = ref(['pendente', 'confirmada', 'falhou', 'concluida']);
-		const optionsTouro = ref(['5/8', 'gir', 'touro']);
+		const optionsTouro = ref(['5/8', 'gir', 'boi']);
 		const gestacaoData = reactive({
 			animal_id: 0 || null,
 			status: '',
