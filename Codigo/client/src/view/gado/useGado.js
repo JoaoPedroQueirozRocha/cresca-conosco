@@ -115,11 +115,11 @@ export function useGado() {
         }
     }
 
-    async function openInsemDialog(id) {
+    async function openInsemDialog(id, isNew) {
         try {
             state.isDialogLoading = true;
             state.showInsemDialog = true;
-            state.animalData = await getAnimal(id);
+            state.animalData = isNew ? await getAnimal(id) : state.gadoData.find((item) => item.id == id);
             console.log("open dialog", state.animalData);
         } catch (e) {
             console.error(e);

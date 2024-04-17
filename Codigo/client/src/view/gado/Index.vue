@@ -55,14 +55,14 @@
 									Editar
 								</div>
 							</router-link>
-							<div class="action-option" @click="openInsemDialog(item.id)">
+							<div class="action-option" @click="openInsemDialog(item.id, true)">
 								<Icon name="vaccines" />
 								Inseminar
 							</div>
-                            <!-- <div class="action-option" @click="confirmarGestacao(item.id)">
-								<Icon name="heart_check" />
-								Confirmar
-							</div> -->
+                            <div class="action-option" @click="openInsemDialog(item.id)">
+								<Icon name="edit" />
+								Editar Gestão Atual
+							</div>
 							<div class="action-option" @click="parirAnimal(item.id)">
 								<Icon name="heart_check" />
 								Parir
@@ -198,6 +198,7 @@ export default {
 		} = useGado();
 
 		const searchValue = ref('');
+        const actualGestacao = ref({});
 		const { filteredData, getSelected } = useFilter(gadoData, filterOptions, searchValue);
         const defaultAlert = ref({
 			top: true,
@@ -265,7 +266,7 @@ export default {
 				const windowHeight = window.innerHeight;
 				const cardHeight = card.offsetHeight;
 				const height = rect.top + 40 + cardHeight;
-				card.style.left = rect.left - 100 + 'px';
+				card.style.left = rect.left - 200 + 'px';
 				if (height > windowHeight) {
 					delete card.style.top;
 					card.style.bottom = 0;

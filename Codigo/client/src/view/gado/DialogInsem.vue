@@ -1,9 +1,8 @@
 <template>
-	<Dialog v-model="model" @update:model-value="changeModel" width="70%" height="fit-content" :noOverflow="!(dateOpened.data_insem || dateOpened.prev_parto)">
+	<Dialog v-model="model" @update:model-value="cancelar" width="70%" height="fit-content" :noOverflow="!(dateOpened.data_insem || dateOpened.prev_parto)">
 		<div class="dialog-div" :class="{ bigger: dateOpened.data_insem || dateOpened.prev_parto }">
 			<div>
 				<h1 class="title">{{ animalData.nome }}</h1>
-				<Tab></Tab>
 			</div>
 			<div class="w-[100%] flex flex-col gap-4 mt-4">
 				<div class="flex md:flex-row flex-col gap-4">
@@ -20,7 +19,7 @@
 				/>
 			</div>
 			<div class="flex flex-row gap-4 justify-end">
-				<Button @click="changeModel" only-border :disabled="loading">Cancelar</Button>
+				<Button @click="cancelar" only-border :disabled="loading">Cancelar</Button>
 				<Button @click="salvarGestacao()" :loading="loading">Salvar</Button>
 			</div>
 		</div>
@@ -52,6 +51,20 @@ export default {
 	},
 	emits: ['update:modelValue', 'change'],
 	watch: {
+        animalData() {
+            console.log(this.model)
+            if (this.animalData.status) {
+				this.gestacaoData = {
+                    animal_id: this.animalData.id,
+                    status: this.animalData.status,
+                    touro: this.animalData.touro,
+                    data_insem: this.animalData.data_insem ? new Date(this.animalData.data_insem) : null,
+                    prev_parto: this.animalData.prev_parto ? new Date(this.animalData.prev_parto) : null,
+                }
+			} else {
+                this.gestacaoData.animal_id = this.animalData.id;
+            }
+        },
 		modelValue() {
 			this.model = this.modelValue;
 		},
@@ -110,9 +123,6 @@ export default {
 
 	mounted() {
 		this.model = this.dialogModel;
-		if (this.animalData.status === 'confirmada') {
-			this.prev;
-		}
 	},
 
 	methods: {
@@ -120,6 +130,16 @@ export default {
 			this.model = value;
 			this.$emit('update:modelValue', this.model);
 		},
+        cancelar() {
+            this.changeModel(false);
+            this.gestacaoData = {
+                animal_id: null,
+                status: '',
+                touro: '',
+                data_insem: '',
+                prev_parto: '' || null,
+            };
+        },
 		async salvarGestacao() {
 			if (!this.validateData()) {
 				this.$alert({
@@ -143,7 +163,7 @@ export default {
                         ...this.defaultAlert,
                     });
 				} finally {
-					this.model = false;
+					this.cancelar();
                     this.loading = false;
                 }
 			}
