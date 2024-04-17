@@ -76,6 +76,10 @@
 					</div>
 				</template>
 			</Table>
+			<div class="flex flex-row w-full justify-between items-center align-middle my-4">
+					<h2 class="title mt-0"></h2>
+						<Button @click="downloadImage">Download Tabela</Button>
+				</div>
 		</div>
 	</div>
 </template>
@@ -89,6 +93,8 @@ import Icon from "@/components/Icon.vue";
 import Checkbox from "@/components/Checkbox.vue";
 import Filter from "@/components/Filter.vue";
 import { useFetchs } from "./useFetchs.js";
+
+import html2canvas from 'html2canvas';
 
 
 export default {
@@ -152,6 +158,17 @@ export default {
             },
         ]);
 
+		const downloadImage = () => {
+      const table = document.querySelector('.funcionarios-table');
+      html2canvas(table).then(canvas => {
+        const imgData = canvas.toDataURL('image/jpeg');
+        const link = document.createElement('a');
+        link.href = imgData;
+        link.download = 'funcionarios.jpg';
+        link.click();
+      });
+    };
+
         return {
             funcionarioData,
             getBaseData,
@@ -162,6 +179,7 @@ export default {
 			showFilter: ref(false),
 			opendedIndex: ref(null),
             searchValue: ref(''),
+			downloadImage,
         };
     },
 
@@ -282,6 +300,8 @@ export default {
             if (result) ()=>{};
         }
 	},
+
+	
 };
 </script>
 
