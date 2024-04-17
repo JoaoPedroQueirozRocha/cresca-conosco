@@ -18,5 +18,10 @@ async function deletarGestacao(id) {
     return await axios.delete(`${APIURL}/${id}`);
 }
 
-export default { salvarGestacao, parir, confirmarGestacao, deletarGestacao };
+async function editarGestacao(id, gestacao) {
+    console.log(id)
+    return await axios.put(`${APIURL}/${id}`, gestacao);
+}
+
+export default { salvarGestacao, parir, confirmarGestacao, deletarGestacao, editarGestacao };
 

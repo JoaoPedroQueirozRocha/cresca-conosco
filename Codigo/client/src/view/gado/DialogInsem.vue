@@ -48,6 +48,7 @@ export default {
 			type: Boolean,
 			required: false,
 		},
+        isEdit: Boolean,
 	},
 	emits: ['update:modelValue', 'change'],
 	watch: {
@@ -140,7 +141,8 @@ export default {
                 this.loading = true;
 				try {
 					console.log('salvarGestacao', this.gestacaoData);
-					const result = await gestacaoController.salvarGestacao(this.gestacaoData);
+                    if (this.isEdit) await gestacaoController.editarGestacao(this.gestacaoData.animal_id, this.gestacaoData);
+					else await gestacaoController.salvarGestacao(this.gestacaoData);
 					this.$alert({
                         message: 'Gestação salva com sucesso',
                         type: 'success',
@@ -154,6 +156,7 @@ export default {
                     });
 				} finally {
 					this.cancelar();
+                    this.$emit('change');
                     this.loading = false;
                 }
 			}

@@ -150,6 +150,8 @@
 				v-model="showInsemDialog"
 				:animalData="animalData"
 				:isDialogLoading="isDialogLoading"
+                :isEdit="isEdit"
+                @change="loadBaseData"
 			></DialogInsem>
 		</div>
 	</div>
@@ -194,11 +196,11 @@ export default {
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
-            confirmarGestacao
+            confirmarGestacao,
+            isEdit
 		} = useGado();
 
 		const searchValue = ref('');
-        const actualGestacao = ref({});
 		const { filteredData, getSelected } = useFilter(gadoData, filterOptions, searchValue);
         const defaultAlert = ref({
 			top: true,
@@ -232,6 +234,7 @@ export default {
 			deletarAnimal,
             confirmarGestacao,
             defaultAlert,
+            isEdit,
 		};
 	},
 
@@ -326,7 +329,7 @@ export default {
 
 		getColor(status) {
 			switch (status) {
-				case 'falha':
+				case 'falhou':
 					return 'red';
 				case 'pendente':
 					return 'yellow';

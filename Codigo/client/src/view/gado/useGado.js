@@ -8,6 +8,7 @@ export function useGado() {
     const state = reactive({
         moreDetails: ref(false),
         showInsemDialog: ref(false),
+        isEdit: ref(false),
         headersDialog: ref([
             { text: "Nome", value: "nome", sortable: true },
             { text: "Crias", value: "crias", sortable: true },
@@ -119,6 +120,7 @@ export function useGado() {
         try {
             state.isDialogLoading = true;
             state.showInsemDialog = true;
+            state.isEdit = !isNew;
             state.animalData = isNew ? await getAnimal(id) : state.gadoData.find((item) => item.id == id);
             console.log("open dialog", state.animalData);
         } catch (e) {
