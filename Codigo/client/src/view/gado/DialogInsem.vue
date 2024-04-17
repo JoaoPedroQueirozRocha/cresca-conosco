@@ -142,14 +142,14 @@ export default {
 					console.log('salvarGestacao', this.gestacaoData);
 					const result = await gestacaoController.salvarGestacao(this.gestacaoData);
 					this.$alert({
-                        message: 'Inseminação feita com sucesso',
+                        message: 'Gestação salva com sucesso',
                         type: 'success',
                         ...this.defaultAlert,
                     });
 				} catch (error) {
 					console.error(error);
 					this.$alert({
-                        message: 'Erro ao inseminar a vaca. Tente novamente mais tarde',
+                        message: 'Erro ao salvar gestação. Tente novamente mais tarde',
                         ...this.defaultAlert,
                     });
 				} finally {
