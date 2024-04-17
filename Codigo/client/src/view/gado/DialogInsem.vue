@@ -6,16 +6,16 @@
 			</div>
 			<div class="w-[100%] flex flex-col gap-4 mt-4">
 				<div class="flex md:flex-row flex-col gap-4">
-					<Select class="flex-1" label="Status" v-model="gestacaoData.status" :items="options" />
+					<Select class="flex-1" label="Status" @update:model-value="changeDisabled" v-model="gestacaoData.status" :items="options" />
 					<Select class="flex-1" label="Touro (semem)" v-model="gestacaoData.touro" :items="optionsTouro" />
 				</div>
-				<DatePicker label="Data Inseminação"v-model:expanded="dateOpened.data_insem" :max-date="new Date()" v-model="gestacaoData.data_insem" />
+				<DatePicker label="Data Inseminação" v-model:expanded="dateOpened.data_insem" :max-date="new Date()" v-model="gestacaoData.data_insem" />
 				<DatePicker
 					label="Previsão parto"
                     v-model:expanded="dateOpened.prev_parto"
                     :min-date="new Date()"
 					v-model="gestacaoData.prev_parto"
-					:disabled="gestacaoData.status !== 'confirmada'"
+					:disabled="isDisabled"
 				/>
 			</div>
 			<div class="flex flex-row gap-4 justify-end">
@@ -52,7 +52,6 @@ export default {
 	emits: ['update:modelValue', 'change'],
 	watch: {
         animalData() {
-            console.log(this.model)
             if (this.animalData.status) {
 				this.gestacaoData = {
                     animal_id: this.animalData.id,
@@ -82,28 +81,18 @@ export default {
 		const options = ref(['pendente', 'confirmada', 'falhou', 'concluida']);
 		const optionsTouro = ref(['5/8', 'gir', 'touro']);
 		const gestacaoData = reactive({
-			animal_id: 31,
+			animal_id: 0 || null,
 			status: '',
 			touro: '',
 			data_insem: '',
 			prev_parto: '' || null,
 		});
         const loading = ref(false);
+        const isDisabled = ref(false);
         const dateOpened = ref({
             data_insem: false,
             prev_parto: false,
-        }); 
-
-		watch(
-			() => gestacaoData.status,
-			(newStatus) => {
-				if (newStatus === 'confirmada' && gestacaoData.data_insem) {
-					const insemDate = new Date(gestacaoData.data_insem);
-					const prevPartoDate = insemDate.setDate(insemDate.getDate() + 283);
-					gestacaoData.prev_parto = prevPartoDate;
-				}
-			}
-		);
+        });
 
 		const defaultAlert = ref({
 			top: true,
@@ -118,6 +107,7 @@ export default {
 			defaultAlert,
             loading,
             dateOpened,
+            isDisabled,
 		};
 	},
 
@@ -180,6 +170,17 @@ export default {
 				return this.gestacaoData.data_insem && this.gestacaoData.touro && this.gestacaoData.status;
 			}
 		},
+        changeDisabled(value) {
+            this.isDisabled = value != 'confirmada';
+            if (value === 'confirmada' && this.gestacaoData.data_insem) {
+                const insemDate = new Date(this.gestacaoData.data_insem);
+                const prevPartoDate = new Date(insemDate);
+                prevPartoDate.setDate(prevPartoDate.getDate() + 283);
+                this.gestacaoData.prev_parto = prevPartoDate;
+            }else if(value !== 'confirmada' && this.gestacaoData.prev_parto){
+                this.gestacaoData.prev_parto = null;
+            }
+        }
 	},
 };
 </script>
