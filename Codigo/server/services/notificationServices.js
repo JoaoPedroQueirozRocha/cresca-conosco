@@ -6,8 +6,8 @@ const router = express.Router()
 router.use(express.json())
 
 async function getNotificationById(id){
-    const queryResult = await pool.query("SELECT * FROM notificacoes WHERE id = $1", [id])
-    return queryResult.rows[0]
+    // const queryResult = await pool.query("SELECT * FROM notificacoes WHERE id = $1", [id])
+    // return queryResult.rows[0]
 }
 
 async function getAllNotifications(){
