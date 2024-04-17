@@ -101,6 +101,7 @@ export default {
 			gestacaoData,
 			validateData,
 			processarGestacao,
+			changeDisabled,
 		} = useEditDialog();
 
 		return {
@@ -114,6 +115,7 @@ export default {
 			isDisabled,
 			validateData,
 			processarGestacao,
+			changeDisabled,
 		};
 	},
 
@@ -161,18 +163,6 @@ export default {
 				type: type,
 				...this.defaultAlert,
 			});
-		},
-
-		changeDisabled(value) {
-			this.isDisabled = value != 'confirmada';
-			if (value === 'confirmada' && this.gestacaoData.data_insem) {
-				const insemDate = new Date(this.gestacaoData.data_insem);
-				const prevPartoDate = new Date(insemDate);
-				prevPartoDate.setDate(prevPartoDate.getDate() + 283);
-				this.gestacaoData.prev_parto = prevPartoDate;
-			} else if (value !== 'confirmada' && this.gestacaoData.prev_parto) {
-				this.gestacaoData.prev_parto = null;
-			}
 		},
 	},
 };

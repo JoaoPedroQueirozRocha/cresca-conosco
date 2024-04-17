@@ -27,7 +27,6 @@ export function useEditDialog() {
     })
 
     async function validateData(gestacaoData) {
-        console.log("validate data", gestacaoData);
         if (gestacaoData.status === "confirmada") {
             return (
                 gestacaoData.data_insem &&
@@ -52,10 +51,36 @@ export function useEditDialog() {
         }
     }
 
+    function changeDisabled(value) {
+        state.isDisabled = value !== 'confirmada'
+        adjustPrevPartoDate(value);
+    }
+
+    function adjustPrevPartoDate(value) {
+        if (value === 'confirmada' && state.gestacaoData.data_insem) {
+            setPrevPartoDate();
+        } else {
+            resetPrevPartoDate(value);
+        };
+    }
+
+    function setPrevPartoDate() {
+        const insemDate = new Date(state.gestacaoData.data_insem);
+        const prevPartoDate = new Date(insemDate.getTime() + (283 * 24 * 60 * 60 * 1000)); // Adiciona 283 dias
+        state.gestacaoData.prev_parto = prevPartoDate;
+    }
+
+    function resetPrevPartoDate(value) {
+        if (value !== 'confirmada') {
+            state.gestacaoData.prev_parto = null;
+        }
+    };
+
     return {
         ...toRefs(state),
         validateData,
         processarGestacao,
+        changeDisabled
     }
 }
 
