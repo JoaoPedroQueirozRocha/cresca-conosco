@@ -31,17 +31,17 @@ export function useFilter(gadoData, filterOptions, searchValue) {
         let data = state.gadoData;
         if (getSelected.value.length) {
             data = data.filter((item) => {
-                let returnItem = false;
+                const returnItem = {};
+    
                 getSelected.value.forEach((selected) => {
-                    if (returnItem) return;
-
                     if (selected.fatherValue) {
-                        returnItem = item[selected.fatherValue] == selected.value;
-                    } else if (item[selected.value]) {
-                        returnItem = !!item[selected.value];
+                        returnItem[selected.fatherValue] = returnItem[selected.fatherValue] || item[selected.fatherValue] == selected.value
+                    } else {
+                        returnItem[selected.value] =  !!item[selected.value];
                     }
                 });
-                if (returnItem) return item;
+                const keys = Object.keys(returnItem).filter((key) => returnItem[key]);
+                if (keys.length == Object.keys(returnItem).length) return item;
             });
         }
 

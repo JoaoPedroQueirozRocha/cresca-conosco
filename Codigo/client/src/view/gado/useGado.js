@@ -63,7 +63,7 @@ export function useGado() {
             },
             {
                 text: 'Sêmen',
-                value: 'semem',
+                value: 'touro',
                 childs: [
                     {
                         text: '5/8',
@@ -73,6 +73,11 @@ export function useGado() {
                     {
                         text: 'gir',
                         value: 'gir',
+                        selected: false,
+                    },
+                    {
+                        text: 'Touro',
+                        value: 'touro',
                         selected: false,
                     },
                 ],

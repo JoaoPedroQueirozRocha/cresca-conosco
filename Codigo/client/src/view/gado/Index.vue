@@ -4,7 +4,7 @@
 			<div class="mb-6">
 				<div class="flex flex-row w-full justify-between align-middle mb-4">
 					<h2 class="title">Gado</h2>
-					<div class="flex flex-row flex-wrap gap-2 content-center">
+					<div class="flex flex-row items-center flex-wrap gap-2 content-center">
 						<Button @click="createDialog">Mais detalhes</Button>
 						<router-link to="/gado/vaca">
 							<Button>Adicionar</Button>
@@ -25,7 +25,7 @@
 						</Button>
 						<Filter
 							v-model="filterOptions"
-							class="top-12 right-0 absolute z-50 filter"
+							class="top-12 md:left-auto md:right-0 left-0 absolute z-50 filter"
 							v-show="showFilter"
 						/>
 					</div>
