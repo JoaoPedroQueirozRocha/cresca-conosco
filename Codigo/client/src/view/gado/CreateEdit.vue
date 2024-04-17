@@ -131,8 +131,7 @@ export default {
 				});
 			} finally {
 				this.loading = false;
-
-				// this.$router.push('/gado');
+				this.$router.push('/gado');
 			}
 		},
 

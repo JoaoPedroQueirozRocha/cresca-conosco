@@ -56,8 +56,16 @@
 								</div>
 							</router-link>
 							<div class="action-option" @click="openInsemDialog(item.id)">
-								<Icon name="edit" />
+								<Icon name="vaccines" />
 								Inseminar
+							</div>
+							<div class="action-option" @click="parirAnimal(item.id)">
+								<Icon name="heart_check" />
+								Parir
+							</div>
+							<div class="action-option" @click="secarAnimal(item.id)">
+								<Icon name="menstrual_health" />
+								Secar
 							</div>
 							<div class="action-option delete" @click="confirmDeletion(item.id)">
 								<Icon name="delete" />
@@ -178,6 +186,9 @@ export default {
 			openInsemDialog,
 			moreDetails,
 			showInsemDialog,
+			parirAnimal,
+			secarAnimal,
+			deletarAnimal,
 		} = useGado();
 
 		const searchValue = ref('');
@@ -204,6 +215,9 @@ export default {
 			filteredData,
 			getSelected,
 			formatDate,
+			parirAnimal,
+			secarAnimal,
+			deletarAnimal,
 		};
 	},
 
@@ -277,8 +291,10 @@ export default {
 			const result = await this.$confirm({
 				title: 'Tem certeza que deseja deletar esse item?',
 			});
-			// Tratar dados
-			if (result) () => {};
+			if (result)
+				async () => {
+					await deletarAnimal(id);
+				};
 		},
 
 		getColor(status) {

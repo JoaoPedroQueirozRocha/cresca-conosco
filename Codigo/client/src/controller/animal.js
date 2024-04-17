@@ -14,9 +14,21 @@ function updateAnimal(id, animal) {
     return axios.put(`${APIURL}/${id}`, animal);
 }
 
+async function secar(animal_id) {
+    console.log("secar", animal_id);
+    return await axios.put(`${APIURL}/${animal_id}`, { lactante: false });
+}
+
+async function deletarAnimal(id) {
+    return await axios.delete(`${APIURL}/${id}`);
+}
+
+
 export default {
     createAnimal,
     getAnimal,
-    updateAnimal
+    updateAnimal,
+    secar,
+    deletarAnimal
 }
 

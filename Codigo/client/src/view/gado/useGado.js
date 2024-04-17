@@ -3,7 +3,7 @@ import { useFetchs } from "./useFetchs.js";
 
 export function useGado() {
 
-    const { getAllData, getBaseData, getAnimal } = useFetchs();
+    const { getAllData, getBaseData, getAnimal, parir, secar, deletar } = useFetchs();
 
     const state = reactive({
         moreDetails: ref(false),
@@ -128,12 +128,51 @@ export function useGado() {
         }
     }
 
+    async function parirAnimal(id) {
+        try {
+            await parir(id);
+            state.isLoading = true;
+            state.gadoData = await getBaseData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isLoading = false;
+        }
+    }
+    async function secarAnimal(id) {
+        try {
+            await secar(id);
+            state.isLoading = true;
+            state.gadoData = await getBaseData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isLoading = false;
+        }
+    }
+
+    async function deletarAnimal(id) {
+        try {
+            await deletar(id);
+            state.isLoading = true;
+            state.gadoData = await getBaseData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isLoading = false;
+        }
+    }
+
+
 
     return {
         ...toRefs(state),
         createDialog,
         loadBaseData,
         openInsemDialog,
+        parirAnimal,
+        secarAnimal,
+        deletarAnimal
     }
 }
 
