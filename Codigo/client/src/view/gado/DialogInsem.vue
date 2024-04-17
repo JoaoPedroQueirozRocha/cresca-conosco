@@ -65,7 +65,7 @@ export default {
 	},
 	setup() {
 		const options = ref(['pendente', 'confirmada', 'falhou', 'concluida']);
-		const optionsTouro = ref(['5/8', 'gir', 'touro']);
+		const optionsTouro = ref(['5/8', 'gir', 'boi']);
 		const gestacaoData = reactive({
 			animal_id: 31,
 			status: '',
@@ -119,7 +119,6 @@ export default {
 				});
 			} else {
 				try {
-					console.log('salvarGestacao', this.gestacaoData);
 					const result = await gestacaoController.salvarGestacao(this.gestacaoData);
 					this.model = false;
 					return result;

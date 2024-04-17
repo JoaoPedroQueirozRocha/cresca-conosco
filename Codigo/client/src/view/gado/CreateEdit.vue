@@ -88,8 +88,7 @@ export default {
 			try {
 				this.pageTitle = await this.getNomeAnimal(this.id);
 				const response = await animalController.getAnimal(Number(this.id));
-				Object.assign(this.data, Array.isArray(response.data) ? response.data[0] : response.data);
-				this.status = this.situacoesItems.find((item) => item.value == this.data.status) || '';
+				Object.assign(this.data, Array.isArray(response.data) ? response.data[0] : response);
 			} catch (e) {
 				console.error(e);
 				this.$alert({
@@ -141,7 +140,7 @@ export default {
 
 		async getNomeAnimal(id) {
 			const response = await animalController.getAnimal(Number(id));
-			return response.data.nome;
+			return response.nome;
 		},
 	},
 };

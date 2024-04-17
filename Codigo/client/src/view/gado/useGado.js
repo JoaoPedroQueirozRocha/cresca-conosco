@@ -120,7 +120,6 @@ export function useGado() {
             state.isDialogLoading = true;
             state.showInsemDialog = true;
             state.animalData = await getAnimal(id);
-            console.log("open dialog", state.animalData);
         } catch (e) {
             console.error(e);
         } finally {

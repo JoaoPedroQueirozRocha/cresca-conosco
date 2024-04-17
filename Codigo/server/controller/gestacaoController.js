@@ -1,16 +1,17 @@
 import * as gestacaoServices from "../services/gestacaoServices.js";
 import * as animalServices from "../services/animalsServices.js";
 
-async function getGestacaoByAnimal(req, res) {
+async function getGestacaoById(req, res) {
     try {
-        const nome_animal = req.params.nome_animal;
-        const animal_exists = await animalServices.getAnimalById(nome_animal);
+        const { animal_id } = req.params;
+        const animal_exists = await animalServices.getAnimalById(animal_id);
 
         if (!animal_exists) throw new Error("Animal não encontrado");
 
-        const gestacao = await gestacaoServices.getGestacaoByAnimal(nome_animal);
+        const gestacao = await gestacaoServices.getGestacaoById(animal_id);
         res.json(gestacao);
     } catch (error) {
+        console.error(error);
         res.status(error.status).send("Erro ao executar a query " + error.message);
     }
 }
@@ -55,4 +56,4 @@ async function deleteGestacao(req, res) {
     }
 }
 
-export { getGestacaoByAnimal, createGestacao, updateGestacao, deleteGestacao };
+export { getGestacaoById, createGestacao, updateGestacao, deleteGestacao };
