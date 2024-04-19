@@ -59,7 +59,7 @@
 								<Icon name="vaccines" />
 								Inseminar
 							</div>
-                            <div class="action-option" @click="openInsemDialog(item.id)">
+							<div class="action-option" @click="openInsemDialog(item.id)">
 								<Icon name="edit" />
 								Editar Gestão Atual
 							</div>
@@ -123,44 +123,22 @@
 					</div>
 				</template>
 			</Table>
-			<Dialog v-model="moreDetails" width="100%" overflowHidden>
-				<div class="flex flex-col gap-2">
-					<h1 class="title">Mais Detalhes</h1>
-					<div class="flex flex-row justify-between mb-4">
-						<Input v-model="searchValue" type="search" placeholder="Pesquisar" class="filter-input" />
-						<div class="relative filter-holder" ref="filterCard">
-							<Button class="filter-button" rounded @click="showFilter = true">
-								<Icon name="filter_list" class="round-icon" />
-							</Button>
-							<Filter
-								v-model="filterOptions"
-								class="top-12 right-0 absolute z-50 filter"
-								v-show="showFilter"
-							/>
-						</div>
-					</div>
-				</div>
-				<DialogTable
-					:headers="headersDialog"
-					:allData="filteredData ? filteredData : allData"
-					:isDialogLoading="isDialogLoading"
-				/>
-			</Dialog>
+			<DialogTable v-model="moreDetails" :allData="allData" :isDialogLoading="isDialogLoading" />
 			<DialogInsem
 				v-model="showInsemDialog"
 				:animalData="animalData"
 				:isDialogLoading="isDialogLoading"
-                :isEdit="isEdit"
-                @change="loadBaseData"
+				:isEdit="isEdit"
+				@change="loadBaseData"
 			></DialogInsem>
 		</div>
 	</div>
 </template>
 
 <script>
-import { useGado } from './useGado.js';
+import { useGado } from './composables/useGado.js';
 import { formatDate } from '../../util';
-import { useFilter } from './userFilter.js';
+import { useFilter } from './composables/useFilter.js';
 import { ref } from 'vue';
 import Table from '@/components/Table.vue';
 import Button from '@/components/Button.vue';
@@ -172,11 +150,22 @@ import Dialog from '@/components/Dialog.vue';
 import Tag from '@/components/Tag.vue';
 import DialogTable from './DialogTable.vue';
 import DialogInsem from './DialogInsem.vue';
-import animalController from "@/controller/animal";
+import animalController from '@/controller/animal';
 
 export default {
 	name: 'Gado',
-	components: { Table, Button, Input, Dialog, DialogTable, DialogInsem, Card, Icon, Filter, Tag },
+	components: {
+		Table,
+		Button,
+		Input,
+		Dialog,
+		DialogTable,
+		DialogInsem,
+		Card,
+		Icon,
+		Filter,
+		Tag,
+	},
 	inject: ['Auth'],
 	setup() {
 		const {
@@ -196,13 +185,13 @@ export default {
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
-            confirmarGestacao,
-            isEdit
+			confirmarGestacao,
+			isEdit,
 		} = useGado();
 
 		const searchValue = ref('');
 		const { filteredData, getSelected } = useFilter(gadoData, filterOptions, searchValue);
-        const defaultAlert = ref({
+		const defaultAlert = ref({
 			top: true,
 			right: true,
 			timeout: 3500,
@@ -232,9 +221,9 @@ export default {
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
-            confirmarGestacao,
-            defaultAlert,
-            isEdit,
+			confirmarGestacao,
+			defaultAlert,
+			isEdit,
 		};
 	},
 
@@ -309,22 +298,22 @@ export default {
 				title: 'Tem certeza que deseja deletar esse item?',
 			});
 			if (result) {
-                try {
-                    await animalController.deletarAnimal(id);
-                    this.gadoData.splice(index, 1);
-                    this.$alert({
-                        message: 'Vaca deletada com sucesso',
-                        type: 'success',
-                        ...this.defaultAlert,
-                    });
-                } catch (error) {
-                    console.log(error)
-                    this.$alert({
-                        message: 'Erro ao deletar a vaca. Tente novamente mais tarde',
-                        ...this.defaultAlert,
-                    });
-                }
-            }
+				try {
+					await animalController.deletarAnimal(id);
+					this.gadoData.splice(index, 1);
+					this.$alert({
+						message: 'Vaca deletada com sucesso',
+						type: 'success',
+						...this.defaultAlert,
+					});
+				} catch (error) {
+					console.log(error);
+					this.$alert({
+						message: 'Erro ao deletar a vaca. Tente novamente mais tarde',
+						...this.defaultAlert,
+					});
+				}
+			}
 		},
 
 		getColor(status) {
@@ -337,8 +326,8 @@ export default {
 					return 'blue';
 				case 'concluida':
 					return 'green';
-                default:
-                    return 'gray';
+				default:
+					return 'gray';
 			}
 		},
 	},
