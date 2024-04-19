@@ -13,3 +13,23 @@ export function formatDate(date, template) {
     return date.toLocaleDateString('pt-BR', template);
 }
 
+export function formatDateString(date) {
+    const convertToDate = new Date(date);
+    return convertToDate.toLocaleDateString();
+}
+
+export function getColor(status) {
+    switch (status) {
+        case 'falhou':
+            return 'red';
+        case 'pendente':
+            return 'yellow';
+        case 'confirmada':
+            return 'blue';
+        case 'concluida':
+            return 'green';
+        default:
+            return 'gray';
+    }
+}
+
