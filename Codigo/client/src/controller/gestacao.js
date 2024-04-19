@@ -22,7 +22,6 @@ async function deletarGestacao(id) {
 }
 
 async function editarGestacao(id, gestacao) {
-    console.log(id)
     return await axios.put(`${APIURL}/${id}`, gestacao);
 }
 
