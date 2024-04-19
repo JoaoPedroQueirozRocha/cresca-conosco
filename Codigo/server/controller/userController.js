@@ -94,7 +94,7 @@ async function deleteUser(req,res){
         res.json(user) 
     }catch (error){
         console.error(error);
-        res.status(error.status).send('Erro ao fazer update de usuário' + error.message)
+        res.status(error.status).send('Erro ao fazer delete de usuário' + error.message)
     }   
 }
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-const APIURL = `${import.meta.env.VITE_API_URL}/gado`
+const APIURL = `${import.meta.env.VITE_API_URL}/gado` || "http://localhost:3002/gado";
 
 async function getAll() {
     const response = await axios.get(`${APIURL}/`);
@@ -8,10 +8,6 @@ async function getAll() {
 
 function createGado(gado) {
     return axios.post(`${APIURL}/animals`, gado);
-}
-
-function getGado(id) {
-    return axios.get(`${APIURL}/animals/${id}`);
 }
 
 function updateGado(gado) {
@@ -33,5 +29,4 @@ export default {
     createGado,
     updateGado,
     deleteGado,
-    getGado,
 };

@@ -63,6 +63,11 @@ export default {
     methods: {
         handleResize() {
             this.isPhone = window.innerWidth <= 768;
+            if (this.isPhone) {
+                this .menu.style.height = '0';
+            } else {
+                this .menu.style.height = '100vh';
+            }
         },
         changeExpanded(value) {
             this.isExpanded = value;
@@ -98,6 +103,7 @@ export default {
                         <img src="../assets/crescaConoscoText.svg" alt="cresça conosco" class="logo-text" v-if="isExpanded" />
                     </div>
                     <router-link
+                        @click="isPhone && changeHeight(!isExpanded)"
                         class="option"
                         :class="{'active': getMenuOption === option.value, 'justify-center': !isExpanded}"
                         v-for="option in options"
