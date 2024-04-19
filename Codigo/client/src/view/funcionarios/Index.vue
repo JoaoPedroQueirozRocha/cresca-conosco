@@ -4,7 +4,7 @@
 			<div class="mb-3">
 				<div class="flex flex-row w-full justify-between items-center align-middle my-4">
 					<h2 class="title mt-0">Funcionários</h2>
-					<router-link to="/funcionario">
+					<router-link to="/funcionarios/criar">
 						<Button>Adicionar</Button>
 					</router-link>
 				</div>
