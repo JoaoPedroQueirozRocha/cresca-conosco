@@ -3,7 +3,7 @@
 		<!-- Dialog header components -->
 		<div class="flex flex-col gap-2">
 			<div class="flex flex-row justify-between">
-				<h1 class="title">Mais Detalhes</h1>
+				<h1 class="title mb-4">Mais Detalhes</h1>
 				<Icon name="close" @click="cancelar" class="cursor-pointer close-button" />
 			</div>
 			<div class="flex flex-row justify-between mb-4">
@@ -20,7 +20,7 @@
 		<Table
 			:items="filteredData"
 			:headers="headersDialog"
-			maxHeight="85vh"
+			maxHeight="65vh"
 			class="w-full"
 			:loading="isDialogLoading"
 		>
