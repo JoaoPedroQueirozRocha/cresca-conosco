@@ -50,4 +50,9 @@ export default {
     color: $red-strong;
     background: $red-light;
 }
+
+.gray {
+    color: $gray-500;
+    background: $gray-300;
+}
 </style>

@@ -28,7 +28,7 @@ const routes = [
         beforeEnter: Auth0.routeGuard
     },
     {
-        path: '/gado/vaca/:nome',
+        path: '/gado/vaca/:id',
         name: 'EditarVaca',
         props: true,
         component: () => import('@/view/gado/CreateEdit.vue'),

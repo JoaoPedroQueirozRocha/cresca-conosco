@@ -12,17 +12,17 @@ const router = express.Router();
 
 /**
  * @swagger
- * /gestacao/{nome_animal}:
+ * /gestacao/{animal_id}:
  *  get:
  *   summary: Retorna as informaçes daquele animal específico]
  *   tags: [Gestacao]
  *   parameters: 
  *    - in: path
- *      name: nome_animal
+ *      name: animal_id
  *      required: true
  *      schema:
  *          type: string
- *      description: nome do animal específico
+ *      description: id do animal específico
  *   responses:
  *      200:
  *          description: Gestacao encontrada
@@ -31,7 +31,7 @@ const router = express.Router();
  *               schema: 
  *                  $ref: '#components/schemas/Gestacao'
  */
-router.get("/:nome_animal", gestacaoController.getGestacaoByAnimal);
+router.get("/:animal_id", gestacaoController.getGestacaoById);
 
 /**
  * @swagger
@@ -54,16 +54,16 @@ router.post("/", gestacaoController.createGestacao);
 
 /**
  * @swagger
- * /gestacao/{nome_animal}:
+ * /gestacao/{animal_id}:
  *  put:
  *   summary: Atualiza as informaçes daquele animal específico
  *   tags: [Gestacao]
  *   parameters: 
  *    - in: path
- *      name: nome_animal
+ *      name: animal_id
  *      required: true
  *      schema:
- *          type: string
+ *          type: animal_id
  *      description: nome do animal específico
  *   requestBody:
  *    required: true
@@ -79,14 +79,21 @@ router.post("/", gestacaoController.createGestacao);
  *               schema: 
  *                  $ref: '#components/schemas/Gestacao'
  */
-router.put("/:nome_animal", gestacaoController.updateGestacao);
+router.put("/:animal_id", gestacaoController.updateGestacao);
 
 /**
  * @swagger
- * /gestacao/{nome_animal}:
+ * /gestacao/{animal_id}:
  *  delete:
  *   summary: Deleta uma gestação
  *   tags: [Gestacao]
+ *   parameters: 
+ *    - in: path
+ *      name: animal_id
+ *      required: true
+ *      schema:
+ *          type: string
+ *      description: id do animal específico
  *  responses:
  *      200:
  *          description: Gestacao deletada

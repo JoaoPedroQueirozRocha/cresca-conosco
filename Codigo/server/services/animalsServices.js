@@ -5,10 +5,10 @@ const router = express.Router();
 
 router.use(express.json());
 
-async function getAnimalByName(name) {
+async function getAnimalById(id) {
     const queryResult = await pool.query(
-        "SELECT * FROM animais WHERE nome = $1",
-        [name]
+        "SELECT * FROM animais WHERE id = $1",
+        [id]
     );
     if (!queryResult.rows.length) throw new Error("Animal não encontrado");
 
@@ -17,21 +17,19 @@ async function getAnimalByName(name) {
 
 async function createNewAnimal(body) {
     const result = await pool.query(
-        "INSERT INTO animais(nome, crias, proxima_insem, num_insem, dias_parida, lactante) VALUES ($1, $2, $3, $4, $5, $6)",
+        "INSERT INTO animais(nome, crias, num_insem, lactante) VALUES ($1, $2, $3, $4)",
         [
             body.nome,
             body.crias,
-            body.proxima_insem,
             body.num_insem,
-            body.dias_parida,
             body.lactante,
         ]
     );
     return result.rows[0];
 }
 
-async function updateAnimalByName(name, updates) {
-    const animal = await getAnimalByName(name);
+async function updateAnimalById(id, updates) {
+    const animal = await getAnimalById(id);
 
     if (!animal) throw new Error("Animal não encontrado");
 
@@ -41,27 +39,27 @@ async function updateAnimalByName(name, updates) {
 
     const values = Object.values(updates);
 
-    const query = `UPDATE animais SET ${fields} WHERE nome = $${values.length + 1
+    const query = `UPDATE animais SET ${fields} WHERE id = $${values.length + 1
         } RETURNING *`;
-    const result = await pool.query(query, [...values, name]);
+    const result = await pool.query(query, [...values, id]);
     return result.rows[0];
 }
 
-async function deleteAnimalByName(name) {
-    const animal = await getAnimalByName(name);
+async function deleteAnimalById(id) {
+    const animal = await getAnimalById(id);
 
     if (!animal) throw new Error("Animal não encontrado");
 
-    const result = await pool.query("DELETE FROM animais WHERE nome = $1", [
-        name,
+    const result = await pool.query("DELETE FROM animais WHERE id = $1", [
+        id,
     ]);
 
-    return result.rows[0];
+    return result.rowCount;
 }
 
 export {
-    getAnimalByName,
+    getAnimalById,
     createNewAnimal,
-    updateAnimalByName,
-    deleteAnimalByName,
+    updateAnimalById,
+    deleteAnimalById,
 };
