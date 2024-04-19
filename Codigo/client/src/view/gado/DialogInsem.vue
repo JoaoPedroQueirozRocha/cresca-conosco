@@ -52,7 +52,7 @@ import Select from '@/components/Select.vue';
 import DatePicker from '@/components/DatePicker.vue';
 import Button from '@/components/Button.vue';
 import gestacaoController from '@/controller/gestacao.js';
-import { useEditDialog } from './EditInsemDialog/useEditDialog.js';
+import { useEditDialog } from './composables/useEditDialog.js';
 import { ref, reactive, watch } from 'vue';
 
 export default {

@@ -32,12 +32,12 @@ export function useFilter(gadoData, filterOptions, searchValue) {
         if (getSelected.value.length) {
             data = data.filter((item) => {
                 const returnItem = {};
-    
+
                 getSelected.value.forEach((selected) => {
                     if (selected.fatherValue) {
                         returnItem[selected.fatherValue] = returnItem[selected.fatherValue] || item[selected.fatherValue] == selected.value
                     } else {
-                        returnItem[selected.value] =  !!item[selected.value];
+                        returnItem[selected.value] = !!item[selected.value];
                     }
                 });
                 const keys = Object.keys(returnItem).filter((key) => returnItem[key]);
