@@ -152,7 +152,6 @@ export default {
             let valid = 
                 this.data.salario > 0 &&
                 this.data.descricao &&
-                this.tipo &&
                 this.data.nome;
             
             return valid;
