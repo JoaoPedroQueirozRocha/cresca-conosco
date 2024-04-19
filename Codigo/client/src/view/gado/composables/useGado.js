@@ -121,7 +121,6 @@ export function useGado() {
             state.showInsemDialog = true;
             state.isEdit = !isNew;
             state.animalData = isNew ? await getAnimal(id) : state.gadoData.find((item) => item.id == id);
-            console.log("open dialog", state.animalData);
         } catch (e) {
             console.error(e);
         } finally {
@@ -152,8 +151,8 @@ export function useGado() {
         }
     }
 
-    async function confirmarGestacao(id){
-        try{
+    async function confirmarGestacao(id) {
+        try {
             await confirmar(id);
             state.isLoading = true;
             state.gadoData = await getBaseData();
