@@ -25,4 +25,4 @@ dist-ssr
 *.sw?
 
 yarn.lock
-.env
+package-lock.json
