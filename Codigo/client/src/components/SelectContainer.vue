@@ -1,8 +1,10 @@
 <script>
 import { ref } from 'vue';
+import Icon from './Icon.vue';
 
 export default {
     name: 'SelectContainer',
+    components: { Icon },
     props: {
         modelValue: {
             type: Boolean,
@@ -10,6 +12,7 @@ export default {
         },
         icon: String,
         label: String,
+        disabled: Boolean,
     },
     emits: ['update:modelValue'],
     setup() {
@@ -28,7 +31,6 @@ export default {
 
     mounted() {
         this.model = this.modelValue;
-        console.log(this.resizeObserver)
 
         if (this.container) this.resizeObserver.observe(this.container, { box: 'border-box' });
         if (this.content) this.resizeObserver.observe(this.content, { box: 'border-box' });
@@ -81,16 +83,16 @@ export default {
     <div class="flex flex-col gap-1">
         <label v-if="label" class="label">{{ label }}</label>
         <div ref="container" class="select-container relative min-w-[5em]" tabindex="0" @blur="changeModel(false)">
-            <div ref="labelContainer" class="label-container" @click="changeModel(!model)" :class="{'active': model}">
-                <div class="flex gap-4">
-                    <span class="material-symbols-rounded select-none" v-if="icon">
-                        {{ icon }}
-                    </span>
+            <div ref="labelContainer" class="label-container" @click="changeModel(!model)" :class="{'active': model, 'disabled': disabled}">
+                <div class="flex gap-4 truncate">
+                    <Icon :name="icon" class="select-none" v-if="icon" />
                     <slot name="status" />
                 </div>
-                <span class="transition duration-150 material-symbols-rounded select-none" :class="{'rotate-180': model}">
-                    arrow_drop_down
-                </span>
+                <Icon
+                    name="arrow_drop_down"
+                    class="transition duration-150 select-none"
+                    :class="{'rotate-180': model}"
+                />
             </div>
             <div ref="content" class="select-content absolute z-50 top-full left-0 overflow-hidden transition-[max-height] bg-white" :class="{'active': model}" style="max-height: 0;">
                 <slot name="item" />
@@ -142,5 +144,11 @@ export default {
     border-top: none;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
+}
+
+.disabled {
+    @apply pointer-events-none;
+    border-color: $gray-300;
+    background: $gray-200;
 }
 </style>

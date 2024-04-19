@@ -1,8 +1,10 @@
 <script>
 import { ref } from 'vue';
+import Icon from './Icon.vue';
 
 export default {
-    name: 'Input',
+    name: 'Tab',
+    components: { Icon },
     props: {
         modelValue: Number,
         items: {
@@ -45,12 +47,10 @@ export default {
             :class="{'active': index === model, 'pointer-events-none': disabled}"
             @click="changeTab(index)"
         >
-            <span
+            <Icon
                 v-if="item.icon"
-                class="material-symbols-rounded"
-            >
-                {{ item.icon }}
-            </span>
+                :name="item.icon"
+            />
             {{ item.text ? item.text : item }}
         </div>
     </div>
