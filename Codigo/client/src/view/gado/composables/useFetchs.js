@@ -13,7 +13,6 @@ export function useFetchs() {
 
     async function getAllData() {
         const data = await gadoController.getAll();
-        console.log("da", data);
         return data;
 
     }
