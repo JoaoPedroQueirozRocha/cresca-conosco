@@ -11,14 +11,14 @@ export function useGado() {
         isEdit: ref(false),
         headersDialog: ref([
             { text: "Nome", value: "nome", sortable: true },
-            { text: "Crias", value: "crias", sortable: true },
+            { text: "Crias", value: "crias", sortable: true, align: "center", },
             {
                 text: "Data.Insem",
                 value: "dataInsem",
                 sortable: true,
             },
             { text: "Prev.Parto", value: "prevParto", sortable: true },
-            { text: "Touro", value: "touro", sortable: true },
+            { text: "Touro", value: "touro", sortable: true, align: "center", },
             {
                 text: "Lactante",
                 value: "lactante",

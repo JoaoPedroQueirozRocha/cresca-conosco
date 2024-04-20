@@ -3,9 +3,10 @@ import * as workerController from "../controller/workerController.js";
 
 const router = express.Router();
 
-router.get('/:nome', workerController.getWorker);
+router.get('/list', workerController.listWorkers);
+router.get('/:id', workerController.getWorker);
 router.post('/', workerController.createWorker);
-router.put('/:nome', workerController.updateWorker);
-router.delete('/:nome', workerController.deleteWorker);
+router.put('/:id', workerController.updateWorker);
+router.delete('/:id', workerController.deleteWorker);
 
 export default router;

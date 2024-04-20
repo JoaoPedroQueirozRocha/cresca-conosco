@@ -288,6 +288,10 @@ export default {
 <style lang="scss" scoped>
 @import '../../style/var.scss';
 
+td {
+    color: $gray-500;
+}
+
 .icon-holder {
 	display: flex;
 	align-items: center;
