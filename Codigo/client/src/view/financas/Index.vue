@@ -1,284 +1,460 @@
 <script>
-import VueApexCharts from "vue3-apexcharts";
-import { formartCurrency } from "../../util";
-import { ref } from "vue";
-import Card from "@/components/Card.vue";
-import Table from "@/components/Table.vue";
-import Button from "@/components/Button.vue";
-import Input from "@/components/Input.vue";
-import Checkbox from "@/components/Checkbox.vue";
-import DatePicker from "@/components/DatePicker.vue";
-import Dialog from "@/components/Dialog.vue";
+import VueApexCharts from 'vue3-apexcharts';
+import { formatCurrency, formatDate } from '../../util';
+import { ref } from 'vue';
+import Icon from '@/components/Icon.vue';
+import Card from '@/components/Card.vue';
+import Button from '@/components/Button.vue';
+import profitController from '@/controller/profit';
+import costController from '@/controller/cost';
+import financeController from '@/controller/finance';
+import FinanceDialog from './components/FinanceDialog.vue';
+import GenericTable from './components/GenericTable.vue';
+import Totals from './components/Totals.vue';
 
 export default {
-	name: "Perfil",
-	components: { Card, Table, Button, Input, Dialog, DatePicker, Checkbox, apexchart: VueApexCharts },
-    inject: ["Auth"],
+	name: 'Finance',
+	components: { Card, Button, Icon, FinanceDialog, GenericTable, Totals, apexchart: VueApexCharts },
+	inject: ['Auth'],
 	setup() {
+		const chartColors = ['#23b73c', '#ed0000', '#0973f5', '#23b772', '#ed002b', '#09aaf5'];
+		const isCompare = ref(false);
+		const series = ref([]);
+		const totals = ref({
+			receita: {
+				name: 'Receita',
+				value: 'profit',
+				total: 0,
+			},
+			despesas: {
+				name: 'Despesas',
+				value: 'costs',
+				total: 0,
+			},
+			roi: {
+				name: 'ROI',
+				value: 'roi',
+				total: 0,
+			},
+		});
+		const showDialog = ref(false);
+		const loading = ref({
+			report: false,
+			profit: false,
+			costs: false,
+		});
+		const defaultAlert = ref({
+			top: true,
+			right: true,
+			timeout: 3500,
+		});
+		const data = ref({
+			profit: [],
+			cost: [],
+		});
+
 		return {
-			defaultAlert: ref({
-				top: true,
-				right: true,
-				timeout: 3500,
-			}),
-            series: ref([
-                {
-                    name: 'Ganhos',
-                    data: [23, 45, 70, 60, 80, 95, 100, 120],
-                },
-                {
-                    name: 'Custos',
-                    data: [15, 30, 45, 40, 50, 60, 70, 80],
-                },
-                {
-                    name: 'Lucro Líquido',
-                    data: [8, 15, 25, 20, 30, 35, 30, 40],
-                },
-            ]),
-            chartOptions: ref({
-                chart: {
-                    id: "vuechart-example",
-                    stacked: false
-                },
-                stroke: {
-                    width: 4,
-                },
-                markers: {
-                    size: 0,
-                },
-                dataLabels: {
-                    enabled: false,
-                    style: {
-                        colors: ['#23b73c', '#ed0000', '#0973f5'],
-                    }
-                },
-                colors: ['#23b73c', '#ed0000', '#0973f5'],
-                xaxis: {
-                    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
-                },
-                tooltip: {
-                    enabled: true,
-                },
-                yaxis: [
-                    {
-                        title: {
-                            text: 'Valores',
-                        },
-                        labels: {
-                            formatter: function (value) {
-                                return formartCurrency(value);
-                            },
-                        },
-                        axisTicks: {
-                            show: true
-                        },
-                        axisBorder: {
-                            show: true,
-                        },
-                    },
-                ],
-            }),
-            totals: ref([
-                {
-                    name: 'Ganhos',
-                    value: 'ganhos',
-                    total: 200,
-                },
-                {
-                    name: 'Custos',
-                    value: 'custos',
-                    total: 180,
-                },
-                {
-                    name: 'Lucro Líquido',
-                    value: 'receita',
-                    total: 20,
-                },
-            ]),
-            headers: ref([
-                {
-                    text: 'Teste',
-                    value: 'teste',
-                }
-            ]),
-            loading: ref(false),
-            isCompare: ref(false),
-            showDialog: ref(false),
-            isDateOpened: ref(false),
-            isDateOpened2: ref(false),
-            formartCurrency,
+			series,
+			totals,
+			isCompare,
+			chartColors,
+			showDialog,
+			loading,
+			defaultAlert,
+			data,
+			formatCurrency,
 		};
 	},
 
+	computed: {
+		chartOptions() {
+			return {
+				chart: {
+					id: 'vuechart-example',
+					stacked: false,
+				},
+				stroke: {
+					width: 4,
+				},
+				markers: {
+					size: 0,
+				},
+				dataLabels: {
+					enabled: false,
+					style: {
+						colors: this.chartColors,
+					},
+				},
+				colors: this.chartColors,
+				xaxis: {},
+				yaxis: [
+					{
+						title: {
+							text: 'Valores',
+						},
+						labels: {
+							formatter: function (value) {
+								return formatCurrency(value);
+							},
+						},
+						axisTicks: {
+							show: true,
+						},
+						axisBorder: {
+							show: true,
+						},
+					},
+				],
+				tooltip: {
+					enabled: true,
+					custom: ({ s, seriesIndex, dataPointIndex, w }) => {
+						const template = { year: 'numeric', month: '2-digit', day: '2-digit' };
+						const rangeDate = this.series[0].data[dataPointIndex].x;
+						const compareDate = this.series[3]?.data[dataPointIndex]?.x;
+
+						return `<div class="custom-tooltip" style="width: max-content">
+                            <div class="date" style="display: flex; justify-content: center; background: #eceff1; padding: 8px 8px;">
+                                ${this.isCompare ? `${rangeDate} - ${compareDate}` : rangeDate}
+                            </div>
+                            <div class="data-tooltip" style="display: grid; gap: 12px; ${
+								this.isCompare ? 'grid-template-columns: 1fr 1fr;' : 'grid-template-columns: 1fr;'
+							}">
+                                <div style="padding: 15px 15px; display: grid; gap: 12px;">
+                                    ${this.series
+										.filter((nothing, index) => index < 3)
+										.map(
+											(s, index) => `
+                                        <div style="display: flex; flex-direction: row; align-items: center; width: 250px;">
+                                            <span class="tooltip-circle" style="background: ${
+												this.chartColors[index]
+											}; height: 10px; width: 10px; border-radius: 50%; margin-right: 10px;"></span>
+                                            <p style="margin-right: 10px; font-size: 15px; margin-bottom: 0px;">
+                                                ${s.name}:
+                                            </p>
+                                            <p style="font-weight: bold; font-size: 14px; margin-bottom: 0px;">
+                                                ${formatCurrency(s.data[dataPointIndex].y)}
+                                            </p>
+                                        </div>`
+										)
+										.join('')}
+                                </div>
+                                ${
+									this.isCompare
+										? `
+                                    <div style="padding: 15px 15px; display: grid; gap: 12px;">
+                                        ${this.series
+											.filter((nothing, index) => index >= 3)
+											.map(
+												(s, index) => `
+                                            <div style="display: flex; flex-direction: row; align-items: center; width: 250px;">
+                                                <span class="tooltip-circle" style="background: ${
+													this.chartColors[index + 3]
+												}; height: 10px; width: 10px; border-radius: 50%; margin-right: 10px;"></span>
+                                                <p style="margin-right: 10px; font-size: 15px; margin-bottom: 0px;">
+                                                    ${s.name}:
+                                                </p>
+                                                <p style="font-weight: bold; font-size: 14px; margin-bottom: 0px;">
+                                                    ${formatCurrency(s.data[dataPointIndex].y)}
+                                                </p>
+                                            </div>`
+											)
+											.join('')}
+                                    </div>
+                                `
+										: ''
+								}
+                            </div>
+                        </div>`;
+					},
+				},
+			};
+		},
+
+		headers() {
+			return {
+				profit: [
+					{
+						value: 'none',
+					},
+					{
+						text: 'Mês/Ano',
+						value: 'updated_at',
+						sortable: true,
+					},
+					{
+						text: 'Leite',
+						value: 'leite',
+						sortable: true,
+						align: 'center',
+					},
+					{
+						text: 'Venda de gado',
+						value: 'venda',
+						sortable: true,
+						align: 'center',
+					},
+					{
+						text: 'Total',
+						value: 'total',
+						sortable: true,
+						align: 'center',
+					},
+				],
+				cost: [
+					{
+						value: 'none',
+					},
+					{
+						text: 'Mês/Ano',
+						value: 'updated_at',
+						sortable: true,
+					},
+					{
+						text: 'Salários',
+						value: 'despesas trabalhistas',
+						sortable: true,
+						align: 'center',
+					},
+					{
+						text: 'Encargos',
+						value: 'encargos',
+						sortable: true,
+						align: 'center',
+					},
+					{
+						text: 'Compras',
+						value: 'compras',
+						sortable: true,
+						align: 'center',
+					},
+					{
+						text: 'Total',
+						value: 'total',
+						sortable: true,
+						align: 'center',
+					},
+				],
+			};
+		},
+	},
+
+	async created() {
+		await this.getAllData();
+	},
+
 	methods: {
-        gerarRelatorio() {
-            this.showDialog = false;
-            this.loading = true;
-        }
+		async getAllData() {
+			const startDate = new Date();
+			startDate.setDate(startDate.getDate() - 30);
+			startDate.setHours(0, 0, 0);
+
+			const endDate = new Date();
+			endDate.setHours(23, 59, 0);
+
+			this.loading.report = true;
+			this.loading.profit = true;
+			this.loading.costs = true;
+			await this.generateReport([startDate, endDate]);
+			await this.getItems([], 'profit');
+			await this.getItems([], 'cost');
+		},
+
+		async generateReport(range, compare = []) {
+			try {
+				this.showDialog = false;
+				this.loading.report = true;
+				this.isCompare = !!compare.length;
+				const { data } = await financeController.generateReport(range, compare);
+
+				this.setTotals(data.totals.range, data.totals.compare);
+				this.setSeries(data.data.range, data.data.compare);
+			} catch (e) {
+				this.$alert({
+					message: 'Erro ao gerar o relatório de finanças. Tente novamente mais tarde',
+					...this.defaultAlert,
+				});
+			} finally {
+				this.loading.report = false;
+			}
+		},
+
+		async getItems(period = [], type) {
+			try {
+				this.loading[type] = true;
+				let response;
+
+				if (type == 'profit') {
+					const { data } = await profitController.listProfits(period);
+					response = data;
+				} else {
+					const { data } = await costController.listCosts(period);
+					response = data;
+				}
+
+				this.data[type] = response;
+			} catch (e) {
+				this.$alert({
+					message: `Erro ao carregar ${
+						type == 'profit' ? 'os lucros' : 'as despesas'
+					}. Tente novamente mais tarde`,
+					...this.defaultAlert,
+				});
+			} finally {
+				this.loading[type] = false;
+			}
+		},
+
+		async deleteItem(item, childIndex, id, type) {
+			try {
+				this.loading[type] = true;
+				if (type == 'profit') {
+					await profitController.deleteProfit(id);
+				} else {
+					await costController.deleteCost(id);
+				}
+
+				const index = this.data[type].findIndex((i) => JSON.stringify(i) == JSON.stringify(item));
+				if (this.data[type][index] && this.data[type][index].childs[childIndex]) {
+					const child = this.data[type][index].childs[childIndex];
+					this.data[type][index].total -= child.valor;
+					this.data[type][index][child.tipo] -= child.valor;
+					this.data[type][index].childs.splice(childIndex, 1);
+				}
+
+				this.$alert({
+					type: 'success',
+					message: 'Item deletado com sucesso',
+					...this.defaultAlert,
+				});
+			} catch (e) {
+				this.$alert({
+					message: 'Erro ao deletar item. Tente novamente mais tarde',
+					...this.defaultAlert,
+				});
+			} finally {
+				this.loading[type] = false;
+			}
+		},
+
+		setTotals(range, compare) {
+			Object.keys(range).forEach((key) => {
+				this.totals[key].total = range[key];
+			});
+
+			if (this.isCompare) {
+				Object.keys(compare).forEach((key) => {
+					this.totals[key].percentage = this.calculatePercentage(compare[key], this.totals[key].total);
+				});
+			}
+		},
+
+		setSeries(range, compare) {
+			const template = { year: 'numeric', month: '2-digit', day: '2-digit' };
+			this.series = [];
+			this.series.push(
+				{
+					name: 'Receita',
+					type: 'line',
+					data: range.map((value) => {
+						return {
+							x: formatDate(new Date(value.data), template),
+							y: value.receita,
+						};
+					}),
+				},
+				{
+					name: 'Despesas',
+					type: 'line',
+					data: range.map((value) => {
+						return {
+							x: formatDate(new Date(value.data), template),
+							y: value.despesas,
+						};
+					}),
+				},
+				{
+					name: 'ROI',
+					type: 'line',
+					data: range.map((value) => {
+						return {
+							x: formatDate(new Date(value.data), template),
+							y: value.roi,
+						};
+					}),
+				}
+			);
+
+			if (this.isCompare) {
+				this.series.push(
+					{
+						name: 'Receita a comparar',
+						type: 'bar',
+						data: compare.map((value) => {
+							return {
+								x: formatDate(new Date(value.data), template),
+								y: value.receita,
+							};
+						}),
+					},
+					{
+						name: 'Despesas a comparar',
+						type: 'bar',
+						data: compare.map((value) => {
+							return {
+								x: formatDate(new Date(value.data), template),
+								y: value.despesas,
+							};
+						}),
+					},
+					{
+						name: 'ROI a comparar',
+						type: 'bar',
+						data: compare.map((value) => {
+							return {
+								x: formatDate(new Date(value.data), template),
+								y: value.roi,
+							};
+						}),
+					}
+				);
+			}
+		},
+
+		calculatePercentage(newValue, oldValue) {
+			return ((newValue - oldValue) / oldValue) * 100;
+		},
 	},
 };
 </script>
 
 <template>
-    <div class="flex flex-col gap-6">
-        <h1 class="title">Finanças</h1>
-        <Button class="w-fit self-end" @click="showDialog = true">Gerar Relatório</Button>
-        <div class="flex flex-wrap gap-4 [&>*]:w-full">
-            <Card v-for="total in totals" class="total-card">
-                <div class="skeleton skeleton-card-title" v-if="loading" />
-                <h6 v-else>{{ total.name }}</h6>
-                <div class="skeleton skeleton-card-content" v-if="loading" />
-                <p :class="total.value" v-else>{{ formartCurrency(total.total) }}</p>
-            </Card>
-        </div>
-        <Card v-if="!loading">
-            <apexchart
-                width="100%"
-                height="300px"
-                type="line"
-                :options="chartOptions"
-                :series="series"
-            ></apexchart>
-        </Card>
-        <Dialog v-model="showDialog" no-overflow>
-            <div class="dialog-div" :class="{'bigger': isDateOpened || isDateOpened2}">
-                <div class="flex justify-between">
-                    <h1 class="title" style="margin: 0;">Campos do relatório</h1>
-                    <div class="close-dialog">
-                        <span class="material-symbols-rounded" @click="showDialog = false">
-                            close
-                        </span>
-                    </div>
-                </div>
-                <div class="flex flex-wrap gap-4 w-full">
-                    <DatePicker is-compare :max-date="new Date()" class="w-full" label="Período 1" v-model:expanded="isDateOpened">Selecionar período</DatePicker>
-                    <DatePicker is-compare :max-date="new Date()" class="w-full" label="Período 2" v-model:expanded="isDateOpened2" v-if="isCompare">Selecionar período</DatePicker>
-                </div>
-                <Checkbox v-model="isCompare">Comparar dois perídos</Checkbox>
-                <Button @click="gerarRelatorio" class="w-fit self-end">Gerar</Button>
-            </div>
-        </Dialog>
-    </div>
-    <div class="flex flex-col gap-6 mt-8">
-        <div class="flex items-center gap-4">
-            <h1 class="title" style="margin: 0;">Receita</h1>
-            <Button rounded>
-                <span class="material-symbols-rounded">
-                    add
-                </span>
-            </Button>
-        </div>
-        <div class="flex items-center justify-between gap-4 flex-wrap">
-            <Input type="search" class="filter-input" placeholder="Pesquisar" />
-            <Button class="filter-button" rounded>
-                <span class="material-symbols-rounded">
-                    filter_list
-                </span>
-            </Button>
-        </div>
-        <Table :headers="headers" :loading="loading"></Table>
-    </div>
-    <div class="flex flex-col gap-6 mt-8">
-        <div class="flex items-center gap-4">
-            <h1 class="title" style="margin: 0;">Despesas</h1>
-            <Button rounded>
-                <span class="material-symbols-rounded">
-                    add
-                </span>
-            </Button>
-        </div>
-        <div class="flex items-center justify-between gap-4 flex-wrap">
-            <Input type="search" class="filter-input" placeholder="Pesquisar" />
-            <Button class="filter-button" rounded>
-                <span class="material-symbols-rounded">
-                    filter_list
-                </span>
-            </Button>
-        </div>
-        <Table :headers="headers" :loading="loading"></Table>
-    </div>
+	<div class="flex flex-col gap-6">
+		<h1 class="title">Finanças</h1>
+		<Button class="w-fit self-end" @click="showDialog = true" :disabled="loading.report">Gerar Relatório</Button>
+		<FinanceDialog v-model="showDialog" @generate-report="generateReport" />
+		<Totals :totals="totals" :loading="loading.report" :is-compare="isCompare" />
+		<Card v-if="!loading.report">
+			<apexchart width="100%" height="300px" :options="chartOptions" :series="series" />
+		</Card>
+	</div>
+	<GenericTable
+		title="Receita"
+		type="profit"
+		:headers="headers.profit"
+		:items="data.profit"
+		:loading="loading.profit"
+		add-route="/financas/receita"
+		@filter-data="getItems"
+		@delete-item="deleteItem"
+	/>
+	<GenericTable
+		title="Despesas"
+		type="cost"
+		:headers="headers.cost"
+		:items="data.cost"
+		:loading="loading.cost"
+		add-route="/financas/despesa"
+		@filter-data="getItems"
+		@delete-item="deleteItem"
+	/>
 </template>
-
-<style scoped lang="scss">
-@import "../../style/var.scss";
-
-.total-card {
-    flex: 1;
-    min-width: 300px;
-
-    h6 {
-        font-weight: bold;
-        font-size: 20px;
-        color: $gray-500;
-    }
-
-    p {
-        font-weight: bold;
-        font-size: 26px;
-    }
-}
-
-.ganhos {
-    color: $green-strong;
-}
-
-.custos {
-    color: $red-strong;
-}
-
-.receita {
-    color: $blue-strong;
-}
-
-.dialog-div {
-    display: flex;
-    flex-direction: column;
-    gap: 2em;
-    width: 60vw;
-    min-height: 290px;
-    padding: 1em;
-    transition-duration: 1s;
-
-    .close-dialog {
-        display: flex;
-        align-items: center;
-        border-radius: 50%;
-        padding: 0.1em 0.2em;
-        cursor: pointer;
-        color: $green-dark;
-        transition-duration: 0.3s;
-
-        &:hover {
-            background: $gray-200;
-        }
-
-        .material-symbols-rounded {
-            font-size: 35px;
-        }
-    }
-}
-
-.dialog-div.bigger {
-    min-height: 90vh;
-}
-
-.filter-button .material-symbols-rounded {
-    font-size: 30px;
-}
-
-.filter-input {
-    min-width: 25em;
-}
-
-@media screen and (max-width: 768px) {
-	.dialog-div {
-        width: 90vw;
-    }
-}
-
-@media screen and (max-width: 488px) {
-    .filter-input {
-        min-width: 100%;
-    }
-}
-</style>
