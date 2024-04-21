@@ -47,7 +47,7 @@ const components = {
                 descricao: { type: "string" },
                 tipo: {
                     type: "string",
-                    enum: ["compras", "despesas trabalhistas", "diverso"]
+                    enum: ["compra", "despesas trabalhistas", "diverso"]
                 },
                 data_despesa: { type: "date" }
             },
@@ -55,7 +55,7 @@ const components = {
             example: {
                 valor: 150.0,
                 descricao: "Compra de equipamentos",
-                tipo: "compras",
+                tipo: "compra",
                 data_despesa: "2024-02-09"
             }
         },

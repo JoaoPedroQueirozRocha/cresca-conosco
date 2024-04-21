@@ -1,11 +1,11 @@
 const cost = [
     {
         label: 'Compras',
-        value: 'compras'
+        value: 'compra'
     },
     {
         label: 'Despesas trabalhistas',
-        value: 'despesas trabalhistas'
+        value: 'despesa_trabalhistas'
     },
     {
         label: 'Diversos',
