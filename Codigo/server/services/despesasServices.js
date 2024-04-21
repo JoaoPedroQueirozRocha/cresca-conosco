@@ -14,7 +14,7 @@ async function listarDespesas(period) {
             DATE_TRUNC('month', updated_at) + INTERVAL '1 month' - INTERVAL '1 day' AS updated_at,
             SUM(valor) AS total,
             SUM(CASE WHEN tipo = 'compras' THEN valor ELSE 0 END) AS compras,
-            SUM(CASE WHEN tipo = 'despesas trabalhistas' THEN valor ELSE 0 END) AS despesas_trabalhistas,
+            SUM(CASE WHEN tipo = 'despesas_trabalhistas' THEN valor ELSE 0 END) AS despesas_trabalhistas,
             SUM(CASE WHEN tipo = 'diversos' THEN valor ELSE 0 END) AS diversos,
             COALESCE(ARRAY(
                 SELECT 
@@ -24,10 +24,10 @@ async function listarDespesas(period) {
                         'tipo', tipo,
                         'valor', valor
                     ) 
-                FROM despesas AS d 
+                FROM despesa AS d 
                 WHERE DATE_TRUNC('month', d.updated_at) = DATE_TRUNC('month', updated_at) ${whereSub}
             ), ARRAY[]::json[]) AS childs
-        FROM despesas
+        FROM despesa
         ${where}    
         GROUP BY DATE_TRUNC('month', updated_at);
     `, period);
@@ -35,7 +35,7 @@ async function listarDespesas(period) {
 }
 
 async function getDespesaById(id) {
-    const result = await pool.query("SELECT * FROM despesas d WHERE d.id = $1", [id]);
+    const result = await pool.query("SELECT * FROM despesa d WHERE d.id = $1", [id]);
     return result.rows[0];
 }
 
@@ -47,7 +47,7 @@ async function createNewDespesa(body) {
         updated_at
     } = body;
 
-    const queryResult = await pool.query("INSERT INTO despesas (valor, descricao, tipo, updated_at) VALUES ($1, $2, $3, $4) RETURNING *", [valor, descricao, tipo, updated_at]);
+    const queryResult = await pool.query("INSERT INTO despesa (valor, descricao, tipo, updated_at) VALUES ($1, $2, $3, $4) RETURNING *", [valor, descricao, tipo, updated_at]);
     return queryResult.rows[0];
 }
 
@@ -59,13 +59,13 @@ async function updateDespesaById(id, updates) {
         .join(", ");
 
     const values = Object.values(updates);
-    const query = `UPDATE despesas SET ${fields} WHERE id = $${values.length + 1} RETURNING *`;
+    const query = `UPDATE despesa SET ${fields} WHERE id = $${values.length + 1} RETURNING *`;
     const result = await pool.query(query, [...values, id]);
     return result.rows[0];
 }
 
 async function deleteDespesaById(id) {
-    const result = await pool.query("DELETE FROM despesas d WHERE d.id = $1", [id])
+    const result = await pool.query("DELETE FROM despesa d WHERE d.id = $1", [id])
     return result.rows[0]
 };
 
