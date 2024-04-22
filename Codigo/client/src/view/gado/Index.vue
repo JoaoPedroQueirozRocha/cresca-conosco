@@ -49,7 +49,7 @@
 							tabindex="0"
 							@blur="item.expanded = false"
 						>
-							<router-link :to="`/gado/vaca/${item.id}`">
+							<router-link :to="`/gado/vaca/${item.id_animal}`">
 								<div class="action-option">
 									<Icon name="edit" />
 									Editar
@@ -57,7 +57,7 @@
 							</router-link>
 							<div
 								class="action-option"
-								@click="openInsemDialog(item.id, true)"
+								@click="openInsemDialog(item.id_gestacao, true)"
 								v-if="isInsemAvaliable(item.status)"
 							>
 								<Icon name="vaccines" />
@@ -75,7 +75,7 @@
 								<Icon name="menstrual_health" />
 								Secar
 							</div>
-							<div class="action-option delete" @click="confirmDeletion(item.id, index)">
+							<div class="action-option delete" @click="confirmDeletion(item.id_animal, index)">
 								<Icon name="delete" />
 								Deletar
 							</div>

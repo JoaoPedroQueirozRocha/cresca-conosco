@@ -86,7 +86,7 @@ export default {
 	async created() {
 		if (this.id) {
 			try {
-                const response = await animalController.getAnimal(Number(this.id));
+				const response = await animalController.getAnimal(Number(this.id));
 				Object.assign(this.data, response);
 				this.pageTitle = this.data?.nome;
 			} catch (e) {
