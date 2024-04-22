@@ -25,6 +25,7 @@
             <Button class="only-border" :disabled="loading" @click="$router.push('/financas')">Cancelar</Button>
             <Button @click = "salvar" :loading="loading">{{ buttonText }}</Button>
         </div>
+        <File />
     </div>
 </template>
 
@@ -37,6 +38,7 @@ import Input from "@/components/Input.vue";
 import Tab from "@/components/Tab.vue";
 import Checkbox from "@/components/Checkbox.vue";
 import Select from "@/components/Select.vue";
+import File from "@/components/File.vue";
 import DatePicker from "@/components/DatePicker.vue";
 import { upperCaseFirstLetter } from "@/util";
 
@@ -49,7 +51,7 @@ export default {
         callback: Function,
         get: Function,
     },
-    components: { Button, Dialog, Card, Input, Tab, Checkbox, Select, DatePicker },
+    components: { Button, Dialog, Card, Input, Tab, Checkbox, Select, DatePicker, File },
     inject: ["Auth"],
 
     setup() {
