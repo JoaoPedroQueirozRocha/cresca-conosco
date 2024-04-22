@@ -2,10 +2,10 @@
     <div class="flex justify-between items-center gap-2 mb-8" style="margin-top: 1.5em;">
         <h2 class="title">{{ title }}</h2>
     </div>
-    <Tab v-model="tabIndex" :items="tabItems" disabled v-if="!id" class="mb-6" />
+    <Tab v-model="tabIndex" :items="tabItems" v-if="!id" class="mb-6" />
 
     <div>
-        <Card class="flex flex-col gap-4 mb-4">
+        <Card class="flex flex-col gap-4 mb-4" v-if="tabIndex == 0">
             <Input type="text" label="Descrição" v-model="data.descricao" placeholder="Digite aqui"></Input>
 
             <div class="flex gap-6 flex-wrap">
@@ -16,16 +16,17 @@
             </div>
 
             <Checkbox v-model="dataChecked">Selecionar data</Checkbox>
-
+            
             <DatePicker v-if="dataChecked" label="Selecione a data" v-model="data.updated_at" />
-
+            
         </Card>
+        <ImportData v-else />
+
 
         <div class="flex flex-row flex-wrap gap-2 justify-end ">
             <Button class="only-border" :disabled="loading" @click="$router.push('/financas')">Cancelar</Button>
             <Button @click = "salvar" :loading="loading">{{ buttonText }}</Button>
         </div>
-        <File />
     </div>
 </template>
 
@@ -38,7 +39,7 @@ import Input from "@/components/Input.vue";
 import Tab from "@/components/Tab.vue";
 import Checkbox from "@/components/Checkbox.vue";
 import Select from "@/components/Select.vue";
-import File from "@/components/File.vue";
+import ImportData from "@/components/ImportData.vue";
 import DatePicker from "@/components/DatePicker.vue";
 import { upperCaseFirstLetter } from "@/util";
 
@@ -51,7 +52,7 @@ export default {
         callback: Function,
         get: Function,
     },
-    components: { Button, Dialog, Card, Input, Tab, Checkbox, Select, DatePicker, File },
+    components: { Button, Dialog, Card, Input, Tab, Checkbox, Select, DatePicker, ImportData },
     inject: ["Auth"],
 
     setup() {
@@ -99,6 +100,7 @@ export default {
         },
         buttonText() {
             if (this.id) return 'Salvar';
+            else if (this.tabIndex != 0) return 'Importar';
             return 'Criar';
         }
     },
@@ -166,7 +168,7 @@ export default {
                 (!this.dataChecked || (this.dataChecked && this.data.updated_at));
             
             return valid;
-        }
+        },
     },
 };
 </script>

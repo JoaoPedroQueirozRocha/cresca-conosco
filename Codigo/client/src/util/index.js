@@ -1,3 +1,5 @@
+import Papa from 'papaparse';
+
 export function formatCurrency(value) {
     if (isNaN(Number(value))) return '$' + (0).toFixed(2);
     value = Number(value);
@@ -48,3 +50,19 @@ export function csvExport(data, name) {
     link.click();
 }
 
+export function parseFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsText(file);
+
+        reader.onloadend = (e) => {
+            const content = e.target.result;
+            const result = Papa.parse(content, { skipEmptyLines: true });
+            resolve(result.data);
+        };
+
+        reader.onerror = (e) => {
+            reject(e);
+        };
+    });
+}

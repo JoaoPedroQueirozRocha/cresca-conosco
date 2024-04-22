@@ -10,7 +10,14 @@ export default {
     },
     emits: ['update:modelValue'],
     setup() {
+        const defaultAlert = ref({
+            top: true,
+            right: true,
+            timeout: 3500,
+        });
+
         return {
+            defaultAlert,
             dragging: ref(false),
             model: ref(),
         }
@@ -33,9 +40,16 @@ export default {
         },
         onChangeFile(e) {
             const files = e.target.files || e.dataTransfer.files;
-            this.dragging = false;
-            this.changeModel(files[0]);
-        }
+            const file = files[0];
+            if (!file.type.match(/csv/)) {
+                this.$alert({
+					message: 'Apenas arquivos csv são aceitos',
+					...this.defaultAlert,
+				});
+                return;
+            }
+            this.changeModel(file);
+        },
     }
 }
 </script>
