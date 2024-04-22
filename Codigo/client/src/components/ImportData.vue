@@ -23,23 +23,36 @@ export default {
     setup() {
         const file = ref(null);
         const headers = ref([]);
+        const parsedOptions = ref([]);
+        const values = ref([]);
         const mapData = ref(false);
 
         return {
             file,
             headers,
+            values,
             mapData,
+            parsedOptions,
         }
+    },
+
+    created() {
+        this.parsedOptions = this.options;
     },
 
     watch: {
         modelValue() {
             this.headers = this.modelValue;
+        },
+        options() {
+            this.parsedOptions = this.options;
         }
     },
 
     methods: {
         async changeModel(file) {
+            if (!file) return;
+
             const parsedFile = await parseFile(file);
             this.headers = parsedFile[0].map((header) => {
                 return {
@@ -47,6 +60,10 @@ export default {
                     to: '',
                 };
             });
+            parsedFile.splice(0, 1);
+            this.values = [...parsedFile];
+            console.log(this.values)
+
             this.$emit('update:modelValue', this.model);
         }
     },
