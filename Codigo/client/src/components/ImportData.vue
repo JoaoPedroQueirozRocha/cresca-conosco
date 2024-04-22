@@ -57,7 +57,7 @@ export default {
     <Card class="flex flex-col gap-4 mb-4">
         <File v-model="file" @update:model-value="changeModel" />
         <Checkbox v-model="mapData" v-if="file">Mapear dados</Checkbox>
-        <template v-if="mapData">
+        <template v-if="mapData && file">
             <div v-for="(header, index) in headers" :key="index" class="flex items-center gap-4">
                 <Input class="flex-1" v-model="header.from" disabled />
                 <Icon class="arrow-icon" name="arrow_forward" />
