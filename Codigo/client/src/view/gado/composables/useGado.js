@@ -175,6 +175,14 @@ export function useGado() {
         }
     }
 
+    function isInsemAvaliable(status) {
+        return status === null || status === 'concluida' || status === 'falhou';
+    }
+
+    function isParirAvaliable(status) {
+        return status === 'pendente' || status === 'confirmada';
+    }
+
 
 
     return {
@@ -185,7 +193,9 @@ export function useGado() {
         parirAnimal,
         secarAnimal,
         deletarAnimal,
-        confirmarGestacao
+        confirmarGestacao,
+        isInsemAvaliable,
+        isParirAvaliable
     }
 }
 
