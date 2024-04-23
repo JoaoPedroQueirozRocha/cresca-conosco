@@ -39,12 +39,17 @@
 			</template>
 			<template #dataInsem="{ item, index }">
 				<td>
-					{{ item.data_insem ? formatDateString(item.data_insem) : '-' }}
+					{{ item.data_insem ? formatDateString(item.data_insem) : "-" }}
+				</td>
+			</template>
+			<template #dpia="{ item, index }">
+				<td>
+					{{ item.data_insem ? calculateDaysInsem(item.data_insem) : "-" }}
 				</td>
 			</template>
 			<template #prevParto="{ item, index }">
 				<td>
-					{{ item.prev_parto ? formatDateString(item.prev_parto) : '-' }}
+					{{ item.prev_parto ? formatDateString(item.prev_parto) : "-" }}
 				</td>
 			</template>
 			<template #touro="{ item, index }">
@@ -67,6 +72,11 @@
 					<Tag :color="getColor(item.status)" :text="item.status || 'Não inseminada'" />
 				</td>
 			</template>
+			<template #secarEm="{ item, index }">
+				<td>
+					{{ item.prev_parto ? formatDateString(calculateSecar(item.data_insem)) : "-" }}
+				</td>
+			</template>
 			<template #empty-state>
 				<div class="empty-div">
 					<Icon name="sentiment_dissatisfied" />
@@ -78,20 +88,21 @@
 </template>
 
 <script>
-import Table from '@/components/Table.vue';
-import Icon from '@/components/Icon.vue';
-import Tag from '@/components/Tag.vue';
-import Dialog from '@/components/Dialog.vue';
-import Filter from '@/components/Filter.vue';
-import Input from '@/components/Input.vue';
-import Button from '@/components/Button.vue';
-import { getColor, formatDateString } from '@/util/index';
-import { useGado } from './composables/useGado';
-import { ref } from 'vue';
-import { useFilter } from './composables/useFilter';
+import Table from "@/components/Table.vue";
+import Icon from "@/components/Icon.vue";
+import Tag from "@/components/Tag.vue";
+import Dialog from "@/components/Dialog.vue";
+import Filter from "@/components/Filter.vue";
+import Input from "@/components/Input.vue";
+import Button from "@/components/Button.vue";
+import { getColor, formatDateString, calculateDaysInsem, calculateSecar } from "@/util/index";
+import GadoReport from "./GadoReport.vue";
+import { useGado } from "../composables/useGado";
+import { ref } from "vue";
+import { useFilter } from "../composables/useFilter";
 
 export default {
-	name: 'DialogTable',
+	name: "DialogTable",
 	props: {
 		allData: {
 			type: Array,
@@ -110,9 +121,10 @@ export default {
 		Filter,
 		Input,
 		Button,
+		GadoReport,
 	},
 	setup() {
-		const searchValue = ref('');
+		const searchValue = ref("");
 		const data = ref([]);
 		const { headersDialog, filterOptions } = useGado();
 		const { getSelected, filteredData } = useFilter(data, filterOptions, searchValue);
@@ -124,17 +136,19 @@ export default {
 			searchValue,
 			getColor,
 			formatDateString,
+			calculateDaysInsem,
 			getSelected,
 			filterOptions,
 			filteredData,
 			data,
+			calculateSecar,
 		};
 	},
 
 	watch: {
 		allData() {
 			this.data = this.allData;
-		}
+		},
 	},
 
 	created() {
@@ -142,35 +156,34 @@ export default {
 	},
 
 	mounted() {
-		document.addEventListener('click', this.closeFilterCard);
+		document.addEventListener("click", this.closeFilterCard);
 	},
 
 	beforeUnmount() {
-		document.removeEventListener('click', this.closeFilterCard);
+		document.removeEventListener("click", this.closeFilterCard);
 	},
 
 	methods: {
 		closeFilterCard(event) {
-			if (this.filterCard == event.target.closest('.filter-holder') || event.target.closest('.filter')) return;
+			if (this.filterCard == event.target.closest(".filter-holder") || event.target.closest(".filter")) return;
 			this.showFilter = false;
 		},
 		changeModel(value) {
 			this.model = value;
-			this.$emit('update:modelValue', this.model); // Emitindo o evento
+			this.$emit("update:modelValue", this.model); // Emitindo o evento
 		},
 		cancelar() {
 			this.changeModel(false);
 		},
 	},
-
 };
 </script>
 
 <style scoped lang="scss">
-@import '../../style/var.scss';
+@import "../../../style/var.scss";
 
 td {
-    color: $gray-500;
+	color: $gray-500;
 }
 
 .close-dialog {

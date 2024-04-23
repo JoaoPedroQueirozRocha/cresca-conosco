@@ -28,7 +28,7 @@
 
 <script>
 import animalController from "@/controller/animal.js";
-import Button from "../../components/Button.vue";
+import Button from "@/components/Button.vue";
 import Input from "@/components/Input.vue";
 import Card from "@/components/Card.vue";
 import Dialog from "@/components/Dialog.vue";
@@ -141,5 +141,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../style/var.scss";
+@import "../../../style/var.scss";
 </style>

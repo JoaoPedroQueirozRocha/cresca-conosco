@@ -34,17 +34,36 @@ export function getColor(status) {
 }
 
 export function csvExport(data, name) {
-   let content = 'data:text/csv;charset=utf-8,';
-   content += [
+    let content = 'data:text/csv;charset=utf-8,';
+    content += [
         Object.keys(data[0]).join(','), ...data.map((item) => Object.values(item).join(','))
     ]
-    .join('\n')
-    .replace(/(^\[)|(\]$)/gm, '');
+        .join('\n')
+        .replace(/(^\[)|(\]$)/gm, '');
 
     const eData = encodeURIComponent(content);
     const link = document.createElement('a');
     link.setAttribute('href', eData);
-    link.setAttribute('download',  `${name || 'export'}.csv`);
+    link.setAttribute('download', `${name || 'export'}.csv`);
     link.click();
+}
+
+export function calculateDaysInsem(date) {
+    const dateInsem = date !== null ? new Date(date) : null;
+    if (dateInsem) {
+        const dateNow = new Date();
+        const diff = (dateNow - dateInsem) / (1000 * 60 * 60 * 24);
+        return Math.floor(diff);
+    }
+    return null;
+}
+
+export function calculateSecar(date) {
+    const dataPrevParto = date !== null ? new Date(date) : null;
+    if (dataPrevParto) {
+        const dataSecar = dataPrevParto.setDate(dataPrevParto.getDate() - 60);
+        return dataSecar;
+    }
+    return null;
 }
 

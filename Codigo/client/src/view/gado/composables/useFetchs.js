@@ -43,10 +43,16 @@ export function useFetchs() {
         return data && dataGestacao;
     }
 
+    async function getReport() {
+        const data = await gadoController.getReport();
+        return data;
+    }
+
     return {
         getBaseData,
         getAllData,
         getAnimal,
+        getReport,
         parir,
         secar,
         deletar,

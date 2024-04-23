@@ -31,12 +31,12 @@ const components = {
             },
             required: ["animal_id", "status", "touro", "data_insem"],
             example: {
-                animal_id: 30,
+                animal_id: 2,
                 status: "pendente",
                 prev_parto: "2024-02-09",
-                semem: "5/8",
+                touro: "5/8",
                 data_insem: "2024-02-09",
-                data_conclusao: "2024-10-09"
+                data_finalizacao: "2024-10-09"
             }
         },
         Despesa: {
@@ -47,16 +47,16 @@ const components = {
                 descricao: { type: "string" },
                 tipo: {
                     type: "string",
-                    enum: ["compra", "despesas trabalhistas", "diverso"]
+                    enum: ["compra", "despesa_trabalhistas", "diverso"]
                 },
-                data_despesa: { type: "date" }
+                updated_at: { type: "date" }
             },
             required: ["valor", "descricao", "tipo"],
             example: {
                 valor: 150.0,
                 descricao: "Compra de equipamentos",
                 tipo: "compra",
-                data_despesa: "2024-02-09"
+                updated_at: "2024-02-09"
             }
         },
         Receita: {

@@ -45,7 +45,8 @@ export function useEditDialog() {
 
     async function processarGestacao(gestacaoData, isEdit) {
         if (isEdit) {
-            await gestacaoController.editarGestacao(gestacaoData.animal_id, gestacaoData);
+            console.log("gestacao id", gestacaoData.id_gestacao);
+            await gestacaoController.editarGestacao(gestacaoData.id_gestacao, gestacaoData);
         } else {
             await gestacaoController.salvarGestacao(gestacaoData);
         }

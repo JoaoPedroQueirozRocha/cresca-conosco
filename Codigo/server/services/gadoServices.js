@@ -62,8 +62,21 @@ async function getLactantes() {
     return queryResult.rows;
 }
 
-async function calculateLactatingAverage() {
+async function calculateLactatingPercentage() {
+    const queryResult = await pool.query(`
+    SELECT
+        (COUNT(*) FILTER (WHERE lactante = true) * 100.0 / COUNT(*)) AS porcentagem_lactantes
+    FROM animais;
+    `);
+    return queryResult.rows[0];
+}
 
+async function calculateConfirmedGestation() {
+    const queryResult = await pool.query(`
+    SELECT (COUNT(*) FILTER (WHERE status = 'confirmada'))
+    FROM gestacoes;
+    `);
+    return queryResult.rows[0];
 }
 
 export {
@@ -72,6 +85,8 @@ export {
     getByStatus,
     getByAnimal,
     getLactantes,
-    getBaseData
+    getBaseData,
+    calculateLactatingPercentage,
+    calculateConfirmedGestation
 }
 

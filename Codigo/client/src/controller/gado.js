@@ -9,6 +9,17 @@ async function getAll() {
     return response.data;
 }
 
+async function getBase() {
+    const response = await axios.get(`${APIURL}/base`);
+    return response.data;
+}
+
+async function getReport() {
+    const response = await axios.get(`${APIURL}/report`);
+    console.log("resposta report", response.data);
+    return response.data;
+}
+
 function createGado(gado) {
     return axios.post(`${APIURL}/animals`, gado);
 }
@@ -17,10 +28,7 @@ function updateGado(gado) {
     return axios.put(`${APIURL}/animals/${gado.id}`, gado);
 }
 
-async function getBase() {
-    const response = await axios.get(`${APIURL}/base`);
-    return response.data;
-}
+
 
 async function deleteGado(id) {
     const deleteGestacao = await gestacaoServices.deletarGestacao(id);
@@ -32,6 +40,7 @@ async function deleteGado(id) {
 export default {
     getAll,
     getBase,
+    getReport,
     createGado,
     updateGado,
     deleteGado,
