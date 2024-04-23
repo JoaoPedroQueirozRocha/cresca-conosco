@@ -1,7 +1,7 @@
 <template>
 	<div class="flex flex-col w-full mt-[3em]">
-		<div class="w-fullflex flex-col gap-3">
-			<div class="mb-3">
+		<div class="w-full flex flex-col gap-3">
+			<div>
 				<div class="flex flex-row w-full justify-between items-center align-middle my-4">
 					<h2 class="title mt-0">Funcionários</h2>
 					<router-link to="/funcionario">
@@ -76,6 +76,7 @@
 					</div>
 				</template>
 			</Table>
+			<Button class="mt-4 self-end" @click="downloadCSV">Download</Button>
 		</div>
 	</div>
 </template>
@@ -89,6 +90,7 @@ import Icon from "@/components/Icon.vue";
 import Checkbox from "@/components/Checkbox.vue";
 import Filter from "@/components/Filter.vue";
 import { useFetchs } from "./useFetchs.js";
+import { csvExport, formatDate } from "@/util";
 
 
 export default {
@@ -151,6 +153,11 @@ export default {
                 ]
             },
         ]);
+        const defaultAlert = ref({
+            top: true,
+            right: true,
+            timeout: 3500,
+        });
 
         return {
             funcionarioData,
@@ -162,6 +169,7 @@ export default {
 			showFilter: ref(false),
 			opendedIndex: ref(null),
             searchValue: ref(''),
+			defaultAlert,
         };
     },
 
@@ -280,13 +288,30 @@ export default {
             });
 			// Tratar dados
             if (result) ()=>{};
-        }
+        },
+
+		downloadCSV() {
+			try {
+				csvExport(this.filteredDate, `funcionarios${formatDate(new Date())}`)
+			} catch (e) {
+                this.$alert({
+					message: 'Erro ao baixar o arquivo de funcionários. Tente novamente mais tarde',
+					...this.defaultAlert,
+				});
+			}
+    	},
 	},
+
+	
 };
 </script>
 
 <style lang="scss" scoped>
 @import '../../style/var.scss';
+
+td {
+    color: $gray-500;
+}
 
 .icon-holder {
 	display: flex;

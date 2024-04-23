@@ -14,7 +14,7 @@ const router = express.Router();
  * @swagger
  * /gestacao/{animal_id}:
  *  get:
- *   summary: Retorna as informaçes daquele animal específico]
+ *   summary: Retorna as informações daquele animal específico]
  *   tags: [Gestacao]
  *   parameters: 
  *    - in: path
@@ -56,7 +56,7 @@ router.post("/", gestacaoController.createGestacao);
  * @swagger
  * /gestacao/{animal_id}:
  *  put:
- *   summary: Atualiza as informaçes daquele animal específico
+ *   summary: Atualiza as informações daquele animal específico
  *   tags: [Gestacao]
  *   parameters: 
  *    - in: path
@@ -79,7 +79,7 @@ router.post("/", gestacaoController.createGestacao);
  *               schema: 
  *                  $ref: '#components/schemas/Gestacao'
  */
-router.put("/:animal_id", gestacaoController.updateGestacao);
+router.put("/:id", gestacaoController.updateGestacao);
 
 /**
  * @swagger
