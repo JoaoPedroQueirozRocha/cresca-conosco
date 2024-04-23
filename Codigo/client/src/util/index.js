@@ -49,22 +49,19 @@ export function csvExport(data, name) {
 }
 
 export function calculateDaysInsem(date) {
-    const dateInsem = date !== null ? new Date(date) : null;
-    if (dateInsem) {
-        const dateNow = new Date();
-        const diff = (dateNow - dateInsem) / (1000 * 60 * 60 * 24);
-        return Math.floor(diff);
-    }
-    return null;
+    const parsedDate = new Date(date);
+    if (!(parsedDate instanceof Date) || isNaN(parsedDate.getTime())) return null;
+
+    const dateNow = new Date();
+    const diff = (dateNow - parsedDate) / (1000 * 60 * 60 * 24);
+    return Math.floor(diff);
 }
 
 export function calculateSecar(date) {
-    const dataPrevParto = date !== null ? new Date(date) : null;
-    if (dataPrevParto) {
-        dataPrevParto.setDate(dataPrevParto.getDate() - 60);
-        // Retorna um novo objeto Date baseado na data ajustada
-        return new Date(dataPrevParto);
-    }
-    return null;
+    const parsedDate = new Date(date);
+    if (!(parsedDate instanceof Date) || isNaN(parsedDate.getTime())) return null;
+
+    parsedDate.setDate(parsedDate.getDate() - 60);
+    return new Date(parsedDate);
 }
 
