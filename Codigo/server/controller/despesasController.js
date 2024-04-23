@@ -28,19 +28,6 @@ async function getDespesaById(req, res) {
     }
 }
 
-/**
- * 
- * @param {*} req 
- * Colunas do banco: 
- * - valor
- * - descricao
- * - tipo
- * Valores válidos para o tipo da despesa:
- * - compras,
- * - despesas trabalhistas,
- * - diverso'
- * @param {*} res 
- */
 async function createNewDespesa(req, res) {
     try {
         const body = req.body;

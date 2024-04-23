@@ -15,16 +15,16 @@ import financeRoutes from './routes/financeRoutes.js';
 import NotificationRouter from './routes/notificationRoutes.js'
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT;
 app.use(
     cors({
         origin: [
             "http://localhost:5173",
             "https://cresca-conosco.queirozrocha.com",
+            "https://cresca-conosco-develop.vercel.app",
             "https://cresca-conosco-staging.onrender.com",
             "https://cresca-conosco.onrender.com",
             "http://localhost:3000",
-            "https://cresca-conosco-develop.vercel.app"
         ],
         credentials: true,
     })
