@@ -10,7 +10,7 @@ function salvarGestacao(gestacao) {
 }
 
 async function parir(id) {
-    return await axios.put(`${APIURL}/${id}`, { status: 'concluida' });
+    return await axios.put(`${APIURL}/${id}`, { status: 'concluida', data_finalizacao: new Date() });
 }
 
 async function confirmarGestacao(id) {

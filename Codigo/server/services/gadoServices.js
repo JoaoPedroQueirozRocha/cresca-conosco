@@ -5,13 +5,48 @@ const router = express.Router();
 
 router.use(express.json());
 
+// async function getAll() {
+//     const queryResult = await pool.query('SELECT * FROM animais a LEFT JOIN gestacoes g ON a.id = g.animal_id ORDER BY a.nome');
+//     return queryResult.rows;
+// }
 async function getAll() {
-    const queryResult = await pool.query('SELECT * FROM animais a LEFT JOIN gestacoes g ON a.id = g.animal_id ORDER BY a.nome');
+    const queryResult = await pool.query(`
+        SELECT a.*, g.*
+        FROM animais a
+        LEFT JOIN (
+            SELECT *,
+            ROW_NUMBER() OVER(PARTITION BY animal_id ORDER BY CASE WHEN status IN ('pendente', 'confirmada') THEN 1 ELSE 2 END, data_insem DESC) as rn
+            FROM gestacoes
+        ) g ON a.id = g.animal_id AND g.rn = 1
+        ORDER BY a.nome
+    `);
     return queryResult.rows;
 }
 
+// async function getBaseData() {
+//     const queryResult = await pool.query('SELECT a.nome, g.id, g.data_insem, g.prev_parto, g.touro, g.status, a.lactante FROM animais a LEFT JOIN gestacoes g ON a.id = g.animal_id ORDER BY a.nome');
+//     return queryResult.rows;
+// }
+
 async function getBaseData() {
-    const queryResult = await pool.query('SELECT a.nome, a.id, g.data_insem, g.prev_parto, g.touro, g.status, a.lactante FROM animais a LEFT JOIN gestacoes g ON a.id = g.animal_id ORDER BY a.nome');
+    const queryResult = await pool.query(`
+    SELECT 
+            a.id as id_animal, 
+            a.nome, 
+            g.id as id_gestacao, 
+            g.data_insem, 
+            g.prev_parto, 
+            g.touro, 
+            g.status, 
+            a.lactante
+        FROM animais a
+        LEFT JOIN (
+            SELECT *,
+            ROW_NUMBER() OVER(PARTITION BY animal_id ORDER BY CASE WHEN status IN ('pendente', 'confirmada') THEN 1 ELSE 2 END, data_insem DESC) as rn
+            FROM gestacoes
+        ) g ON a.id = g.animal_id AND g.rn = 1
+        ORDER BY a.nome
+    `);
     return queryResult.rows;
 }
 
@@ -36,6 +71,9 @@ async function getLactantes() {
     return queryResult.rows;
 }
 
+async function calculateLactatingAverage() {
+
+}
 
 export {
     getAll,

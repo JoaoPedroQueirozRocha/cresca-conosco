@@ -49,13 +49,17 @@
 							tabindex="0"
 							@blur="item.expanded = false"
 						>
-							<router-link :to="`/gado/vaca/${item.id}`">
+							<router-link :to="`/gado/vaca/${item.id_animal}`">
 								<div class="action-option">
 									<Icon name="edit" />
 									Editar
 								</div>
 							</router-link>
-							<div class="action-option" @click="openInsemDialog(item.id, true)">
+							<div
+								class="action-option"
+								@click="openInsemDialog(item.id_gestacao, true)"
+								v-if="isInsemAvaliable(item.status)"
+							>
 								<Icon name="vaccines" />
 								Inseminar
 							</div>
@@ -71,7 +75,7 @@
 								<Icon name="menstrual_health" />
 								Secar
 							</div>
-							<div class="action-option delete" @click="confirmDeletion(item.id, index)">
+							<div class="action-option delete" @click="confirmDeletion(item.id_animal, index)">
 								<Icon name="delete" />
 								Deletar
 							</div>
@@ -137,6 +141,7 @@
 
 <script>
 import { useGado } from './composables/useGado.js';
+import { useEditDialog } from './composables/useEditDialog.js';
 import { formatDate } from '../../util';
 import { useFilter } from './composables/useFilter.js';
 import { ref } from 'vue';
@@ -187,6 +192,8 @@ export default {
 			deletarAnimal,
 			confirmarGestacao,
 			isEdit,
+			isInsemAvaliable,
+			isParirAvaliable,
 		} = useGado();
 
 		const searchValue = ref('');
@@ -224,6 +231,8 @@ export default {
 			confirmarGestacao,
 			defaultAlert,
 			isEdit,
+			isInsemAvaliable,
+			isParirAvaliable,
 		};
 	},
 
@@ -338,7 +347,7 @@ export default {
 @import '../../style/var.scss';
 
 td {
-    color: $gray-500;
+	color: $gray-500;
 }
 
 .icon-holder {

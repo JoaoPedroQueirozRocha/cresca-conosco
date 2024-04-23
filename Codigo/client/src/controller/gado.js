@@ -1,4 +1,7 @@
 import axios from "axios";
+import gestacaoServices from "./gestacao";
+import animalServices from "./animal";
+
 const APIURL = `${import.meta.env.VITE_API_URL}/gado` || "http://localhost:3002/gado";
 
 async function getAll() {
@@ -19,8 +22,11 @@ async function getBase() {
     return response.data;
 }
 
-function deleteGado(id) {
-    return axios.delete(`${APIURL}/animals/${id}`);
+async function deleteGado(id) {
+    const deleteGestacao = await gestacaoServices.deletarGestacao(id);
+
+    const deleteAnimal = animalServices.deletarAnimal(id);
+    return { deleteGestacao, deleteAnimal };
 }
 
 export default {

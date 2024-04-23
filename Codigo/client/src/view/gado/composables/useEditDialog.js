@@ -75,12 +75,11 @@ export function useEditDialog() {
             state.gestacaoData.prev_parto = null;
         }
     };
-
     return {
         ...toRefs(state),
         validateData,
         processarGestacao,
-        changeDisabled
+        changeDisabled,
     }
 }
 
