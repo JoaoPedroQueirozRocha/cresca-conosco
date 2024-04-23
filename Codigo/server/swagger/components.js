@@ -9,7 +9,7 @@ const components = {
                 lactante: { type: "boolean" },
                 primeira_ia: { type: "date" }
             },
-            required: ["nome", "crias", "num_insem", "dias_parida", "lactante", "primeira_ia"],
+            required: ["nome", "crias", "num_insem", "lactante"],
             example: {
                 nome: "Mumuzinha",
                 crias: 2,
@@ -25,9 +25,9 @@ const components = {
                 animal_id: { type: "number" },
                 status: { type: "string", enum: ["pendente", "confirmada", "concluida", "falhou"] },
                 prev_parto: { type: "date" },
-                touro: { type: "string", enum: ["5/8", "gir", "boi"] },
+                touro: { type: "string", enum: ["5/8", "gir", "nelore", "touro"] },
                 data_insem: { type: "date" },
-                data_conclusao: { type: "date" }
+                data_finalizacao: { type: "date" }
             },
             required: ["animal_id", "status", "touro", "data_insem"],
             example: {

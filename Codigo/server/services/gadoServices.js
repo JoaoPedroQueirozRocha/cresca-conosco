@@ -5,10 +5,6 @@ const router = express.Router();
 
 router.use(express.json());
 
-// async function getAll() {
-//     const queryResult = await pool.query('SELECT * FROM animais a LEFT JOIN gestacoes g ON a.id = g.animal_id ORDER BY a.nome');
-//     return queryResult.rows;
-// }
 async function getAll() {
     const queryResult = await pool.query(`
         SELECT a.*, g.*
@@ -22,11 +18,6 @@ async function getAll() {
     `);
     return queryResult.rows;
 }
-
-// async function getBaseData() {
-//     const queryResult = await pool.query('SELECT a.nome, g.id, g.data_insem, g.prev_parto, g.touro, g.status, a.lactante FROM animais a LEFT JOIN gestacoes g ON a.id = g.animal_id ORDER BY a.nome');
-//     return queryResult.rows;
-// }
 
 async function getBaseData() {
     const queryResult = await pool.query(`

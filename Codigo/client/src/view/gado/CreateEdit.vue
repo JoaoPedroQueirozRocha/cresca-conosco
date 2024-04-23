@@ -27,20 +27,19 @@
 </template>
 
 <script>
-// import gadoController from '@/controller/gado.js';
-import animalController from '@/controller/animal.js';
-import Button from '../../components/Button.vue';
-import Input from '@/components/Input.vue';
-import Card from '@/components/Card.vue';
-import Dialog from '@/components/Dialog.vue';
-import Tab from '@/components/Tab.vue';
-import DatePicker from '@/components/DatePicker.vue';
-import Checkbox from '@/components/Checkbox.vue';
-import Select from '@/components/Select.vue';
-import { ref } from 'vue';
+import animalController from "@/controller/animal.js";
+import Button from "../../components/Button.vue";
+import Input from "@/components/Input.vue";
+import Card from "@/components/Card.vue";
+import Dialog from "@/components/Dialog.vue";
+import Tab from "@/components/Tab.vue";
+import DatePicker from "@/components/DatePicker.vue";
+import Checkbox from "@/components/Checkbox.vue";
+import Select from "@/components/Select.vue";
+import { ref } from "vue";
 
 export default {
-	name: 'CreateEdit',
+	name: "CreateEdit",
 	props: {
 		id: Number | String,
 	},
@@ -48,12 +47,12 @@ export default {
 	setup() {
 		const tabItems = ref([
 			{
-				text: 'Criação',
-				icon: 'add_circle',
+				text: "Criação",
+				icon: "add_circle",
 			},
 			{
-				text: 'Importação de Planilha',
-				icon: 'swap_vert',
+				text: "Importação de Planilha",
+				icon: "swap_vert",
 			},
 		]);
 		const tabIndex = ref(0);
@@ -64,7 +63,7 @@ export default {
 		});
 		const data = ref({});
 		const loading = ref(false);
-		const pageTitle = ref('');
+		const pageTitle = ref("");
 
 		return {
 			tabItems,
@@ -78,8 +77,8 @@ export default {
 
 	computed: {
 		buttonText() {
-			if (this.id) return 'Salvar';
-			return 'Criar';
+			if (this.id) return "Salvar";
+			return "Criar";
 		},
 	},
 
@@ -97,7 +96,7 @@ export default {
 				});
 			}
 		} else {
-			this.pageTitle = 'Nova Vaca';
+			this.pageTitle = "Nova Vaca";
 		}
 	},
 
@@ -105,7 +104,7 @@ export default {
 		async salveVaca() {
 			if (!this.isValnome()) {
 				this.$alert({
-					message: 'Preencha todos os campos para salvar a vaca',
+					message: "Preencha todos os campos para salvar a vaca",
 					...this.defaultAlert,
 				});
 				return;
@@ -118,19 +117,19 @@ export default {
 				else await animalController.createAnimal(this.data);
 
 				this.$alert({
-					message: 'Vaca salva com sucesso',
-					type: 'success',
+					message: "Vaca salva com sucesso",
+					type: "success",
 					...this.defaultAlert,
 				});
 			} catch (e) {
 				console.error(e);
 				this.$alert({
-					message: 'Erro ao salvar vaca. Tente novamente mais tarde',
+					message: "Erro ao salvar vaca. Tente novamente mais tarde",
 					...this.defaultAlert,
 				});
 			} finally {
 				this.loading = false;
-				this.$router.push('/gado');
+				this.$router.push("/gado");
 			}
 		},
 
@@ -142,5 +141,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../../style/var.scss';
+@import "../../style/var.scss";
 </style>
