@@ -52,7 +52,7 @@ import Select from '@/components/Select.vue';
 import DatePicker from '@/components/DatePicker.vue';
 import Button from '@/components/Button.vue';
 import gestacaoController from '@/controller/gestacao.js';
-import { useEditDialog } from './composables/useEditDialog.js';
+import { useEditDialog } from '../composables/useEditDialog.js';
 import { ref, reactive, watch } from 'vue';
 
 export default {
@@ -68,6 +68,7 @@ export default {
 			if (this.animalData.status) {
 				this.gestacaoData = {
 					animal_id: this.animalData.id,
+					id_gestacao: this.animalData.id_gestacao ? this.animalData.id_gestacao : null,
 					status: this.animalData.status,
 					touro: this.animalData.touro,
 					data_insem: this.animalData.data_insem ? new Date(this.animalData.data_insem) : null,
@@ -132,6 +133,7 @@ export default {
 			this.changeModel(false);
 			this.gestacaoData = {
 				animal_id: null,
+				id_gestacao: null,
 				status: '',
 				touro: '',
 				data_insem: '',

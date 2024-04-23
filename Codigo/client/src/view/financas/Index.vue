@@ -223,7 +223,7 @@ export default {
 					},
 					{
 						text: 'Compras',
-						value: 'compras',
+						value: 'compra',
 						sortable: true,
 						align: 'center',
 					},
