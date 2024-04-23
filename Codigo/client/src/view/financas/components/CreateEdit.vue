@@ -20,12 +20,12 @@
             <DatePicker v-if="dataChecked" label="Selecione a data" v-model="data.updated_at" />
             
         </Card>
-        <ImportData v-else />
+        <ImportData v-model="fileData" :options="Object.keys(data)" v-else />
 
 
         <div class="flex flex-row flex-wrap gap-2 justify-end ">
             <Button class="only-border" :disabled="loading" @click="$router.push('/financas')">Cancelar</Button>
-            <Button @click = "salvar" :loading="loading">{{ buttonText }}</Button>
+            <Button @click="salvar" :loading="loading">{{ buttonText }}</Button>
         </div>
     </div>
 </template>
@@ -50,6 +50,7 @@ export default {
         value: String,
         types: Array,
         callback: Function,
+        import: Function,
         get: Function,
     },
     components: { Button, Dialog, Card, Input, Tab, Checkbox, Select, DatePicker, ImportData },
@@ -81,6 +82,7 @@ export default {
             timeout: 3500,
         });
         const loading = ref(false);
+        const fileData = ref({});
 
         return {
             data,
@@ -90,6 +92,7 @@ export default {
             tabIndex,
             defaultAlert,
             loading,
+            fileData,
         }
     },
 
@@ -123,6 +126,14 @@ export default {
 
     methods: {
         async salvar() {
+            if (this.tabIndex > 0) {
+
+            } else {
+                await this.saveOne();
+            }
+        },
+
+        async save(isValidFn) {
             this.data.tipo = this.tipo.value;
             if (!this.isValid()) {
                 this.$alert({
@@ -159,6 +170,8 @@ export default {
                 this.$router.push('/financas');
             }
         },
+
+        async importFile() {},
 
         isValid() {
             let valid = 

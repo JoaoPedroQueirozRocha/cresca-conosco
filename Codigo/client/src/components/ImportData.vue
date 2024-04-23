@@ -8,6 +8,7 @@ import Checkbox from "./Checkbox.vue";
 import Select from "./Select.vue";
 import Icon from "./Icon.vue";
 import File from "./File.vue";
+import Button from "./Button.vue";
 import { parseFile } from "@/util";
 
 export default {
@@ -15,37 +16,34 @@ export default {
     props: {
         modelValue: Object,
         options: Array,
+        values: Array,
+        map: Boolean,
     },
-    emits: ['update:modelValue'],
-    components: { Card, Input, Checkbox, Select, File, Icon },
+    emits: ['update:modelValue', 'update:values', 'update:map'],
+    components: { Card, Input, Checkbox, Select, File, Icon, Button },
     inject: ["Auth"],
 
     setup() {
         const file = ref(null);
         const headers = ref([]);
-        const parsedOptions = ref([]);
-        const values = ref([]);
+        const deletedHeaders = ref([]);
         const mapData = ref(false);
 
         return {
             file,
             headers,
-            values,
             mapData,
-            parsedOptions,
+            deletedHeaders,
         }
     },
 
-    created() {
-        this.parsedOptions = this.options;
-    },
-
-    watch: {
-        modelValue() {
-            this.headers = this.modelValue;
-        },
-        options() {
-            this.parsedOptions = this.options;
+    computed: {
+        parsedOptions() {
+            const options = [];
+            this.options.forEach((option) => {
+                if (!this.headers.find((header) => option == header.to)) options.push(option);
+            });
+            return options;
         }
     },
 
@@ -57,14 +55,30 @@ export default {
             this.headers = parsedFile[0].map((header) => {
                 return {
                     from: header,
+                    map: true,
                     to: '',
                 };
             });
             parsedFile.splice(0, 1);
-            this.values = [...parsedFile];
-            console.log(this.values)
+            const values = [...parsedFile];
 
-            this.$emit('update:modelValue', this.model);
+            this.$emit('update:modelValue', this.headers);
+            this.$emit('update:value', values);
+        },
+
+        deleteHeader(index) {
+            this.headers[index].map = false;
+            this.headers[index].to = '';
+            this.deletedHeaders.push(index);
+            this.$emit('update:modelValue', this.headers);
+        },
+
+        addHeader() {
+            if (!this.deletedHeaders.length) return;
+            const index = this.deletedHeaders[0];
+            this.headers[index].map = true;
+            this.deletedHeaders.splice(0, 1);
+            this.$emit('update:modelValue', this.headers);
         }
     },
 };
@@ -73,12 +87,18 @@ export default {
 <template>
     <Card class="flex flex-col gap-4 mb-4">
         <File v-model="file" @update:model-value="changeModel" />
-        <Checkbox v-model="mapData" v-if="file">Mapear dados</Checkbox>
+        <Checkbox v-model="mapData" @update:model-value="(value) => { $emit('update:map', value) }" v-if="file">Mapear dados</Checkbox>
         <template v-if="mapData && file">
-            <div v-for="(header, index) in headers" :key="index" class="flex items-center gap-4">
+            <div v-for="(header, index) in headers.filter((h) => h.map)" :key="index" class="flex items-center gap-4">
                 <Input class="flex-1" v-model="header.from" disabled />
                 <Icon class="arrow-icon" name="arrow_forward" />
-                <Select class="flex-1" v-model="headers.to" :items="options" />
+                <Select class="flex-1" v-model="header.to" :items="parsedOptions" />
+                <Icon class="delete-icon" name="delete" @click="deleteHeader(headers.findIndex((h) => h.from == header.from))" />
+            </div>
+            <div v-if="deletedHeaders.length">
+                <Button rounded @click="addHeader">
+                    <Icon name="add" />
+                </Button>
             </div>
         </template>
     </Card>
@@ -90,5 +110,14 @@ export default {
 
 .arrow-icon {
     color: $green-dark;
+}
+
+.delete-icon {
+    @apply cursor-pointer;
+    color: $gray-500;
+
+    &:hover {
+        color: $red-strong;
+    }
 }
 </style>
