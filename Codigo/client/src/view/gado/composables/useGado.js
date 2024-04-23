@@ -17,6 +17,7 @@ export function useGado() {
                 value: "dataInsem",
                 sortable: true,
             },
+            { text: "DPIA", value: "dpia", sortable: true },
             { text: "Prev.Parto", value: "prevParto", sortable: true },
             { text: "Touro", value: "touro", sortable: true, align: "center", },
             {
@@ -27,6 +28,7 @@ export function useGado() {
             },
             // { text: "Num.Insem", value: "numInsem", sortable: true },
             { text: "Status", value: "status", sortable: true },
+            { text: "Secar em", value: 'secarEm' },
         ]),
         headers: ref([
             { text: "Nome", value: "nome", sortable: true },
@@ -115,12 +117,12 @@ export function useGado() {
         }
     }
 
-    async function openInsemDialog(id, isNew) {
+    async function openInsemDialog(id_animal, id_gestacao, isNew) {
         try {
             state.isDialogLoading = true;
             state.showInsemDialog = true;
             state.isEdit = !isNew;
-            state.animalData = isNew ? await getAnimal(id) : state.gadoData.find((item) => item.id == id);
+            state.animalData = isNew ? await getAnimal(id_animal) : state.gadoData.find((item) => item.id_gestacao == id_gestacao);
         } catch (e) {
             console.error(e);
         } finally {
@@ -175,13 +177,14 @@ export function useGado() {
         }
     }
 
-    function isInsemAvaliable(status) {
-        return status === null || status === 'concluida' || status === 'falhou';
+    function getOptions(status) {
+        const parirAvaliable = status === 'confirmada';
+        const editGestacaoAvaliable = status !== null;
+        const insemAvaliable = status === null || status === 'concluida' || status === 'falhou';
+        return { parirAvaliable, editGestacaoAvaliable, insemAvaliable }
     }
 
-    function isParirAvaliable(status) {
-        return status === 'pendente' || status === 'confirmada';
-    }
+
 
 
 
@@ -194,8 +197,7 @@ export function useGado() {
         secarAnimal,
         deletarAnimal,
         confirmarGestacao,
-        isInsemAvaliable,
-        isParirAvaliable
+        getOptions
     }
 }
 

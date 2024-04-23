@@ -19,7 +19,6 @@ async function getGestacaoById(req, res) {
 async function createGestacao(req, res) {
     try {
         const body = req.body;
-
         const animal = await animalServices.getAnimalById(body.animal_id);
         if (!animal) throw new Error("Animal não encontrado");
 
@@ -34,12 +33,9 @@ async function createGestacao(req, res) {
 async function updateGestacao(req, res) {
     try {
         const body = req.body;
-        const { animal_id } = req.params
+        const { id } = req.params;
 
-        const animal = await animalServices.getAnimalById(animal_id);
-        if (!animal) throw new Error("Animal não encontrado");
-
-        const gestacao = await gestacaoServices.updateGestacao(animal_id, body);
+        const gestacao = await gestacaoServices.updateGestacao(id, body);
         res.status(200).json(gestacao);
     } catch (error) {
         console.error(error);

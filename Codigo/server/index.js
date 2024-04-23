@@ -15,7 +15,7 @@ import financeRoutes from './routes/financeRoutes.js';
 import NotificationRouter from './routes/notificationRoutes.js'
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT;
 app.use(
     cors({
         origin: [

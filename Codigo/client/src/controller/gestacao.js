@@ -22,6 +22,8 @@ async function deletarGestacao(id) {
 }
 
 async function editarGestacao(id, gestacao) {
+    delete gestacao.animal_id;
+    delete gestacao.id_gestacao;
     return await axios.put(`${APIURL}/${id}`, gestacao);
 }
 
