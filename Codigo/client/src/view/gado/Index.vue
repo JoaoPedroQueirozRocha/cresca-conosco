@@ -57,7 +57,7 @@
 							</router-link>
 							<div
 								class="action-option"
-								@click="openInsemDialog(item.id_animal, true)"
+								@click="openInsemDialog(item.id_animal, null, true)"
 								v-if="getOptions(item.status).insemAvaliable"
 							>
 								<Icon name="vaccines" />

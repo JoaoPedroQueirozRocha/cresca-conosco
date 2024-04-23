@@ -48,6 +48,7 @@ export function useEditDialog() {
             console.log("gestacao id", gestacaoData.id_gestacao);
             await gestacaoController.editarGestacao(gestacaoData.id_gestacao, gestacaoData);
         } else {
+            console.log("gestacao data", gestacaoData);
             await gestacaoController.salvarGestacao(gestacaoData);
         }
     }

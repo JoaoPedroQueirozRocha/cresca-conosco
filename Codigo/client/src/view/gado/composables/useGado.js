@@ -118,7 +118,6 @@ export function useGado() {
     }
 
     async function openInsemDialog(id_animal, id_gestacao, isNew) {
-        console.log("state.gadoData", state.gadoData);
         try {
             state.isDialogLoading = true;
             state.showInsemDialog = true;

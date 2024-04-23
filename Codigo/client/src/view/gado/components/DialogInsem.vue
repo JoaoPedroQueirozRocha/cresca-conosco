@@ -69,14 +69,14 @@ export default {
 			if (this.animalData.status) {
 				this.gestacaoData = {
 					animal_id: this.animalData.id,
-					id_gestacao: this.animalData.id_gestacao,
+					id_gestacao: this.animalData.id_gestacao ? this.animalData.id_gestacao : null,
 					status: this.animalData.status,
 					touro: this.animalData.touro,
 					data_insem: this.animalData.data_insem ? new Date(this.animalData.data_insem) : null,
 					prev_parto: this.animalData.prev_parto ? new Date(this.animalData.prev_parto) : null,
 				};
 			} else {
-				this.gestacaoData.animal_id = this.animalData.id;
+				this.gestacaoData.animal_id = this.animalData.id_animal;
 			}
 		},
 		modelValue() {
