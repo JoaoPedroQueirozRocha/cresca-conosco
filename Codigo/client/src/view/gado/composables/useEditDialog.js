@@ -43,13 +43,13 @@ export function useEditDialog() {
         }
     }
 
-    async function processarGestacao(gestacaoData, isEdit) {
+    async function processarGestacao(dataGestacao, isEdit) {
+        this.gestacaoData.animal_id = dataGestacao.animal_id;
         if (isEdit) {
-            console.log("gestacao id", gestacaoData.id_gestacao);
-            await gestacaoController.editarGestacao(gestacaoData.id_gestacao, gestacaoData);
+            await gestacaoController.editarGestacao(dataGestacao.id_gestacao, dataGestacao);
         } else {
-            console.log("gestacao data", gestacaoData);
-            await gestacaoController.salvarGestacao(gestacaoData);
+
+            await gestacaoController.salvarGestacao(dataGestacao);
         }
     }
 

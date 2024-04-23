@@ -61,8 +61,9 @@ export function calculateDaysInsem(date) {
 export function calculateSecar(date) {
     const dataPrevParto = date !== null ? new Date(date) : null;
     if (dataPrevParto) {
-        const dataSecar = dataPrevParto.setDate(dataPrevParto.getDate() - 60);
-        return dataSecar;
+        dataPrevParto.setDate(dataPrevParto.getDate() - 60);
+        // Retorna um novo objeto Date baseado na data ajustada
+        return new Date(dataPrevParto);
     }
     return null;
 }

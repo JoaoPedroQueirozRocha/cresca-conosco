@@ -16,7 +16,6 @@ async function getBase() {
 
 async function getReport() {
     const response = await axios.get(`${APIURL}/report`);
-    console.log("resposta report", response.data);
     return response.data;
 }
 

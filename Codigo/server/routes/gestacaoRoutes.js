@@ -79,7 +79,7 @@ router.post("/", gestacaoController.createGestacao);
  *               schema: 
  *                  $ref: '#components/schemas/Gestacao'
  */
-router.put("/:animal_id", gestacaoController.updateGestacao);
+router.put("/:id", gestacaoController.updateGestacao);
 
 /**
  * @swagger
