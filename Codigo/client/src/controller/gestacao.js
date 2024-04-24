@@ -10,7 +10,7 @@ function salvarGestacao(gestacao) {
 }
 
 async function parir(id) {
-    return await axios.put(`${APIURL}/${id}`, { status: 'concluida' });
+    return await axios.put(`${APIURL}/${id}`, { status: 'concluida', data_finalizacao: new Date() });
 }
 
 async function confirmarGestacao(id) {
@@ -22,6 +22,8 @@ async function deletarGestacao(id) {
 }
 
 async function editarGestacao(id, gestacao) {
+    delete gestacao.animal_id;
+    delete gestacao.id_gestacao;
     return await axios.put(`${APIURL}/${id}`, gestacao);
 }
 

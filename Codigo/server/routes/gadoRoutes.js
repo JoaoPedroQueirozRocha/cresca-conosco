@@ -6,15 +6,9 @@ const router = express.Router();
  * @swagger
  * tags:
  *   - name: Gado
- *     description: Rotas para realizar pesquisas nas gestações
+ *     description: Rotas para realizar pesquisas conjuntas de gado e gestação
  */
 
-/**
- * @swagger
- * tags:
- *   - name: Gado
- *     description: Rotas para realizar pesquisas nas gestações
- */
 router.get('/', gadoController.getAll);
 
 /**
@@ -97,6 +91,15 @@ router.get('/animal/:animal', gadoController.getByAnimal);
  */
 
 router.get('/lactantes', gadoController.getLactantes);
+
+/**
+ * @swagger
+ * /gado/report:
+ *   get:
+ *     tags: [Gado]
+ *     description: Retorna as alguns relatórios sobre o gado
+ */
+router.get('/report', gadoController.createReport);
 
 export default router;
 

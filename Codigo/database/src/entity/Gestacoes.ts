@@ -32,6 +32,9 @@ export class Gestacoes {
 	@Column({ type: 'date', nullable: true })
 	data_insem: Date;
 
+	@Column({ type: 'date', nullable: true })
+	data_finalizacao: Date;
+
 	@ManyToOne(() => Animais, (animal) => animal.gestacoes)
 	@JoinColumn({ name: 'animal_id' })
 	animal: Animais;

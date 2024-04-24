@@ -19,7 +19,7 @@ export const AppDataSource = new DataSource({
 	synchronize: true,
 	logging: false,
 	entities: [Animais, Despesa, Gestacoes, MaoDeObra, Notificacoes, Receita, Usuarios],
-	migrations: [],
+	migrations: [__dirname + '/migration/*.ts'],
 	subscribers: [],
 	ssl: true,
 });
