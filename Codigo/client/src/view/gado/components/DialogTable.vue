@@ -2,9 +2,11 @@
 	<Dialog v-model="model" @update:model-value="cancelar" width="100%" overflowHidden>
 		<!-- Dialog header components -->
 		<div class="flex flex-col gap-2">
-			<div class="flex flex-row justify-between">
-				<h1 class="title mb-4">Mais Detalhes</h1>
-				<Icon name="close" @click="cancelar" class="cursor-pointer close-button" />
+			<div class="flex flex-row justify-between my-4">
+				<h1 class="title mt-0">Mais Detalhes</h1>
+				<div class="close-dialog">
+					<Icon name="close" @click="changeModel(false)" />
+				</div>
 			</div>
 			<div class="flex flex-row justify-between mb-4">
 				<Input v-model="searchValue" type="search" placeholder="Pesquisar" class="filter-input" />
@@ -30,11 +32,19 @@
 				</td>
 			</template>
 			<template #crias="{ item, index }">
-				<td class="text-center">{{ item.crias ? item.crias : 0 }}</td>
+				<td class="text-center">
+					{{ item.crias || 0 }}
+					<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
+				</td>
 			</template>
 			<template #dataInsem="{ item, index }">
 				<td>
 					{{ item.data_insem ? formatDateString(item.data_insem) : '-' }}
+				</td>
+			</template>
+			<template #dpia="{ item, index }">
+				<td>
+					{{ item.data_insem ? calculateDaysInsem(item.data_insem) : '-' }}
 				</td>
 			</template>
 			<template #prevParto="{ item, index }">
@@ -59,7 +69,14 @@
 			</template>
 			<template #status="{ item, index }">
 				<td>
-					<Tag :color="getColor(item.status)" :text="item.status || 'Não inseminada'" />
+					<div class="flex justify-center">
+						<Tag :color="getColor(item.status)" :text="item.status || 'Não inseminada'" />
+					</div>
+				</td>
+			</template>
+			<template #secarEm="{ item, index }">
+				<td>
+					{{ item.prev_parto ? formatDateString(calculateSecar(item.prev_parto)) : '-' }}
 				</td>
 			</template>
 			<template #empty-state>
@@ -80,9 +97,11 @@ import Dialog from '@/components/Dialog.vue';
 import Filter from '@/components/Filter.vue';
 import Input from '@/components/Input.vue';
 import Button from '@/components/Button.vue';
-import { getColor, formatDateString } from '@/util/index';
-import { useGado } from './composables/useGado';
+import { getColor, formatDateString, calculateDaysInsem, calculateSecar } from '@/util/index';
+import GadoReport from './GadoReport.vue';
+import { useGado } from '../composables/useGado';
 import { ref } from 'vue';
+import { useFilter } from '../composables/useFilter';
 
 export default {
 	name: 'DialogTable',
@@ -104,16 +123,46 @@ export default {
 		Filter,
 		Input,
 		Button,
+		GadoReport,
 	},
 	setup() {
-		const { headersDialog } = useGado();
+		const searchValue = ref('');
+		const data = ref([]);
+		const { headersDialog, filterOptions } = useGado();
+		const { getSelected, filteredData } = useFilter(data, filterOptions, searchValue);
+
 		return {
-			searchValue: ref(''),
-			headersDialog,
 			showFilter: ref(false),
+			filterCard: ref(),
+			headersDialog,
+			searchValue,
 			getColor,
 			formatDateString,
+			calculateDaysInsem,
+			getSelected,
+			filterOptions,
+			filteredData,
+			data,
+			calculateSecar,
 		};
+	},
+
+	watch: {
+		allData() {
+			this.data = this.allData;
+		},
+	},
+
+	created() {
+		this.data = this.allData;
+	},
+
+	mounted() {
+		document.addEventListener('click', this.closeFilterCard);
+	},
+
+	beforeUnmount() {
+		document.removeEventListener('click', this.closeFilterCard);
 	},
 
 	methods: {
@@ -129,24 +178,33 @@ export default {
 			this.changeModel(false);
 		},
 	},
-
-	computed: {
-		filteredData() {
-			if (!this.searchValue) return this.allData;
-
-			return this.allData.filter((item) => {
-				return Object.values(item).some((value) => {
-					const stringValue = String(value);
-					return stringValue.toLowerCase().includes(this.searchValue.toLowerCase());
-				});
-			});
-		},
-	},
 };
 </script>
 
 <style scoped lang="scss">
-@import '../../style/var.scss';
+@import '../../../style/var.scss';
+
+td {
+	color: $gray-500;
+}
+
+.close-dialog {
+	display: flex;
+	align-items: center;
+	border-radius: 50%;
+	padding: 0.1em 0.2em;
+	cursor: pointer;
+	color: $green-dark;
+	transition-duration: 0.3s;
+
+	&:hover {
+		background: $gray-200;
+	}
+
+	.material-symbols-rounded {
+		font-size: 35px;
+	}
+}
 
 .empty-div {
 	@apply flex flex-col items-center justify-center gap-4 p-4;

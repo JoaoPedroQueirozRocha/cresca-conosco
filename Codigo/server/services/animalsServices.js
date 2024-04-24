@@ -16,14 +16,11 @@ async function getAnimalById(id) {
 }
 
 async function createNewAnimal(body) {
+    const { nome, crias, num_insem, lactante } = body;
+
     const result = await pool.query(
         "INSERT INTO animais(nome, crias, num_insem, lactante) VALUES ($1, $2, $3, $4)",
-        [
-            body.nome,
-            body.crias,
-            body.num_insem,
-            body.lactante,
-        ]
+        [nome, crias, num_insem, lactante ? true : false]
     );
     return result.rows[0];
 }
