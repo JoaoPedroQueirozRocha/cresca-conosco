@@ -83,3 +83,31 @@ export function parseFile(file) {
         };
     });
 }
+
+export function checkValidImport(headers, values, map, options, name) {
+    let message = '';
+    const parsedHeaders = [];
+    const toExclude = [];
+    let isValid = true;
+    headers.forEach((header, index) => {
+        if (!header.map) toExclude.push(index);
+
+        if (!map && !options.includes(header.from)) isValid = false;
+        else if (!map) parsedHeaders.push(header.from);
+        else if (header.to) parsedHeaders.push(header.to);
+    });
+    const parsedValues = values.map((value) => {
+        return value.filter((_, index) => !toExclude.includes(index));
+    });
+
+    if (map && headers.find((header) => !header.to && header.map))
+        message = `Preencha todos os dados para salvar a ${name}`;
+    else if (!isValid)
+        message = `Algum dos cabeçalhos do arquivo não é compatível as opções. Mapeie os dados para importar`;
+    else if (parsedHeaders.length != options.length)
+        message = `É necessário ter um cabeçalho para cada opção`;
+    else if (!parsedValues.length)
+        message = `Insira mais linhas no arquivo .csv para importá-lo`;
+    
+    return { message, parsedHeaders, parsedValues };
+}

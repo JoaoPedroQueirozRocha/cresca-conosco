@@ -21,6 +21,10 @@ const profit = [
         label: 'Venda de Gado',
         value: 'venda'
     },
+    {
+        label: 'Diversos',
+        value: 'diversos'
+    },
 ];
 
 export { profit, cost };

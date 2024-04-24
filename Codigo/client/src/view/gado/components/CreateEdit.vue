@@ -102,7 +102,7 @@ export default {
 
 	methods: {
 		async salveVaca() {
-			if (!this.isValnome()) {
+			if (!this.isValid()) {
 				this.$alert({
 					message: "Preencha todos os campos para salvar a vaca",
 					...this.defaultAlert,
@@ -133,7 +133,7 @@ export default {
 			}
 		},
 
-		isValnome() {
+		isValid() {
 			return this.data.nome && this.data.crias >= 0 && this.data.num_insem >= 0;
 		},
 	},

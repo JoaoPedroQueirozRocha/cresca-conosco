@@ -151,18 +151,18 @@ export default {
                 <td v-if="header.value == 'updated_at' && item[header.value]">
                     {{ upperCaseFirstLetter(formatDate(new Date(item[header.value]), { month: 'long' })) }}/{{ formatDate(new Date(item[header.value]), { year: 'numeric' }) }}
                 </td>
-                <td v-else-if="typeof item[header.value.replace(' ', '_')] == 'number'" class="text-center">
-                    <div class="flex items-center justify-center">
-                        {{ formatCurrency(item[header.value.replace(' ', '_')]) }}
-                        <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
-                    </div>
-                </td>
                 <td v-else-if="header.value == 'none'" class="w-2">
                     <div class="icon-holder" :class="{'rotate-180': item.expanded}" @click="item.expanded = !item.expanded">
                         <Icon name="arrow_drop_down" />
                     </div>
                 </td>
-                <td v-else>{{ item[header.value.replace(' ', '_')] }}</td>
+                <td v-else-if="typeof Number(item[header.value]) == 'number'" class="text-center">
+                    <div class="flex items-center justify-center">
+                        {{ formatCurrency(item[header.value]) }}
+                        <Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
+                    </div>
+                </td>
+                <td v-else>{{ item[header.value] }}</td>
             </template>
             <template #actions></template>
             <template #childs="{ item, index }">
