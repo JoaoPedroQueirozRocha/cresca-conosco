@@ -28,23 +28,25 @@ export default {
         const headers = ref([]);
         const deletedHeaders = ref([]);
         const mapData = ref(false);
+        const isHeader = ref(true);
+        const parsedFile = ref();
 
         return {
             file,
             headers,
             mapData,
             deletedHeaders,
+            isHeader,
+            parsedFile,
         }
     },
 
-    computed: {
-        parsedOptions() {
-            const options = [];
-            this.options.forEach((option) => {
-                if (!this.headers.find((header) => option == header.to)) options.push(option);
-            });
-            return options;
-        }
+    mounted() {
+        document.addEventListener('keydown', this.detectCtrlZ);
+    },
+
+    beforeUnmount() {
+        document.removeEventListener('keydown', this.detectCtrlZ);
     },
 
     methods: {
@@ -52,24 +54,24 @@ export default {
             if (!file) return;
 
             const parsedFile = await parseFile(file);
-            this.headers = parsedFile[0].map((header) => {
-                return {
-                    from: header,
-                    map: true,
-                    to: '',
-                };
-            });
-            parsedFile.splice(0, 1);
-            const values = [...parsedFile];
+            this.parsedFile = parsedFile;
+            this.parseHeader();
+        },
 
-            this.$emit('update:modelValue', this.headers);
-            this.$emit('update:value', values);
+        changeMap(value) {
+            this.mapData = value;
+            this.$emit('update:map', value);
+        },
+
+        changeHeader(value) {
+            if (!value) this.changeMap(true);
+            this.parseHeader(value);
         },
 
         deleteHeader(index) {
             this.headers[index].map = false;
             this.headers[index].to = '';
-            this.deletedHeaders.push(index);
+            this.deletedHeaders.unshift(index);
             this.$emit('update:modelValue', this.headers);
         },
 
@@ -79,6 +81,35 @@ export default {
             this.headers[index].map = true;
             this.deletedHeaders.splice(0, 1);
             this.$emit('update:modelValue', this.headers);
+        },
+
+        selectOption(value, index) {
+            this.headers.forEach((header, i) => {
+                if (header.to == value && i != index) header.to = '';
+                return header;
+            });
+            this.$emit('update:modelValue', this.headers);
+        },
+
+        detectCtrlZ(event) {
+            if ((event.ctrlKey || event.metaKey) && event.key == 'z') this.addHeader();
+        },
+
+        parseHeader(isFirstHeader = true) {
+            const parsedFile = JSON.parse(JSON.stringify(this.parsedFile));
+
+            this.headers = parsedFile[0].map((header, index) => {
+                return {
+                    from: isFirstHeader ? header : ('Coluna ' + (index + 1)),
+                    map: true,
+                    to: '',
+                };
+            });
+            if (isFirstHeader) parsedFile.splice(0, 1);
+            const values = [...parsedFile];
+
+            this.$emit('update:modelValue', this.headers);
+            this.$emit('update:values', values);
         }
     },
 };
@@ -87,12 +118,15 @@ export default {
 <template>
     <Card class="flex flex-col gap-4 mb-4">
         <File v-model="file" @update:model-value="changeModel" />
-        <Checkbox v-model="mapData" @update:model-value="(value) => { $emit('update:map', value) }" v-if="file">Mapear dados</Checkbox>
+        <div class="flex gap-4">
+            <Checkbox v-model="isHeader" @update:model-value="changeHeader" v-if="file">Primeira linha é cabeçalho</Checkbox>
+            <Checkbox v-model="mapData" :disabled="!isHeader" @update:model-value="changeMap" v-if="file">Mapear dados</Checkbox>
+        </div>
         <template v-if="mapData && file">
             <div v-for="(header, index) in headers.filter((h) => h.map)" :key="index" class="flex items-center gap-4">
                 <Input class="flex-1" v-model="header.from" disabled />
                 <Icon class="arrow-icon" name="arrow_forward" />
-                <Select class="flex-1" v-model="header.to" :items="parsedOptions" />
+                <Select class="flex-1" v-model="header.to" :items="options" @update:model-value="(value) => { selectOption(value, index) }" />
                 <Icon class="delete-icon" name="delete" @click="deleteHeader(headers.findIndex((h) => h.from == header.from))" />
             </div>
             <div v-if="deletedHeaders.length">

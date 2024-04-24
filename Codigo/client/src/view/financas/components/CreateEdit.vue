@@ -10,7 +10,7 @@
 
             <div class="flex gap-6 flex-wrap">
                 <Input class="md:w-[49%] w-full" type="number" label="Valor" placeholder="Digite aqui" v-model="data.valor" />
-                <Select class="tipo-holder md:w-[49%] w-full" v-model="tipo" :items="types" label="Tipo">
+                <Select class="tipo-holder md:w-[49%] w-full" v-model="tipo" :items="types" @update:model-value="changeTipo" label="Tipo">
                     Selecione
                 </Select>
             </div>
@@ -20,8 +20,7 @@
             <DatePicker v-if="dataChecked" label="Selecione a data" v-model="data.updated_at" />
             
         </Card>
-        <ImportData v-model="fileData" :options="Object.keys(data)" v-else />
-
+        <ImportData v-model="fileData.headers" v-model:values="fileData.values" v-model:map="fileData.map" :options="Object.keys(data)" v-else />
 
         <div class="flex flex-row flex-wrap gap-2 justify-end ">
             <Button class="only-border" :disabled="loading" @click="$router.push('/financas')">Cancelar</Button>
@@ -82,7 +81,13 @@ export default {
             timeout: 3500,
         });
         const loading = ref(false);
-        const fileData = ref({});
+        const fileData = ref({
+            map: false,
+            headers: [],
+            parsedHeaders: [],
+            values: [],
+            parsedValues: [],
+        });
 
         return {
             data,
@@ -103,8 +108,16 @@ export default {
         },
         buttonText() {
             if (this.id) return 'Salvar';
-            else if (this.tabIndex != 0) return 'Importar';
+            else if (this.tabIndex > 0) return 'Importar';
             return 'Criar';
+        },
+        errorMessage() {
+            if (this.tabIndex > 0) return `importar arquivo`;
+            return `salvar a ${this.value}`;
+        },
+        sucessMessage() {
+            if (this.tabIndex > 0) return `Arquivo importado`;
+            return `${upperCaseFirstLetter(this.value)} salva`;
         }
     },
 
@@ -116,72 +129,99 @@ export default {
                 this.tipo = this.types.find((item) => item.value == data.tipo);
 
             } catch (e) {
-                this.$alert({
-					message: `Erro ao requisitar a ${this.value}`,
-					...this.defaultAlert,
-				});
+                this.callAlert(`Erro ao requisitar a ${this.value}`);
             }
         }
     },
 
     methods: {
         async salvar() {
-            if (this.tabIndex > 0) {
-
-            } else {
-                await this.saveOne();
-            }
-        },
-
-        async save(isValidFn) {
-            this.data.tipo = this.tipo.value;
-            if (!this.isValid()) {
-                this.$alert({
-					message: `Preencha todos os dados para salvar a ${this.value}`,
-					...this.defaultAlert,
-				});
+            const importError = this.isImportaValid();
+            if ((!this.isValid() && this.tabIndex == 0) || importError) {
+                this.callAlert(importError || `Preencha todos os dados para salvar a ${this.value}`);
                 return;
             }
 
             this.loading = true;
-            if (!this.dataChecked && !this.id) this.data.updated_at = new Date();
 
             try {
                 if (this.id) {
                     await this.callback(this.id, this.data);
+                }
+                else if (this.tabIndex > 0) {
+                    await this.import(this.fileData.parsedHeaders, this.fileData.parsedValues);
                 } else {
                     await this.callback(this.data);
                 }
 
-                this.$alert({
-                    type: 'success',
-					message: `${upperCaseFirstLetter(this.value)} salva com sucesso`,
-					...this.defaultAlert,
-				});
+                this.callAlert(`${this.sucessMessage} com sucesso`, { type: 'success' });
 
             } catch (e) {
-                console.log(e)
-                this.$alert({
-					message: `Erro ao salvar a ${this.value}. Tente novamente mais tarde`,
-					...this.defaultAlert,
-				});
+                this.callAlert(`Erro ao ${this.errorMessage}. Tente novamente mais tarde`);
             } finally {
                 this.loading = false;
                 this.$router.push('/financas');
             }
         },
 
-        async importFile() {},
+        callAlert(message, extra = {}) {
+            this.$alert({
+                message: message,
+                ...extra,
+                ...this.defaultAlert,
+            });
+        },
+
+        changeTipo(value) {
+            this.data.tipo = value.value;
+        }, 
 
         isValid() {
-            let valid = 
-                this.data.valor > 0 &&
+            if (!this.dataChecked && !this.id) this.data.updated_at = new Date();
+
+            return this.data.valor > 0 &&
                 this.data.descricao &&
                 this.data.tipo &&
-                (!this.dataChecked || (this.dataChecked && this.data.updated_at));
-            
-            return valid;
+                this.data.updated_at;
         },
+        teste(value) {
+            value = 'teste';
+        },
+
+        isImportaValid() {
+            if (this.tabIndex == 0) return;
+            const teste = '';
+            this.teste(teste);
+            console.log(teste)
+            let message = '';
+            const parsedHeaders = [];
+            const options = Object.keys(this.data);
+            const isMap = this.fileData.map;
+            const toExclude = [];
+            let isValid = true;
+            this.fileData.headers.forEach((header, index) => {
+                if (!header.map) toExclude.push(index);
+    
+                if (!isMap && !options.includes(header.from)) isValid = false;
+                else if (!isMap) parsedHeaders.push(header.from);
+                else if (header.to) parsedHeaders.push(header.to);
+            });
+            this.fileData.parsedValues = this.fileData.values.map((value) => {
+                return value.filter((_, index) => !toExclude.includes(index));
+            });
+            this.fileData.parsedHeaders = parsedHeaders;
+
+            if (isMap && this.fileData.headers.find((header) => !header.to && header.map))
+                message = `Preencha todos os dados para salvar a ${this.value}`;
+            else if (!isValid)
+                message = `Algum dos cabeçalhos do arquivo não é compatível as opções. Mapeie os dados para importar`;
+            else if (parsedHeaders.length != options.length)
+                message = `É necessário ter um cabeçalho para cada opção`;
+            else if (!this.fileData.parsedValues.length)
+                message = `Insira mais linhas no arquivo .csv para importá-lo`;
+            
+            return message;
+        }
     },
 };
 </script>
