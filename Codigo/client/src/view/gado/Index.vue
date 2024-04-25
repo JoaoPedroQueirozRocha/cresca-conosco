@@ -73,7 +73,7 @@
 							</div>
 							<div
 								class="action-option"
-								@click="parirAnimal(item.id)"
+								@click="openParirDialog(item.id_animal, null, true)"
 								v-if="getOptions(item.status).parirAvaliable"
 							>
 								<Icon name="heart_check" />
@@ -136,6 +136,14 @@
 				</template>
 			</Table>
 			<DialogTable v-model="moreDetails" :allData="allData" :isDialogLoading="isDialogLoading" />
+			<DialogParir
+				v-model="showInsemDialog"
+				:isDialogLoading="isDialogLoading"
+				:animalData="animalData"
+				:isEdit="isEdit"
+				@change="loadBaseData"
+
+				></DialogParir>
 			<DialogInsem
 				v-model="showInsemDialog"
 				:animalData="animalData"
@@ -163,6 +171,7 @@ import Dialog from "@/components/Dialog.vue";
 import Tag from "@/components/Tag.vue";
 import DialogTable from "./components/DialogTable.vue";
 import DialogInsem from "./components/DialogInsem.vue";
+import DialogParir from "./components/DialogParir.vue";
 import animalController from "@/controller/animal";
 
 export default {
@@ -174,6 +183,7 @@ export default {
 		Dialog,
 		DialogTable,
 		DialogInsem,
+		DialogParir,
 		Card,
 		Icon,
 		Filter,
@@ -192,10 +202,12 @@ export default {
 			filterOptions,
 			moreDetails,
 			showInsemDialog,
+			showParirDialog,
 			isEdit,
 			loadBaseData,
 			createDialog,
 			openInsemDialog,
+			openParirDialog,
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
@@ -221,6 +233,7 @@ export default {
 			filterOptions,
 			moreDetails,
 			showInsemDialog,
+			showParirDialog,
 			filterOptions,
 			filterCard: ref(),
 			showFilter: ref(false),
@@ -233,6 +246,7 @@ export default {
 			loadBaseData,
 			createDialog,
 			openInsemDialog,
+			openParirDialog,
 			formatDate,
 			parirAnimal,
 			secarAnimal,

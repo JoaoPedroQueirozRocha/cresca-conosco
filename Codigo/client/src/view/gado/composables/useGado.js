@@ -130,6 +130,20 @@ export function useGado() {
         }
     }
 
+
+    async function openParirDialog(id_animal, id_gestacao, isNew) {
+        try {
+            state.isDialogLoading = true;
+            state.showParirDialog = true;
+            state.isEdit = !isNew;
+            state.animalData = isNew ? await getAnimal(id_animal) : state.gadoData.find((item) => item.id_gestacao == id_gestacao);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isDialogLoading = false;
+        }
+    }
+
     async function parirAnimal(id) {
         try {
             await parir(id);
@@ -193,6 +207,7 @@ export function useGado() {
         createDialog,
         loadBaseData,
         openInsemDialog,
+        openParirDialog,
         parirAnimal,
         secarAnimal,
         deletarAnimal,
