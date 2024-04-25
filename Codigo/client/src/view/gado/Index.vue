@@ -137,7 +137,7 @@
 			</Table>
 			<DialogTable v-model="moreDetails" :allData="allData" :isDialogLoading="isDialogLoading" />
 			<DialogParir
-				v-model="showInsemDialog"
+				v-model="showParirDialog"
 				:isDialogLoading="isDialogLoading"
 				:animalData="animalData"
 				:isEdit="isEdit"

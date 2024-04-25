@@ -8,6 +8,7 @@ export function useGado() {
     const state = reactive({
         moreDetails: ref(false),
         showInsemDialog: ref(false),
+        showParirDialog: ref(false),
         isEdit: ref(false),
         headersDialog: ref([
             { text: "Nome", value: "nome", sortable: true },
