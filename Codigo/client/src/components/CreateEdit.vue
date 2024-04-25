@@ -6,24 +6,21 @@
 
     <div>
         <Card class="flex flex-col gap-4 mb-4" v-if="tabIndex == 0">
-            <Input type="text" label="Descrição" v-model="data.descricao" placeholder="Digite aqui"></Input>
-
-            <div class="flex gap-6 flex-wrap">
-                <Input class="md:w-[49%] w-full" type="number" label="Valor" placeholder="Digite aqui" v-model="data.valor" />
-                <Select class="tipo-holder md:w-[49%] w-full" v-model="tipo" :items="types" @update:model-value="changeTipo" label="Tipo">
-                    Selecione
-                </Select>
-            </div>
-
-            <Checkbox v-model="dataChecked">Selecionar data</Checkbox>
-            
-            <DatePicker v-if="dataChecked" label="Selecione a data" v-model="data.updated_at" />
-            
+            <template v-for="field in parsedFields">
+                <div class="flex gap-6 flex-wrap items-end" v-if="Array.isArray(field)">
+                    <template v-for="item in field">
+                        <GenerateField v-if="item.control" v-model="controlVars[item.value]" :control-vars="controlVars" :field="item" />
+                        <GenerateField v-model="data[item.value]" :control-vars="controlVars" :field="item" class="md:w-[49%] w-full" />
+                    </template>
+                </div>
+                <GenerateField v-else-if="field.control" v-model="controlVars[field.value]" :control-vars="controlVars" :field="field" />
+                <GenerateField v-else v-model="data[field.value]" :control-vars="controlVars" :field="field" />
+            </template>
         </Card>
-        <ImportData v-model="fileData.headers" v-model:values="fileData.values" v-model:map="fileData.map" :options="Object.keys(data)" v-else />
+        <ImportData v-model="fileData.headers" v-model:values="fileData.values" v-model:map="fileData.map" :options="options" v-else />
 
         <div class="flex flex-row flex-wrap gap-2 justify-end ">
-            <Button class="only-border" :disabled="loading" @click="$router.push('/financas')">Cancelar</Button>
+            <Button class="only-border" :disabled="loading" @click="$router.push(`${returnTo}`)">Cancelar</Button>
             <Button @click="salvar" :loading="loading">{{ buttonText }}</Button>
         </div>
     </div>
@@ -34,12 +31,9 @@ import { ref } from "vue";
 import Button from "@/components/Button.vue";
 import Dialog from "@/components/Dialog.vue";
 import Card from "@/components/Card.vue";
-import Input from "@/components/Input.vue";
 import Tab from "@/components/Tab.vue";
-import Checkbox from "@/components/Checkbox.vue";
-import Select from "@/components/Select.vue";
 import ImportData from "@/components/ImportData.vue";
-import DatePicker from "@/components/DatePicker.vue";
+import GenerateField from "@/components/GenerateField.vue";
 import { upperCaseFirstLetter, checkValidImport } from "@/util";
 
 export default {
@@ -47,23 +41,21 @@ export default {
     props: {
         id: String | Number,
         value: String,
-        types: Array,
+        returnTo: String,
+        fields: {
+            type: Array,
+            default: []
+        },
         callback: Function,
         import: Function,
         get: Function,
     },
-    components: { Button, Dialog, Card, Input, Tab, Checkbox, Select, DatePicker, ImportData },
+    components: { Button, Dialog, Card, Tab, GenerateField, ImportData },
     inject: ["Auth"],
 
     setup() {
-        const data = ref({
-            descricao: '',
-            valor: 0,
-            tipo: '',
-            updated_at: '',
-        });
-        const dataChecked = ref(false)
-        const tipo = ref("")
+        const data = ref({});
+        const controlVars = ref({});
         const tabItems = ref([
             {
                 text: 'Criação',
@@ -91,8 +83,7 @@ export default {
 
         return {
             data,
-            dataChecked,
-            tipo,
+            controlVars,
             tabItems,
             tabIndex,
             defaultAlert,
@@ -103,7 +94,7 @@ export default {
 
     computed: {
         title() {
-            if (this.id) return 'Editar ' + upperCaseFirstLetter(this.value);
+            if (this.id) return this.data.nome || ('Editar ' + upperCaseFirstLetter(this.value));
             return 'Criar ' + upperCaseFirstLetter(this.value);
         },
         buttonText() {
@@ -118,15 +109,29 @@ export default {
         sucessMessage() {
             if (this.tabIndex > 0) return `Arquivo importado`;
             return `${upperCaseFirstLetter(this.value)} salva`;
-        }
+        },
+        parsedFields() {
+            const parsedFields = {};
+            this.fields.map((field) => {
+                if (field.group) {
+                    if (!parsedFields[field.group]) parsedFields[field.group] = [];
+                    parsedFields[field.group].push(field);
+                } else {
+                    parsedFields[field.value] = field;
+                }
+            });
+            return Object.values(parsedFields);
+        },
+        options() {
+            return this.fields.filter((field) => !field.control).map((field) => field.value);
+        },
     },
 
     async created() {
         if (this.id) {
             try {
-                const { data } = await this.get(Number(this.id));
-                this.data = data;
-                this.tipo = this.types.find((item) => item.value == data.tipo);
+                const data = await this.get(Number(this.id));
+                this.data = data?.data || data;
 
             } catch (e) {
                 this.callAlert(`Erro ao requisitar a ${this.value}`);
@@ -137,7 +142,7 @@ export default {
     methods: {
         async salvar() {
             const importError = this.isImportaValid();
-            if ((!this.isValid() && this.tabIndex == 0) || importError) {
+            if ((!this.isValid() && this.tabIndex == 0) || (importError && this.tabIndex == 1)) {
                 this.callAlert(importError || `Preencha todos os dados para salvar a ${this.value}`);
                 return;
             }
@@ -160,7 +165,7 @@ export default {
                 this.callAlert(`Erro ao ${this.errorMessage}. Tente novamente mais tarde`);
             } finally {
                 this.loading = false;
-                this.$router.push('/financas');
+                this.$router.push(`${this.returnTo}`);
             }
         },
 
@@ -172,47 +177,40 @@ export default {
             });
         },
 
-        changeTipo(value) {
-            this.data.tipo = value.value;
-        }, 
-
         isValid() {
-            if (!this.dataChecked && !this.id) this.data.updated_at = new Date();
+            let valid = true;
+            this.fields
+            .filter((field) => !field.control)
+            .forEach((field) => {
+                if (!valid) return;
 
-            return this.data.valor > 0 &&
-                this.data.descricao &&
-                this.data.tipo &&
-                this.data.updated_at;
+                if (field.controlValue && !this.controlVars[field.controlValue] && field.default && !this.data[field.value]) this.data[field.value] = field.default();
+
+                if (field.required && !this.data[field.value]) valid = false;
+            });
+
+            return valid;
         },
 
         isImportaValid() {
             if (this.tabIndex == 0) return;
-            const data = checkValidImport(this.fileData.headers, this.fileData.values, this.fileData.map, Object.keys(this.data), this.value);
+            const data = checkValidImport(this.fileData.headers, this.fileData.values, this.fileData.map, this.options, this.value);
             this.fileData.parsedHeaders = data.parsedHeaders;
             this.fileData.parsedValues = data.parsedValues;
             
             return data.message;
-        }
+        },
     },
 };
 </script>
 
 
 <style lang="scss" scoped>
-@import "../../../style/var.scss";
+@import "../style/var.scss";
 
 .selecionar-data {
     margin-top: 1em;
     margin-bottom: 1em;
-}
-
-.tipo-holder {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 0.2em;
-    height: fit-content;
-    width: 50%;
 }
 
 .card {

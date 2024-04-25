@@ -118,9 +118,9 @@ export default {
 <template>
     <Card class="flex flex-col gap-4 mb-4">
         <File v-model="file" @update:model-value="changeModel" />
-        <div class="flex gap-4">
-            <Checkbox v-model="isHeader" @update:model-value="changeHeader" v-if="file">Primeira linha é cabeçalho</Checkbox>
-            <Checkbox v-model="mapData" :disabled="!isHeader" @update:model-value="changeMap" v-if="file">Mapear dados</Checkbox>
+        <div class="flex gap-4" v-if="file">
+            <Checkbox v-model="isHeader" @update:model-value="changeHeader">Primeira linha é cabeçalho</Checkbox>
+            <Checkbox v-model="mapData" :disabled="!isHeader" @update:model-value="changeMap">Mapear dados</Checkbox>
         </div>
         <template v-if="mapData && file">
             <div v-for="(header, index) in headers.filter((h) => h.map)" :key="index" class="flex items-center gap-4">

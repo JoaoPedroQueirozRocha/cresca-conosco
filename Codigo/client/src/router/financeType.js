@@ -1,10 +1,10 @@
-const cost = [
+const COST = [
     {
-        label: 'Compras',
+        label: 'Compra',
         value: 'compra'
     },
     {
-        label: 'Despesas trabalhistas',
+        label: 'Despesa trabalhistas',
         value: 'despesa_trabalhistas'
     },
     {
@@ -12,7 +12,7 @@ const cost = [
         value: 'diversos'
     },
 ];
-const profit = [
+const PROFIT = [
     {
         label: 'Leite',
         value: 'leite'
@@ -27,4 +27,4 @@ const profit = [
     },
 ];
 
-export { profit, cost };
+export { PROFIT, COST };
