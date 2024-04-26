@@ -108,20 +108,20 @@ const routes = [
         beforeEnter: Auth0.routeGuard
     },
     {
-        path: '/funcionarios',
-        name: 'Funcionários',
+        path: '/mao-de-obra',
+        name: 'MaoDeObra',
         props: true,
-        component: () => import('@/view/funcionarios/Index.vue'),
+        component: () => import('@/view/mao-de-obra/Index.vue'),
         beforeEnter: Auth0.routeGuard
     },
     {
-        path: '/funcionarios/criar',
-        name: 'FuncionariosCriar',
+        path: '/mao-de-obra/criar',
+        name: 'MaoDeObrasCriar',
         props: route => ({
-            value: 'funcionário',
+            value: 'Mão de obra',
             callback: maoDeObraController.createFuncionario
         }),
-        component: () => import('@/view/funcionarios/components/CreateEdit.vue'),
+        component: () => import('@/view/mao-de-obra/components/CreateEdit.vue'),
         beforeEnter: Auth0.routeGuard
     },
 ];
