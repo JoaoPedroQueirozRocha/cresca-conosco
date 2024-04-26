@@ -1,17 +1,18 @@
 import { reactive, toRefs, ref } from 'vue'
-import funcionarioController from '@/controller/funcionario.js';
+import maoDeObraController from '@/controller/mao-de-obra.js';
 
-export function useFetchs(funcionarioData) {
+export function useFetchs() {
 
     const state = reactive({
-        isLoading: false,
+        isLoading: ref(false),
+        funcionarioData: ref([])
     })
 
     async function getBaseData() {
         state.isLoading = true;
         try {
-            const data = await funcionarioController.getBase();
-            funcionarioData.value = data;
+            state.funcionarioData = await maoDeObraController.getBase();
+            console.log('data', state.funcionarioData);
         } catch (error) {
             console.log(error);
         } finally {
@@ -20,7 +21,7 @@ export function useFetchs(funcionarioData) {
     }
 
     return {
-        ...toRefs(funcionarioData),
+        ...toRefs(state),
         getBaseData
     }
 }

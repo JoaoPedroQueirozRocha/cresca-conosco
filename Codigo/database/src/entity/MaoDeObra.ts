@@ -6,7 +6,7 @@ export class MaoDeObra {
 	id: number;
 
 	@Column({ type: 'varchar', length: 280, nullable: false })
-	nnome: string;
+	nome: string;
 
 	@Column({ type: 'decimal', nullable: false })
 	salario: number;

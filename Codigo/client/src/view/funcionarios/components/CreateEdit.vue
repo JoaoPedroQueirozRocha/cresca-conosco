@@ -6,16 +6,15 @@
 
 	<div>
 		<Card class="flex flex-col gap-4 mb-4">
-			<Input type="text" label="Nome" v-model="data.nome" placeholder="Digite aqui"></Input>
-			<Input type="text" label="Descrição" v-model="data.descricao" placeholder="Digite aqui"></Input>
-
+			<Input type="text" label="Nome" v-model="dataWorker.nome" placeholder="Digite aqui"></Input>
+			<Input type="text" label="Descrição" v-model="dataWorker.descricao" placeholder="Digite aqui"></Input>
 			<div class="flex gap-6 flex-wrap">
 				<Input
 					class="md:w-[49%] w-full"
 					type="number"
 					label="Salário"
 					placeholder="Digite aqui"
-					v-model="data.salario"
+					v-model="dataWorker.salario"
 				/>
 			</div>
 		</Card>
@@ -28,19 +27,19 @@
 </template>
 
 <script>
-import { ref } from "vue";
-import Button from "@/components/Button.vue";
-import Dialog from "@/components/Dialog.vue";
-import Card from "@/components/Card.vue";
-import Input from "@/components/Input.vue";
-import Tab from "@/components/Tab.vue";
-import Checkbox from "@/components/Checkbox.vue";
-import Select from "@/components/Select.vue";
-import DatePicker from "@/components/DatePicker.vue";
-import { upperCaseFirstLetter } from "@/util";
+import { ref } from 'vue';
+import Button from '@/components/Button.vue';
+import Dialog from '@/components/Dialog.vue';
+import Card from '@/components/Card.vue';
+import Input from '@/components/Input.vue';
+import Tab from '@/components/Tab.vue';
+import Checkbox from '@/components/Checkbox.vue';
+import Select from '@/components/Select.vue';
+import DatePicker from '@/components/DatePicker.vue';
+import { upperCaseFirstLetter } from '@/util';
 
 export default {
-	name: "CreateEdit",
+	name: 'CreateEdit',
 	props: {
 		id: String | Number,
 		value: String,
@@ -49,28 +48,25 @@ export default {
 		get: Function,
 	},
 	components: { Button, Dialog, Card, Input, Tab, Checkbox, Select, DatePicker },
-	inject: ["Auth"],
+	inject: ['Auth'],
 
 	setup() {
-		const data = ref({
-			nome: "",
-			descricao: "",
-			tipo: "",
+		const dataWorker = ref({
+			nome: '',
+			descricao: '',
 			salario: 0,
-			updated_at: "",
 		});
 		const tabItems = ref([
 			{
-				text: "Criação",
-				icon: "add_circle",
+				text: 'Criação',
+				icon: 'add_circle',
 			},
 			{
-				text: "Importação de Planilha",
-				icon: "swap_vert",
+				text: 'Importação de Planilha',
+				icon: 'swap_vert',
 			},
 		]);
 		const tabIndex = ref(0);
-		const tipo = ref("");
 		const defaultAlert = ref({
 			top: true,
 			right: true,
@@ -79,8 +75,7 @@ export default {
 		const loading = ref(false);
 
 		return {
-			data,
-			tipo,
+			dataWorker,
 			tabItems,
 			tabIndex,
 			defaultAlert,
@@ -90,12 +85,12 @@ export default {
 
 	computed: {
 		title() {
-			if (this.id) return "Editar " + upperCaseFirstLetter(this.value);
-			return "Criar " + upperCaseFirstLetter(this.value);
+			if (this.id) return 'Editar ' + upperCaseFirstLetter(this.value);
+			return 'Criar ' + upperCaseFirstLetter(this.value);
 		},
 		buttonText() {
-			if (this.id) return "Salvar";
-			return "Criar";
+			if (this.id) return 'Salvar';
+			return 'Criar';
 		},
 	},
 
@@ -103,8 +98,8 @@ export default {
 		if (this.id) {
 			try {
 				const { data } = await this.get(Number(this.id));
+				console.log('data on component', data);
 				this.data = data;
-				this.tipo = this.types.find((item) => item.value == data.tipo);
 			} catch (e) {
 				this.$alert({
 					message: `Erro ao requisitar a ${this.value}`,
@@ -116,7 +111,6 @@ export default {
 
 	methods: {
 		async salvar() {
-			this.data.tipo = this.tipo.value;
 			if (!this.isValid()) {
 				this.$alert({
 					message: `Preencha todos os dados para salvar a ${this.value}`,
@@ -129,37 +123,37 @@ export default {
 
 			try {
 				if (this.id) {
-					await this.callback(this.id, this.data);
+					await this.callback(this.id, this.dataWorker);
 				} else {
-					await this.callback(this.data);
+					await this.callback(this.dataWorker);
 				}
 
 				this.$alert({
-					type: "success",
+					type: 'success',
 					message: `${upperCaseFirstLetter(this.value)} salva com sucesso`,
 					...this.defaultAlert,
 				});
 			} catch (e) {
-				console.log(e);
+				console.error(e);
 				this.$alert({
 					message: `Erro ao salvar ${this.value}. Tente novamente mais tarde`,
 					...this.defaultAlert,
 				});
 			} finally {
 				this.loading = false;
-				this.$router.push("/funcionarios");
+				this.$router.push('/funcionarios');
 			}
 		},
 
 		isValid() {
-			return this.data.salario > 0 && this.data.descricao && this.data.nome;
+			return this.dataWorker.salario > 0 && this.dataWorker.descricao && this.dataWorker.nome;
 		},
 	},
 };
 </script>
 
 <style lang="scss" scoped>
-@import "../../../style/var.scss";
+@import '../../../style/var.scss';
 
 .selecionar-data {
 	margin-top: 1em;
