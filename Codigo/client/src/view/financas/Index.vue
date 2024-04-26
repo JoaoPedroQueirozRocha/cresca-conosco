@@ -194,6 +194,12 @@ export default {
 						align: 'center',
 					},
 					{
+						text: 'Diversos',
+						value: 'diversos',
+						sortable: true,
+						align: 'center',
+					},
+					{
 						text: 'Total',
 						value: 'total',
 						sortable: true,
@@ -211,19 +217,19 @@ export default {
 					},
 					{
 						text: 'Salários',
-						value: 'despesas trabalhistas',
-						sortable: true,
-						align: 'center',
-					},
-					{
-						text: 'Encargos',
-						value: 'encargos',
+						value: 'despesa_trabalhistas',
 						sortable: true,
 						align: 'center',
 					},
 					{
 						text: 'Compras',
 						value: 'compra',
+						sortable: true,
+						align: 'center',
+					},
+					{
+						text: 'Diversos',
+						value: 'diversos',
 						sortable: true,
 						align: 'center',
 					},

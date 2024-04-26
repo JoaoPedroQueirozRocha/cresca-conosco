@@ -164,7 +164,7 @@ export default {
 
 .input.disabled {
     @apply pointer-events-none;
-    color: $gray-300;
+    color: $gray-400;
     border-color: $gray-300;
     background: $gray-200;
 }
