@@ -30,7 +30,7 @@
 				</div>
 			</div>
 
-			<Table :items="funcionarioData" :headers="headers" class="w-full funcionarios-table" :loading="isLoading">
+			<Table :items="filteredData" :headers="headers" class="w-full funcionarios-table" :loading="isLoading">
 				<template #actions="{ item, index }">
 					<td class="w-2 cursos-pointer action">
 						<div class="icon-holder" @click="positionCard(item, index)">
@@ -43,7 +43,7 @@
 							tabindex="0"
 							@blur="item.expanded = false"
 						>
-							<router-link :to="`/funcionario/${item.id}`">
+							<router-link :to="`/mao-de-obra/${item.id}`">
 								<div class="action-option">
 									<Icon name="edit" />
 									Editar
@@ -63,17 +63,19 @@
 				<template #salario="{ item, index }">
 					<div class="flex justify-center">
 						<td>R$ {{ item.salario }}</td>
+						<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 					</div>
 				</template>
 
-				<template #cargo="item, index">
-					<td>{{ item.descricao }}</td>
+				<template #cargo="{ item, index }">
+					<td>{{ item.cargo }}</td>
 				</template>
 
 				<template #clt="{ item, index }">
-					<td>
+					<td class="text-center">
 						<Icon name="check" class="text-green-500" v-if="item.clt" />
 						<Icon name="close" class="text-red-500" v-else />
+						<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 					</td>
 				</template>
 
@@ -126,16 +128,16 @@ export default {
 				sortable: true,
 			},
 			{
-				text: 'Descricao',
-				value: 'descricao',
+				text: 'Cargo',
+				value: 'cargo',
 				sortable: true,
 			},
-			// {
-			// 	text: 'CLT',
-			// 	value: 'clt',
-			// 	align: 'center',
-			// 	sortable: true,
-			// },
+			{
+				text: 'CLT',
+				value: 'clt',
+				align: 'center',
+				sortable: true,
+			},
 		]);
 		const filterOptions = ref([
 			{
@@ -191,13 +193,13 @@ export default {
 	},
 
 	computed: {
-		filteredDate() {
+		filteredData() {
 			let filteredData = this.funcionarioData;
-			if (getSelected.value.length) {
+			if (this.getSelected.length) {
 				filteredData = filteredData.filter((item) => {
 					const returnItem = {};
 
-					getSelected.value.forEach((selected) => {
+					this.getSelected.forEach((selected) => {
 						if (selected.fatherValue) {
 							returnItem[selected.fatherValue] =
 								returnItem[selected.fatherValue] || item[selected.fatherValue] == selected.value;
@@ -215,7 +217,7 @@ export default {
 			return filteredData.filter((item) => {
 				return Object.values(item).some((value) => {
 					const stringValue = String(value);
-					return stringValue.includes(this.searchValue);
+					return stringValue.toLowerCase().includes(this.searchValue.toLowerCase());
 				});
 			});
 		},
@@ -280,6 +282,7 @@ export default {
 
 		closeCard(event) {
 			const cardParent = this.$refs['card' + this.opendedIndex]?.$el?.parentElement;
+			console.log(this.opendedIndex)
 			if (this.opendedIndex == null || (cardParent && event.target.closest('.action') === cardParent)) return;
 			this.setExpanded();
 		},
@@ -295,7 +298,8 @@ export default {
 		},
 
 		setExpanded() {
-			const item = this.gadoData[this.opendedIndex];
+			if(this.opendedIndex == null) return;
+			const item = this.filteredData[this.opendedIndex];
 			if (!item) return;
 			item.expanded = false;
 			this.opendedIndex = null;
@@ -311,7 +315,7 @@ export default {
 
 		downloadCSV() {
 			try {
-				csvExport(this.filteredDate, `funcionarios${formatDate(new Date())}`);
+				csvExport(this.filteredData, `funcionarios${formatDate(new Date())}`);
 			} catch (e) {
 				this.$alert({
 					message: 'Erro ao baixar o arquivo de funcionários. Tente novamente mais tarde',
