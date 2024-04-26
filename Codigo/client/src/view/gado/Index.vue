@@ -149,7 +149,6 @@
 
 <script>
 import { useGado } from "./composables/useGado.js";
-import { useEditDialog } from "./composables/useEditDialog.js";
 import { formatDate } from "../../util";
 import { useFilter } from "./composables/useFilter.js";
 import { ref } from "vue";

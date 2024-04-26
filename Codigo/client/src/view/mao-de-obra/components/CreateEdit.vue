@@ -20,7 +20,7 @@
 		</Card>
 
 		<div class="flex flex-row flex-wrap gap-2 justify-end">
-			<Button class="only-border" :disabled="loading" @click="$router.push('/funcionarios')">Cancelar</Button>
+			<Button class="only-border" :disabled="loading" @click="$router.push('/mao-de-obra')">Cancelar</Button>
 			<Button @click="salvar" :loading="loading">{{ buttonText }}</Button>
 		</div>
 	</div>
@@ -141,7 +141,7 @@ export default {
 				});
 			} finally {
 				this.loading = false;
-				this.$router.push('/funcionarios');
+				this.$router.push('/mao-de-obra');
 			}
 		},
 
