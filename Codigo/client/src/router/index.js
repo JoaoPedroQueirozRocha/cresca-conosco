@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import lucroController from '@/controller/profit.js';
+import maoDeObraController from '@/controller/mao-de-obra.js';
 import despesaController from '@/controller/cost.js';
 import { cost, profit } from './financeType.js';
 import Auth0 from '../auth/index.js';
@@ -86,6 +87,16 @@ const routes = [
         name: 'Funcionários',
         props: true,
         component: () => import('@/view/funcionarios/Index.vue'),
+        beforeEnter: Auth0.routeGuard
+    },
+    {
+        path: '/funcionarios/criar',
+        name: 'FuncionariosCriar',
+        props: route => ({
+            value: 'funcionário',
+            callback: maoDeObraController.createFuncionario
+        }),
+        component: () => import('@/view/funcionarios/components/CreateEdit.vue'),
         beforeEnter: Auth0.routeGuard
     },
 ];

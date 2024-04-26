@@ -35,7 +35,7 @@ app.use(
     .use("/auth", authRouter)
     .use("/animals", animalsRouter)
     .use("/gestacoes", gestacaoRouter)
-    .use('/worker', workerRouter)
+    .use('/mao-de-obra', workerRouter)
     .use('/gado', gadoRouter)
     .use('/despesas', despesasRouter)
     .use('/lucro', lucroRouter)
