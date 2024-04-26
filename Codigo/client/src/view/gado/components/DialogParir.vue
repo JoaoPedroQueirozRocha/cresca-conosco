@@ -149,8 +149,9 @@ export default {
 	display: flex;
 	flex-direction: column;
 	min-height: 290px;
-	gap: 2em;
-	padding: 1em;
+	gap: 3em;
+	padding: 3em;
+
 	transition-duration: 1s;
 }
 
