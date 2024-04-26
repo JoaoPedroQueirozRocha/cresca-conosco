@@ -198,7 +198,7 @@ export default {
     border-radius: 16px;
     color: $green-dark;
     font-weight: 600;
-    font-size: 24px;
+    font-size: 22px;
     cursor: pointer;
     user-select: none;
 
