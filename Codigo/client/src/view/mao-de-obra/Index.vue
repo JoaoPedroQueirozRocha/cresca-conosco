@@ -4,7 +4,7 @@
 			<div>
 				<div class="flex flex-row w-full justify-between items-center align-middle my-4">
 					<h2 class="title mt-0">Mão de Obra</h2>
-					<router-link to="/funcionarios/criar">
+					<router-link to="/mao-de-obra/criar">
 						<Button>Adicionar</Button>
 					</router-link>
 				</div>
@@ -30,7 +30,7 @@
 				</div>
 			</div>
 
-			<Table :items="filteredData" :headers="headers" class="w-full funcionarios-table" :loading="isLoading">
+			<Table :items="filteredData" :headers="headers" class="w-full mao-de-obra-table" :loading="isLoading">
 				<template #actions="{ item, index }">
 					<td class="w-2 cursos-pointer action">
 						<div class="icon-holder" @click="positionCard(item, index)">
@@ -103,7 +103,7 @@ import { useFetchs } from './useFetchs.js';
 import { csvExport, formatDate } from '@/util';
 
 export default {
-	name: 'Funcionarios',
+	name: 'MaoDeObra',
 	components: {
 		Button,
 		Card,
@@ -114,7 +114,7 @@ export default {
 		Filter,
 	},
 	setup() {
-		const { getBaseData, isLoading, funcionarioData } = useFetchs();
+		const { getBaseData, isLoading, maoDeObraData } = useFetchs();
 		const headers = ref([
 			{
 				text: 'Nome',
@@ -174,7 +174,7 @@ export default {
 		});
 
 		return {
-			funcionarioData,
+			maoDeObraData,
 			getBaseData,
 			headers,
 			filterOptions,
@@ -189,12 +189,12 @@ export default {
 
 	async beforeMount() {
 		await this.getBaseData();
-		console.log(this.funcionarioData);
+		console.log(this.maoDeObraData);
 	},
 
 	computed: {
 		filteredData() {
-			let filteredData = this.funcionarioData;
+			let filteredData = this.maoDeObraData;
 			if (this.getSelected.length) {
 				filteredData = filteredData.filter((item) => {
 					const returnItem = {};
@@ -245,7 +245,7 @@ export default {
 		document.addEventListener('click', this.closeCards);
 		const app = document.querySelector('#app');
 		app.addEventListener('scroll', this.closeCard);
-		const table = document.querySelector('.funcionarios-table');
+		const table = document.querySelector('.mao-de-obra-table');
 		table.addEventListener('scroll', this.closeCard);
 	},
 
@@ -253,7 +253,7 @@ export default {
 		document.removeEventListener('click', this.closeCards);
 		const app = document.querySelector('#app');
 		app.removeEventListener('scroll', this.closeCard);
-		const table = document.querySelector('.funcionarios-table');
+		const table = document.querySelector('.mao-de-obra-table');
 		table.removeEventListener('scroll', this.closeCard);
 	},
 
@@ -315,7 +315,7 @@ export default {
 
 		downloadCSV() {
 			try {
-				csvExport(this.filteredData, `funcionarios${formatDate(new Date())}`);
+				csvExport(this.filteredData, `mao-de-obra-${formatDate(new Date())}`);
 			} catch (e) {
 				this.$alert({
 					message: 'Erro ao baixar o arquivo de funcionários. Tente novamente mais tarde',

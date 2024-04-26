@@ -5,14 +5,14 @@ export function useFetchs() {
 
     const state = reactive({
         isLoading: ref(false),
-        funcionarioData: ref([])
+        maoDeObraData: ref([])
     })
 
     async function getBaseData() {
         state.isLoading = true;
         try {
-            state.funcionarioData = await maoDeObraController.getBase();
-            console.log('data', state.funcionarioData);
+            state.maoDeObraData = await maoDeObraController.getBase();
+            console.log('data', state.maoDeObraData);
         } catch (error) {
             console.log(error);
         } finally {
