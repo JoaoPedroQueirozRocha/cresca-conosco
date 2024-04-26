@@ -393,11 +393,7 @@ td {
 }
 
 .action-card {
-	@apply p-3 flex flex-col gap-2;
-
-	a {
-		@apply cursor-default;
-	}
+	@apply p-3 flex flex-col cursor-default gap-2;
 }
 
 .action-option {
