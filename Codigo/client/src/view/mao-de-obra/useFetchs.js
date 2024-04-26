@@ -12,9 +12,8 @@ export function useFetchs() {
         state.isLoading = true;
         try {
             state.maoDeObraData = await maoDeObraController.getBase();
-            console.log('data', state.maoDeObraData);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         } finally {
             state.isLoading = false;
         }

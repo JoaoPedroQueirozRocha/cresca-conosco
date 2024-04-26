@@ -43,7 +43,7 @@ export function csvExport(data, name) {
         .join('\n')
         .replace(/(^\[)|(\]$)/gm, '');
 
-    const eData = encodeURIComponent(content);
+    const eData = encodeURI(content);
     const link = document.createElement('a');
     link.setAttribute('href', eData);
     link.setAttribute('download', `${name || 'export'}.csv`);

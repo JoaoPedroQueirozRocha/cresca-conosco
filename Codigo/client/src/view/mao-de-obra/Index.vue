@@ -68,7 +68,7 @@
 				</template>
 
 				<template #cargo="{ item, index }">
-					<td>{{ item.cargo }}</td>
+					<td>{{ item.descricao }}</td>
 				</template>
 
 				<template #clt="{ item, index }">
@@ -189,7 +189,6 @@ export default {
 
 	async beforeMount() {
 		await this.getBaseData();
-		console.log(this.maoDeObraData);
 	},
 
 	computed: {
@@ -282,7 +281,6 @@ export default {
 
 		closeCard(event) {
 			const cardParent = this.$refs['card' + this.opendedIndex]?.$el?.parentElement;
-			console.log(this.opendedIndex)
 			if (this.opendedIndex == null || (cardParent && event.target.closest('.action') === cardParent)) return;
 			this.setExpanded();
 		},

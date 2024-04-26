@@ -40,7 +40,6 @@ export default {
         selectItem(index, cIndex) {
             if (cIndex != undefined || cIndex != null) {
                 this.model[index].childs[cIndex].selected = !this.model[index].childs[cIndex].selected;
-                console.log(this.model, this.model[index].childs[cIndex])
             } else {
                 this.model[index].selected = !this.model[index].selected;
             }

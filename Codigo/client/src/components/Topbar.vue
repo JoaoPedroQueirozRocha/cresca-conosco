@@ -98,7 +98,6 @@ export default {
 		},
 		async deleteNotification(item, index) {
 			try{
-				console.log(item);
 				await NotificationController.deleteNotification(item.id)
 				this.notifications.splice(index,1);
 				this.$alert({

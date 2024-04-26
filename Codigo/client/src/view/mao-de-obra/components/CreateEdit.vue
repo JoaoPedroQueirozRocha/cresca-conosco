@@ -98,7 +98,6 @@ export default {
 		if (this.id) {
 			try {
 				const { data } = await this.get(Number(this.id));
-				console.log('data on component', data);
 				this.data = data;
 			} catch (e) {
 				this.$alert({
