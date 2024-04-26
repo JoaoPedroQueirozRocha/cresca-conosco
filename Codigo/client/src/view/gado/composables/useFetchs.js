@@ -1,7 +1,7 @@
 import { reactive, toRefs, ref } from 'vue'
-import gadoController from '../../controller/gado.js';
-import animalsController from '../../controller/animal.js';
-import gestacaoController from '../../controller/gestacao.js';
+import gadoController from '../../../controller/gado.js';
+import animalsController from '../../../controller/animal.js';
+import gestacaoController from '../../../controller/gestacao.js';
 
 
 export function useFetchs() {
@@ -27,7 +27,7 @@ export function useFetchs() {
         return data;
     }
 
-    async function confirmar(animal_id){
+    async function confirmar(animal_id) {
         const data = await gestacaoController.confirmarGestacao(animal_id);
         return data;
     }
@@ -43,10 +43,16 @@ export function useFetchs() {
         return data && dataGestacao;
     }
 
+    async function getReport() {
+        const data = await gadoController.getReport();
+        return data;
+    }
+
     return {
         getBaseData,
         getAllData,
         getAnimal,
+        getReport,
         parir,
         secar,
         deletar,

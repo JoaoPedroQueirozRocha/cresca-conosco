@@ -1,5 +1,5 @@
 <script>
-// 'red' | 'orange' | 'yellow' | 'green' | 'blue'
+// 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'gray'
 export default {
     name: 'Tag',
     props: {

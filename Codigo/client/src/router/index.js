@@ -25,14 +25,14 @@ const routes = [
         path: '/gado/vaca',
         name: 'CriarVaca',
         props: true,
-        component: () => import('@/view/gado/CreateEdit.vue'),
+        component: () => import('@/view/gado/components/CreateEdit.vue'),
         beforeEnter: Auth0.routeGuard
     },
     {
         path: '/gado/vaca/:id',
         name: 'EditarVaca',
         props: true,
-        component: () => import('@/view/gado/CreateEdit.vue'),
+        component: () => import('@/view/gado/components/CreateEdit.vue'),
         beforeEnter: Auth0.routeGuard
     },
     {

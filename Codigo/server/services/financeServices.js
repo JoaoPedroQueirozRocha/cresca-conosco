@@ -14,7 +14,7 @@ async function generateReport(range, compare) {
         FROM 
             (SELECT updated_at, valor FROM receita WHERE updated_at BETWEEN $1 AND $2) AS r
         FULL JOIN 
-            (SELECT updated_at, valor FROM despesas WHERE updated_at BETWEEN $1 AND $2) AS d
+            (SELECT updated_at, valor FROM despesa WHERE updated_at BETWEEN $1 AND $2) AS d
         ON r.updated_at = d.updated_at
         GROUP BY COALESCE(r.updated_at, d.updated_at)
         ORDER BY COALESCE(r.updated_at, d.updated_at);
@@ -27,7 +27,7 @@ async function generateReport(range, compare) {
         FROM 
             (SELECT SUM(valor) AS receita FROM receita WHERE updated_at BETWEEN $1 AND $2) AS l
         FULL JOIN 
-            (SELECT SUM(valor) AS despesas FROM despesas WHERE updated_at BETWEEN $1 AND $2) AS d
+            (SELECT SUM(valor) AS despesas FROM despesa WHERE updated_at BETWEEN $1 AND $2) AS d
         ON true;
     `;
     const rangeData = await pool.query(dataQuery, [...range]);
