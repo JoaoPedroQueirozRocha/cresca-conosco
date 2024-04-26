@@ -145,17 +145,7 @@ export function useGado() {
         }
     }
 
-    async function parirAnimal(id) {
-        try {
-            await parir(id);
-            state.isLoading = true;
-            state.gadoData = await getBaseData();
-        } catch (e) {
-            console.error(e);
-        } finally {
-            state.isLoading = false;
-        }
-    }
+    
     async function secarAnimal(id) {
         try {
             await secar(id);
@@ -200,6 +190,24 @@ export function useGado() {
     }
 
 
+    async function parirAnimal(id) {
+        try {
+            await parir(id);
+            state.isLoading = true;
+            state.gadoData = await getBaseData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isLoading = false;
+        }
+    }
+
+    async function processarParto(dataGestacao){
+        this.gestacaoData.animal_id = dataGestacao.animal_id;
+
+        await parirAnimal(dataGestacao.animal_id);
+    }
+
 
 
 
@@ -213,7 +221,8 @@ export function useGado() {
         secarAnimal,
         deletarAnimal,
         confirmarGestacao,
-        getOptions
+        getOptions,
+        processarParto
     }
 }
 
