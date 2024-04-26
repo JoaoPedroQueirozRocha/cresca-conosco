@@ -321,7 +321,6 @@ export default {
 						...this.defaultAlert,
 					});
 				} catch (error) {
-					console.log(error);
 					this.$alert({
 						message: "Erro ao deletar a vaca. Tente novamente mais tarde",
 						...this.defaultAlert,
