@@ -93,6 +93,12 @@ export function useGado() {
         allData: ref([]),
         gadoData: ref([]),
         animalData: ref([]),
+        partoData: reactive({
+            animal_id: 0 || null,
+            id_parto: 0,
+            crias: 0,
+        })
+
     })
 
     async function loadBaseData() {
@@ -202,13 +208,6 @@ export function useGado() {
         }
     }
 
-    async function processarParto(dataGestacao){
-        this.gestacaoData.animal_id = dataGestacao.animal_id;
-
-        await parirAnimal(dataGestacao.animal_id);
-    }
-
-
 
 
     return {
@@ -221,8 +220,7 @@ export function useGado() {
         secarAnimal,
         deletarAnimal,
         confirmarGestacao,
-        getOptions,
-        processarParto
+        getOptions
     }
 }
 

@@ -74,6 +74,7 @@
 							<div
 								class="action-option"
 								@click="openParirDialog(item.id_animal, null, true)"
+								
 								v-if="getOptions(item.status).parirAvaliable"
 							>
 								<Icon name="heart_check" />

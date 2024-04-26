@@ -4,7 +4,7 @@
 			<div>
 				<h1 class="title">Parir a {{ animalData.nome }}</h1>
 			</div>
-			<Input class="md:w-[49%] w-full" label="Crias" type="number" v-model="crias" />
+			<Input class="md:w-[49%] w-full" label="Crias" type="number" v-model="partoData.crias" />
 			<div class="flex flex-row gap-4 justify-end">
 				<Button @click="cancelar" only-border :disabled="loading">Cancelar</Button>
 				<Button @click="salvarParto()" :loading="loading">Parir</Button>
@@ -25,26 +25,22 @@ import { useGado } from '../composables/useGado.js';
 import { ref, reactive, watch } from 'vue';
 
 export default {
-	name: 'DialogInsem',
+	name: 'DialogParto',
 	props: {
 		animalData: { type: Object, required: true },
-		modelValue: { type: Boolean, required: false },
-		isEdit: Boolean,
+		modelValue: { type: Boolean, required: false }
 	},
 	emits: ['update:modelValue', 'change'],
 	watch: {
 		animalData() {
-			if (this.animalData.status) {
-				this.gestacaoData = {
+			if (this.animalData) {
+				this.partoData = {
 					animal_id: this.animalData.id,
-					id_gestacao: this.animalData.id_gestacao ? this.animalData.id_gestacao : null,
-					status: this.animalData.status,
-					touro: this.animalData.touro,
-					crias: this.crias
-
+					id_parto: this.animalData.id_parto ? this.animalData.id_parto : null,
+					crias: 0
 				};
 			} else {
-				this.gestacaoData.animal_id = this.animalData.id;
+				this.partoData.animal_id = this.animalData.id;
 			}
 		},
 		modelValue() {
@@ -62,6 +58,9 @@ export default {
 	},
 	setup() {
 		const {
+			model,
+			loading,
+			partoData,
 			createDialog,
 			loadBaseData,
 			openInsemDialog,
@@ -70,12 +69,14 @@ export default {
 			secarAnimal,
 			deletarAnimal,
 			confirmarGestacao,
-			getOptions,
-			processarParto
+			getOptions
 		} = useGado();
 
 		return {
 			model: ref(false),
+			model,
+			loading,
+			partoData,
 			createDialog,
 			loadBaseData,
 			openInsemDialog,
@@ -84,8 +85,7 @@ export default {
 			secarAnimal,
 			deletarAnimal,
 			confirmarGestacao,
-			getOptions,
-			processarParto
+			getOptions
 		};
 	},
 
@@ -100,25 +100,31 @@ export default {
 		},
 		cancelar() {
 			this.changeModel(false);
-			this.gestacaoData = {
+			this.partoData = {
 				animal_id: null,
-				id_gestacao: null,
+				id_parto: null,
 				status: '',
+				crias: null,
 				touro: '',
 				data_insem: '',
 				prev_parto: '' || null,
 			};
 		},
 
+		async validateData(partoData){	
+			return partoData.crias>=0
+		},
+
 		async salvarParto() {
-			if (this.validateData(this.data)) {
-				this.showAlert('Preencha todos os campos para parir a vaca', 'error');
+			if (!this.validateData(this.partoData)) {
+				this.showAlert('Verifique o valor dos campos para parir a vaca', 'error');
 			} else {
 				this.loading = true;
 				try {
-					await this.processarParto();
+					await this.parirAnimal(this.partoData.id);
 					this.showAlert('Parto registrado com sucesso', 'success')
 				} catch (error) {
+					console.error(error);
 
 				} finally {
 					this.cancelar();
