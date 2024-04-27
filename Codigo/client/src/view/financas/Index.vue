@@ -327,10 +327,15 @@ export default {
 			const endDate2 = new Date(period2[1]);
 
 			while (currentDate1 <= endDate1 || currentDate2 <= endDate2) {
-				pairedDates.push([
-					currentDate1 <= endDate1 ? formatDate(new Date(currentDate1), template) : null,
-					currentDate2 <= endDate2 ? formatDate(new Date(currentDate2), template) : null
-				]);
+				let date1 = currentDate1 <= endDate1 ? formatDate(new Date(currentDate1), template) : null;
+				let date2 = currentDate2 <= endDate2 ? formatDate(new Date(currentDate2), template) : null;
+
+				if (!date2 && date1) {
+					date2 = date1;
+					date1 = null;
+				}
+
+				pairedDates.push([date1, date2]);
 
 				currentDate1.setDate(currentDate1.getDate() + 1);
 				currentDate2.setDate(currentDate2.getDate() + 1);
@@ -417,7 +422,7 @@ export default {
 
 			if (this.isCompare) {
 				this.overwriteCategories.forEach((date) => {
-					const item = this.findItemByDate(range, date[0]);
+					const item = this.findItemByDate(range, date[0] || date[1]);
 					const compareItem = this.findItemByDate(compare, date[1]);
 					parsedRange.push(item);
 					parsedCompare.push(compareItem);
