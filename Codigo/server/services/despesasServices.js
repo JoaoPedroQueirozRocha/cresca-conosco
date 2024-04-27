@@ -13,8 +13,8 @@ async function listarDespesas(period) {
         SELECT 
             DATE_TRUNC('month', updated_at) + INTERVAL '1 month' - INTERVAL '1 day' AS updated_at,
             SUM(valor) AS total,
-            SUM(CASE WHEN tipo = 'compra' THEN valor ELSE 0 END) AS compras,
-            SUM(CASE WHEN tipo = 'despesa_trabalhistas' THEN valor ELSE 0 END) AS despesas_trabalhistas,
+            SUM(CASE WHEN tipo = 'compra' THEN valor ELSE 0 END) AS compra,
+            SUM(CASE WHEN tipo = 'despesa_trabalhistas' THEN valor ELSE 0 END) AS despesa_trabalhistas,
             SUM(CASE WHEN tipo = 'diversos' THEN valor ELSE 0 END) AS diversos,
             COALESCE(ARRAY(
                 SELECT 

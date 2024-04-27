@@ -4,18 +4,10 @@ import router from './router';
 import Auth0 from "./auth/index"
 
 import 'vuetify/styles';
-import { createVuetify } from 'vuetify';
-import * as components from 'vuetify/components';
-import * as directives from 'vuetify/directives';
 import event from './util/event';
 import VueApexCharts from "vue3-apexcharts";
 
 import '@/style/main.css';
-
-const vuetify = createVuetify({
-    components,
-    directives
-});
 
 async function init() {
     const AuthPlugin = await Auth0.init({
@@ -31,7 +23,6 @@ async function init() {
     const app = createApp(App);
     app.use(AuthPlugin)
         .use(router)
-        .use(vuetify)
         .use(VueApexCharts)
 
     const confirm = (options) => {

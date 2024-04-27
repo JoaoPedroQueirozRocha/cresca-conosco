@@ -5,6 +5,11 @@ const router = express.Router();
 
 router.use(express.json());
 
+/**
+ * @param {number} id - O ID do animal para recuperar os dados.
+ * @returns {Promise<Animal>} Uma promessa que resolve para os dados do animal especificado.
+ * Recupera um animal pelo seu ID.
+ */
 async function getAnimalById(id) {
     const queryResult = await pool.query(
         "SELECT * FROM animais WHERE id = $1",

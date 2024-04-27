@@ -34,7 +34,7 @@ export default {
 </script>
 
 <template>
-    <div class="checkbox-holder" @click="changeModel(!model)">
+    <div class="checkbox-holder" :class="{'pointer-events-none': disabled}" @click="changeModel(!model)">
         <div class="checkbox" :class="{'active': model, 'disabled': disabled}">
             <svg v-show="model === true" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full" style="stroke: currentColor">
                 <path id="Vector" d="M11.15 6L7.04998 9.9375L5 7.96875" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -71,5 +71,10 @@ export default {
 .checkbox.active {
     background: $green-dark;
     border-color: $green-dark;
+}
+
+.checkbox.disabled {
+    background: $gray-300;
+    border-color: $gray-300;
 }
 </style>
