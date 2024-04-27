@@ -316,7 +316,7 @@ export default {
 				csvExport(this.filteredData, `mao-de-obra-${formatDate(new Date())}`);
 			} catch (e) {
 				this.$alert({
-					message: 'Erro ao baixar o arquivo de funcionários. Tente novamente mais tarde',
+					message: 'Erro ao baixar o arquivo de mão de obra. Tente novamente mais tarde',
 					...this.defaultAlert,
 				});
 			}

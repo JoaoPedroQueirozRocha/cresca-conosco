@@ -170,7 +170,7 @@ table {
     }
 
     thead {
-        @apply border-b-[.1em] border-b-stone-100 w-full;
+        @apply border-b-[.1em] border-b-stone-100 w-full z-10;
         border-top-right-radius: 16px;
         border-top-left-radius: 16px;
 

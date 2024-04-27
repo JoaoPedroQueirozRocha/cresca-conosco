@@ -6,7 +6,7 @@ import Input from "@/components/Input.vue";
 import Icon from "@/components/Icon.vue";
 import DatePicker from "@/components/DatePicker.vue";
 import Card from "@/components/Card.vue";
-import { formatCurrency, formatDate, upperCaseFirstLetter } from "@/util";
+import { formatCurrency, formatDate, upperCaseFirstLetter, csvExport } from "@/util";
 
 export default {
 	name: "GenericTable",
@@ -22,6 +22,12 @@ export default {
     emits: ['filterData', 'deleteItem'],
     inject: ["Auth"],
 	setup() {
+		const defaultAlert = ref({
+			top: true,
+			right: true,
+			timeout: 3500,
+		});
+
 		return {
             searchValue: ref(''),
 			opendedIndex: ref(null),
@@ -31,6 +37,7 @@ export default {
             formatCurrency,
             formatDate,
             upperCaseFirstLetter,
+            defaultAlert,
 		};
 	},
     
@@ -118,7 +125,22 @@ export default {
                 title: 'Tem certeza que deseja deletar esse item?'
             });
             if (result) await this.$emit('deleteItem', item, childIndex, id, this.type);
-        }
+        },
+
+        downloadCSV() {
+            try {
+                const exportData = [];
+                this.filteredData.forEach((item) => {
+                    exportData.push(...item.childs)
+                });
+                csvExport(exportData, `${this.title.toLowerCase()}-${formatDate(new Date())}`);
+            } catch (e) {
+                this.$alert({
+                    message: `Erro ao baixar o arquivo de ${this.title.toLowerCase()}. Tente novamente mais tarde`,
+                    ...this.defaultAlert,
+                });
+            }
+        },
     },
 };
 </script>
@@ -148,11 +170,11 @@ export default {
         </div>
         <Table :headers="headers" :items="filteredData" :loading="loading" class="finance-table">
             <template v-for="(header, index) in headers" :key="index" v-slot:[header.value]="{ item }">
-                <td v-if="header.value == 'updated_at' && item[header.value]">
+                <td v-if="header.value == 'data' && item[header.value]">
                     {{ upperCaseFirstLetter(formatDate(new Date(item[header.value]), { month: 'long' })) }}/{{ formatDate(new Date(item[header.value]), { year: 'numeric' }) }}
                 </td>
                 <td v-else-if="header.value == 'none'" class="w-2">
-                    <div class="icon-holder" :class="{'rotate-180': item.expanded}" @click="item.expanded = !item.expanded">
+                    <div class="icon-holder relative z-0" :class="{'rotate-180': item.expanded}" @click="item.expanded = !item.expanded">
                         <Icon name="arrow_drop_down" />
                     </div>
                 </td>
@@ -175,7 +197,7 @@ export default {
                         v-for="(header, hIndex) in headers"
                         :key="hIndex"
                         class="border-gray-200 border-t-[.1em]"
-                        :class="{'text-center': header.value != 'updated_at'}"
+                        :class="{'text-center': header.value != 'data'}"
                     >
                         <template v-if="child.tipo == header.value">
                             <Icon name="check" class="text-green-500" />
@@ -223,6 +245,7 @@ export default {
                 </div>
             </template>
         </Table>
+        <Button class="self-end" @click="downloadCSV">Download</Button>
     </div>
 </template>
 

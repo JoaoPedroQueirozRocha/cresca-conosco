@@ -7,28 +7,39 @@ router.use(express.json())
 
 async function listarLucro(period) {
     const where = period.length ? 'WHERE updated_at BETWEEN $1 AND $2' : '';
-    const whereSub = period.length ? 'AND r.updated_at BETWEEN $1 AND $2' : '';
+    const whereSub = period.length ? 'AND sub1.updated_at BETWEEN $1 AND $2' : '';
 
     const data = await pool.query(`
         SELECT 
-            DATE_TRUNC('month', updated_at) + INTERVAL '1 month' - INTERVAL '1 day' AS updated_at,
-            SUM(valor) AS total,
-            SUM(CASE WHEN tipo = 'leite' THEN valor ELSE 0 END) AS leite,
-            SUM(CASE WHEN tipo = 'venda' THEN valor ELSE 0 END) AS venda,
+            updated_at_month + INTERVAL '1 month' - INTERVAL '1 day' AS data,
+            SUM(total) AS total,
+            SUM(leite) AS leite,
+            SUM(venda) AS venda,
+            SUM(diversos) AS diversos,
             COALESCE(ARRAY(
                 SELECT 
                     json_build_object(
                         'id', id,
-                        'updated_at', updated_at,
                         'tipo', tipo,
-                        'valor', valor
+                        'valor', valor,
+                        'descricao', descricao,
+                        'data', sub1.updated_at
                     ) 
-                FROM receita AS r 
-                WHERE DATE_TRUNC('month', r.updated_at) = DATE_TRUNC('month', updated_at) ${whereSub}
+                FROM receita AS sub1
+                WHERE DATE_TRUNC('month', sub1.updated_at) = updated_at_month ${whereSub}
             ), ARRAY[]::json[]) AS childs
-        FROM receita
-        ${where}
-        GROUP BY DATE_TRUNC('month', updated_at);
+        FROM(
+            SELECT 
+                DATE_TRUNC('month', t1.updated_at) updated_at_month,
+                SUM(valor) AS total,
+                SUM(CASE WHEN tipo = 'leite' THEN valor ELSE 0 END) AS leite,
+                SUM(CASE WHEN tipo = 'venda' THEN valor ELSE 0 END) AS venda,
+                SUM(CASE WHEN tipo = 'diversos' THEN valor ELSE 0 END) AS diversos
+            FROM receita as t1
+            ${where}    
+            GROUP BY DATE_TRUNC('month', t1.updated_at)
+        )
+        GROUP BY updated_at_month;
     `, period);
     return data.rows;
 }
@@ -39,7 +50,7 @@ async function getLucro(id){
 }
 
 async function createLucro(body){
-    const result = await pool.query('INSERT INTO receita (descricao, tipo, valor, updated_at) VALUES ($1, $2, $3, $4)', [body.descricao, body.tipo, body.valor, body.data || new Date()])
+    const result = await pool.query('INSERT INTO receita (descricao, tipo, valor, updated_at) VALUES ($1, $2, $3, $4)', [body.descricao, body.tipo, body.valor, body.updated_at || new Date()])
     return result.rows[0];
 }
 
