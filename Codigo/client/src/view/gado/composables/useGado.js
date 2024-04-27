@@ -184,10 +184,6 @@ export function useGado() {
         return { parirAvaliable, editGestacaoAvaliable, insemAvaliable }
     }
 
-
-
-
-
     return {
         ...toRefs(state),
         createDialog,
