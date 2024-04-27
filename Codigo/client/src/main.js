@@ -3,7 +3,6 @@ import App from './App.vue';
 import router from './router';
 import Auth0 from "./auth/index"
 
-import 'vuetify/styles';
 import event from './util/event';
 import VueApexCharts from "vue3-apexcharts";
 
