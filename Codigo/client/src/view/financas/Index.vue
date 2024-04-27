@@ -416,7 +416,6 @@ export default {
 
 		setSeries(range, compare) {
 			this.series = [];
-			console.log(compare)
 			const parsedRange = [];
 			const parsedCompare = [];
 
