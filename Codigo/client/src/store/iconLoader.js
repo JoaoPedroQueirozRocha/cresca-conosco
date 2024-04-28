@@ -1,4 +1,5 @@
 import { ref, onMounted, onUnmounted } from 'vue';
+import store from '../store/store';  // Adicione o caminho correto para sua store Vuex
 
 export const useIconLoader = () => {
     const loaded = ref(false);
@@ -10,4 +11,3 @@ export const useIconLoader = () => {
 
     return { loaded };
 };
-

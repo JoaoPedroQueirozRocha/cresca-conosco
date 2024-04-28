@@ -3,7 +3,7 @@ import Menu from './components/Menu.vue';
 import Alert from './components/Alert.vue';
 import Confirm from './components/Confirm.vue';
 import Topbar from './components/Topbar.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { mapState, useStore } from 'vuex';
 import Loader from './components/Loader.vue';
 
@@ -12,13 +12,13 @@ export default {
 	components: { Menu, Alert, Topbar, Confirm, Loader },
 	setup() {
 		const store = useStore();
-		onMounted(() => {
-			store.dispatch('loadIcons');
+		const iconsLoaded = computed(() => {
+			return store.state.iconsLoaded;
 		});
-
 		return {
 			expanded: ref(false),
 			isPhone: ref(window.innerWidth <= 768),
+			iconsLoaded,
 		};
 	},
 	beforeMount() {
@@ -45,7 +45,7 @@ export default {
 		<Menu @update:is-menu-opened="changeExpanded" />
 		<Topbar />
 		<div class="md:mt-14 mt-20 w-full h-fit md:px-8 content pb-8">
-			<Loader :isLoading="!iconsLoaded" />
+			<Loader :isLoading="!iconsLoaded" v-if="this.$route.path == '/'" />
 			<router-view />
 		</div>
 	</div>

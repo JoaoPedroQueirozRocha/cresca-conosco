@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
+import store from './store/store';
 import Auth0 from "./auth/index"
 
 
@@ -23,6 +24,7 @@ async function init() {
     app.use(AuthPlugin)
         .use(router)
         .use(VueApexCharts)
+        .use(store)
 
     const confirm = (options) => {
         return new Promise((resolve) => {

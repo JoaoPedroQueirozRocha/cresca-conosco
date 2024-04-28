@@ -15,7 +15,7 @@ export default {
 	components: { Card, Dialog, Button, Input, Icon, Loader },
 	inject: ['Auth'],
 	setup() {
-		const { iconsLoaded, loaded } = useIconLoader();
+		const { iconsLoaded } = useIconLoader();
 		return {
 			editing: ref(false),
 			changingPass: ref(false),
@@ -139,7 +139,6 @@ export default {
 </script>
 
 <template>
-	<Loader isLoading="true" v-if="!iconsLoaded" />
 	<div class="flex flex-col gap-6 w-full">
 		<h1 class="title">Perfil</h1>
 		<Card class="w-full flex flex-col gap-4">
