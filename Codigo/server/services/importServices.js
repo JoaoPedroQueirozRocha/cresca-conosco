@@ -28,12 +28,8 @@ async function insertMultiple(headers, data, tableName) {
 
     const query = `INSERT INTO ${tableName} (${column}) VALUES ${placeholders};`;
 
-    try {
-        const result = await pool.query(query, values);
-        return result.rows[0];
-    } catch (err) {
-        console.error('Erro ao inserir dados:', err);
-    }
+    const result = await pool.query(query, values);
+    return result.rows[0];
 }
 
 export { insertMultiple };

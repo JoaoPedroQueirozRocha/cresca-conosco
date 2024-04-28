@@ -21,10 +21,15 @@ function deleteCost(id) {
     return axios.delete(`${APIURL}/${id}`);
 }
 
+function importFile(data) {
+    return axios.post(`${import.meta.env.VITE_API_URL}/import/despesa`, data);
+}
+
 export default {
     getCost,
     updateCost,
     createCost,
     deleteCost,
-    listCosts
+    listCosts,
+    importFile
 }
