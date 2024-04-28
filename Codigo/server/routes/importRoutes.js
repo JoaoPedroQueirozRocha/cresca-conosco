@@ -24,7 +24,7 @@ const router = express.Router();
  *          $ref: '#/components/schema/Imports'
  *     description: nome da tabela onde os dados serão inseridos     
  */
-router.post('/', importController.insertMultiple);
+router.post('/:tableName', importController.insertMultiple);
 
 export default router;
 

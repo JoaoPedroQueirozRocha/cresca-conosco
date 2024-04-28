@@ -154,7 +154,7 @@ export default {
                     await this.callback(this.id, this.data);
                 }
                 else if (this.tabIndex > 0) {
-                    await this.import(this.fileData.parsedHeaders, this.fileData.parsedValues);
+                    await this.import({headers: this.fileData.parsedHeaders, data: this.fileData.parsedValues});
                 } else {
                     await this.callback(this.data);
                 }

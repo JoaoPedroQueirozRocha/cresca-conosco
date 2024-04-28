@@ -76,6 +76,7 @@ const routes = [
             value: 'despesa',
             fields: COST_FIELDS,
             callback: despesaController.createCost,
+            import: despesaController.importFile,
             returnTo: '/financas',
         },
         component: () => import('@/components/CreateEdit.vue'),
