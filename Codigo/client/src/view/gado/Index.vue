@@ -74,7 +74,7 @@
 							<div
 								class="action-option"
 								:class="{disabled: !getOptions(item.status).parirAvaliable}"
-								@click="openParirDialog(item.id, null, true)"
+								@click="openParirDialog(item.id_animal, null, true)"
 							>
 								<Icon name="heart_check" />
 								Parir

@@ -1,9 +1,7 @@
 <template>
 	<Dialog v-model="model" @update:model-value="cancelar" width="70%" height="fit-content">
 		<div class="dialog-div">
-			<div>
-				<h1 class="title">Parir a {{ animalData.nome }}</h1>
-			</div>
+			<h1 class="title mt-0">Parir a {{ animalData.nome }}</h1>
 			<Input class="md:w-[49%] w-full" label="Crias" type="number" v-model="partoData.crias" />
 			<div class="flex flex-row gap-4 justify-end">
 				<Button @click="cancelar" only-border :disabled="loading">Cancelar</Button>
@@ -58,8 +56,6 @@ export default {
 	},
 	setup() {
 		const {
-			model,
-			loading,
 			partoData,
 			createDialog,
 			loadBaseData,
@@ -72,10 +68,16 @@ export default {
 			getOptions
 		} = useGado();
 
+		const defaultAlert = ref({
+			top: true,
+			right: true,
+			timeout: 3500,
+		});
+
 		return {
 			model: ref(false),
-			model,
-			loading,
+			defaultAlert,
+			loading: ref(false),
 			partoData,
 			createDialog,
 			loadBaseData,
@@ -148,14 +150,10 @@ export default {
 .dialog-div {
 	display: flex;
 	flex-direction: column;
-	min-height: 290px;
+	height: fit-content;
 	gap: 3em;
-	padding: 0 1em;
+	padding: 1em;
 	transition-duration: 1s;
-}
-
-.dialog-div.bigger {
-	min-height: 90vh;
 }
 
 @media screen and (max-width: 768px) {
