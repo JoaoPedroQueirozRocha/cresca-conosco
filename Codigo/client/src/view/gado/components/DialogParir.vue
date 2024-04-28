@@ -112,7 +112,7 @@ export default {
 		},
 
 		async validateData(partoData){	
-			return partoData.crias>=0
+			return partoData.crias >= 0;
 		},
 
 		async salvarParto() {
@@ -150,8 +150,7 @@ export default {
 	flex-direction: column;
 	min-height: 290px;
 	gap: 3em;
-	padding: 3em;
-
+	padding: 0 1em;
 	transition-duration: 1s;
 }
 
