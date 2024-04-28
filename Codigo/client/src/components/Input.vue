@@ -71,7 +71,7 @@ export default {
                 v-model="model"
                 :placeholder="placeholder"
                 :disabled="disabled"
-                :type="(type === 'password' && !hidePass) || type === 'email' ? 'text': type"
+                :type="(type === 'password' && !hidePass) || type === 'email' || type === 'search' ? 'text': type"
                 :value="model"
                 @focusin="onFocus = true"
                 @focusout="focusout"
