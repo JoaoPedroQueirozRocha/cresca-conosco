@@ -123,7 +123,8 @@ export default {
 			} else {
 				this.loading = true;
 				try {
-					await this.parirAnimal(this.partoData.id);
+					console.log(this.partoData.crias);
+					await this.parirAnimal(this.partoData.id, this.partoData.crias);
 					this.showAlert('Parto registrado com sucesso', 'success')
 				} catch (error) {
 					console.error(error);

@@ -9,7 +9,7 @@ function salvarGestacao(gestacao) {
     return axios.post(`${APIURL}/`, gestacao);
 }
 
-async function parir(id) {
+async function parir(id, crias) {
     return await axios.put(`${APIURL}/${id}`, { status: 'concluida', data_finalizacao: new Date() });
 }
 

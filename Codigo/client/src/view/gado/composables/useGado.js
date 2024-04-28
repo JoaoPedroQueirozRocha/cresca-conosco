@@ -195,9 +195,9 @@ export function useGado() {
         return { parirAvaliable, editGestacaoAvaliable, insemAvaliable }
     }
 
-    async function parirAnimal(id) {
+    async function parirAnimal(id, crias) {
         try {
-            await parir(id);
+            await parir(id, crias);
             state.isLoading = true;
             state.gadoData = await getBaseData();
         } catch (e) {
