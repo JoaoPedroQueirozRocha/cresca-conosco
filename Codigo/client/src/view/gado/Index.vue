@@ -57,25 +57,24 @@
 							</router-link>
 							<div
 								class="action-option"
+								:class="{disabled: !getOptions(item.status).insemAvaliable}"
 								@click="openInsemDialog(item.id_animal, null, true)"
-								v-if="getOptions(item.status).insemAvaliable"
 							>
 								<Icon name="vaccines" />
 								Inseminar
 							</div>
 							<div
 								class="action-option"
+								:class="{disabled: !getOptions(item.status).editGestacaoAvaliable}"
 								@click="openInsemDialog(item.id_animal, item.id_gestacao)"
-								v-if="getOptions(item.status).editGestacaoAvaliable"
 							>
 								<Icon name="edit" />
 								Editar Gestão Atual
 							</div>
 							<div
 								class="action-option"
-								@click="openParirDialog(item.id_animal, null, true)"
-								
-								v-if="getOptions(item.status).parirAvaliable"
+								:class="{disabled: !getOptions(item.status).parirAvaliable}"
+								@click="openParirDialog(item.id, null, true)"
 							>
 								<Icon name="heart_check" />
 								Parir
@@ -158,7 +157,6 @@
 
 <script>
 import { useGado } from "./composables/useGado.js";
-import { useEditDialog } from "./composables/useEditDialog.js";
 import { formatDate } from "../../util";
 import { useFilter } from "./composables/useFilter.js";
 import { ref } from "vue";
@@ -337,7 +335,6 @@ export default {
 						...this.defaultAlert,
 					});
 				} catch (error) {
-					console.log(error);
 					this.$alert({
 						message: "Erro ao deletar a vaca. Tente novamente mais tarde",
 						...this.defaultAlert,
@@ -408,11 +405,11 @@ td {
 }
 
 .action-card {
-	@apply p-3 flex flex-col gap-2;
+	@apply p-3 flex flex-col cursor-default gap-2;
 }
 
 .action-option {
-	@apply flex items-center gap-4 cursor-pointer p-2 font-bold;
+	@apply flex items-center cursor-pointer gap-4 p-2 font-bold;
 	color: $gray-500;
 	border-radius: 8px;
 
@@ -427,6 +424,12 @@ td {
 	&:hover {
 		background: $red-light;
 	}
+}
+
+.action-option.disabled {
+	@apply pointer-events-none;
+	color: $gray-400;
+	background: $gray-200;
 }
 
 @media screen and (max-width: 768px) {

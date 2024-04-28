@@ -7,14 +7,14 @@ import * as workerServices from "../services/workerServices.js";
  * @returns {worker}
  * Função para listar funcionários
  */
-async function listWorkers(req, res){
+async function listWorkers(req, res) {
     try {
         const worker = await workerServices.listWorkers()
 
-        if(!worker) throw new Error('Funcionários não encontrados')
+        if (!worker) throw new Error('Funcionários não encontrados')
 
-        res.json(worker)
-    
+        res.status(200).json(worker)
+
     } catch (error) {
         console.error(error)
         res.status(error.status).send('Erro ao listar funcionários' + error.message)
@@ -28,15 +28,15 @@ async function listWorkers(req, res){
  * @returns {worker}
  * Função para procurar um funcionário
  */
-async function getWorker(req, res){
+async function getWorker(req, res) {
     try {
         const { id } = req.params
         const worker = await workerServices.getWorker(id)
 
-        if(!worker) throw new Error('Funcionário não encontrado')
+        if (!worker) throw new Error('Funcionário não encontrado')
 
-        res.json(worker)
-    
+        res.status(200).json(worker)
+
     } catch (error) {
         console.error(error)
         res.status(error.status).send('Erro ao procurar funcionário' + error.message)
@@ -51,14 +51,14 @@ async function getWorker(req, res){
  * Função para criar um novo funcionário
  * 
  */
-async function createWorker(req, res){
+async function createWorker(req, res) {
     try {
-        const body = req.body 
+        const body = req.body
         const worker = await workerServices.createWorker(body)
-        res.json(worker)
+        res.status(200).json(worker)
     } catch (error) {
         console.error(error)
-        res.status(error.status).send('Erro ao criar funcionário' + error.message) 
+        res.status(error.status).send('Erro ao criar funcionário' + error.message)
     }
 }
 
@@ -69,12 +69,12 @@ async function createWorker(req, res){
  * @returns {worker}
  * Função para atualizar um funcionário
  */
-async function updateWorker(req, res){
+async function updateWorker(req, res) {
     try {
         const body = req.body
         const worker = await workerServices.updateWorker(body)
-        res.json(worker)
-    } catch(error) {
+        res.status(200).json(worker)
+    } catch (error) {
         console.error(error);
         res.status(error.status).send('Erro ao editar funcionário' + error.message)
     }
@@ -87,15 +87,15 @@ async function updateWorker(req, res){
  * @returns {worker}
  * Função para deletar um funcionário
  */
-async function deleteWorker(req,res){
+async function deleteWorker(req, res) {
     try {
         const { id } = req.body;
         const worker = await workerServices.deleteWorker(id)
-        res.json(worker) 
+        res.status(200).json(worker)
     } catch (error) {
         console.error(error);
         res.status(error.status).send('Erro ao deletar funcionário' + error.message)
-    }   
+    }
 }
 
-export { listWorkers, getWorker, createWorker, updateWorker, deleteWorker}
+export { listWorkers, getWorker, createWorker, updateWorker, deleteWorker }
