@@ -9,13 +9,9 @@ function salvarGestacao(gestacao) {
     return axios.post(`${APIURL}/`, gestacao);
 }
 
-/**
- * Realiza o parto de um animal e atualiza o nmero de crias
- * @param {number} id - Id da gestação
- * @param {number} crias - Nmero de crias
- */
 async function parir(id, crias) {
     return await axios.put(`${APIURL}/parir/${id}`, { status: 'concluida', data_finalizacao: new Date(), crias: crias });
+
 }
 
 async function confirmarGestacao(id) {
