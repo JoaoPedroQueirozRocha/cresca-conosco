@@ -49,6 +49,47 @@ async function updateGestacao(id, updates) {
 }
 
 /**
+ * @param {number} id - O ID da gestação a ser atualizada.
+ * @param {number} numCrias - O número de crias que o animal teve.
+ * @returns {Promise<{gestacao: Gestacao, animal: Animal}>} Uma promessa que resolve para os dados de gestação e animal após o parto.
+ * Realiza o parto de um animal.
+ * A função recebe o id da gestação a ser concluida e o número de crias do animal. Além de atualizar a gestação
+ * seleciona o animal a partir de seu identificador na gestação e insere o número de crias.
+ */
+async function parirAnimal(id, numCrias, data_finalizacao) {
+    await pool.query("BEGIN");
+    try {
+        // Operação para atualizar o status da gestação
+        const queryGestacao = `
+            UPDATE gestacoes SET 
+                status  = 'concluida',
+                data_finalizacao = $2
+            where id = $1
+            RETURNING *
+        `
+        const resultGestacao = await pool.query(queryGestacao, [id, data_finalizacao])
+
+        // Operação para atualizar o número de crias do animal
+        const queryAnimal = `
+            UPDATE animais SET
+                crias = crias + $2
+            WHERE id = (
+                SELECT animal_id from gestacoes where id = $1
+            )
+            RETURNING *
+        `
+        const resultAnimal = await pool.query(queryAnimal, [id, numCrias])
+
+        await pool.query("COMMIT");
+        return { gestacao: resultGestacao.rows[0], animal: resultAnimal.rows[0] }
+
+    } catch (error) {
+        await pool.query("ROLLBACK");
+        throw error;
+    }
+}
+
+/**
  * @param {number} animal_id - O ID do animal para excluir o registro de gestação.
  * @returns {Promise<Gestacao>} Uma promessa que resolve para os dados de gestação do animal especificado.
  * Exclui um registro de gestação pelo ID do animal.
@@ -61,4 +102,4 @@ async function deleteGestacao(animal_id) {
     return result.rows[0];
 }
 
-export { getGestacaoById, createGestacao, updateGestacao, deleteGestacao };
+export { getGestacaoById, createGestacao, updateGestacao, parirAnimal, deleteGestacao };
