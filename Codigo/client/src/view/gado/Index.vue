@@ -168,6 +168,7 @@ import Icon from "@/components/Icon.vue";
 import Filter from "@/components/Filter.vue";
 import Dialog from "@/components/Dialog.vue";
 import Tag from "@/components/Tag.vue";
+import Loader from "@/components/Loader.vue";
 import DialogTable from "./components/DialogTable.vue";
 import DialogInsem from "./components/DialogInsem.vue";
 import DialogParir from "./components/DialogParir.vue";
@@ -187,6 +188,7 @@ export default {
 		Icon,
 		Filter,
 		Tag,
+		Loader,
 	},
 	inject: ["Auth"],
 	setup() {
@@ -215,6 +217,7 @@ export default {
 		} = useGado();
 
 		const searchValue = ref("");
+		const pageLoading = ref(false);
 		const { filteredData, getSelected } = useFilter(gadoData, filterOptions, searchValue);
 		const defaultAlert = ref({
 			top: true,
@@ -252,11 +255,14 @@ export default {
 			deletarAnimal,
 			confirmarGestacao,
 			getOptions,
+			pageLoading,
 		};
 	},
 
 	async beforeMount() {
+		this.pageLoading = true;
 		await this.loadBaseData();
+		this.pageLoading = false;
 	},
 
 	mounted() {

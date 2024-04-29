@@ -1,11 +1,12 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
+import store from './store/store';
 import Auth0 from "./auth/index"
+
 
 import event from './util/event';
 import VueApexCharts from "vue3-apexcharts";
-
 import '@/style/main.css';
 
 async function init() {
@@ -23,6 +24,7 @@ async function init() {
     app.use(AuthPlugin)
         .use(router)
         .use(VueApexCharts)
+        .use(store)
 
     const confirm = (options) => {
         return new Promise((resolve) => {
