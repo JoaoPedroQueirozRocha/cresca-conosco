@@ -45,7 +45,7 @@ export default {
 		<Menu @update:is-menu-opened="changeExpanded" />
 		<Topbar />
 		<div class="md:mt-14 mt-20 w-full h-fit md:px-8 content pb-8">
-			<Loader :isLoading="!iconsLoaded" v-if="this.$route.path == '/'" />
+			<Loader :isLoading="!iconsLoaded" v-if="!iconsLoaded && this.$route.path === '/'" />
 			<router-view />
 		</div>
 	</div>
