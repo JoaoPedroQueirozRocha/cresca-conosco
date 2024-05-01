@@ -1,10 +1,6 @@
 import express, { query } from "express";
 import pool from "../db/index.js";
 
-const router = express.Router();
-
-router.use(express.json());
-
 /**
  * @param {Array} headers 
  * @param {Array} data 
