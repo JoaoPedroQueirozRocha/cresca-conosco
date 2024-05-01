@@ -14,7 +14,7 @@ async function insertMultipleBasic(req, res) {
         res.status(200).json(insert);
     } catch (e) {
         console.error(e);
-        res.status(e.status).send(e.message);
+        res.status(e.status || 500).send(e.message);
     }
 }
 
