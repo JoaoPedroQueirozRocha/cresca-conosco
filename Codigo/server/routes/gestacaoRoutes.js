@@ -12,17 +12,17 @@ const router = express.Router();
 
 /**
  * @swagger
- * /gestacao/{animal_id}:
+ * /gestacao/{id}:
  *  get:
- *   summary: Retorna as informações daquele animal específico]
+ *   summary: Retorna as informações daquela gestação específica
  *   tags: [Gestacao]
  *   parameters: 
  *    - in: path
- *      name: animal_id
+ *      name: id
  *      required: true
  *      schema:
  *          type: string
- *      description: id do animal específico
+ *      description: id da gestação específica
  *   responses:
  *      200:
  *          description: Gestacao encontrada
@@ -54,17 +54,16 @@ router.post("/", gestacaoController.createGestacao);
 
 /**
  * @swagger
- * /gestacao/{animal_id}:
+ * /gestacao/{id}:
  *  put:
- *   summary: Atualiza as informações daquele animal específico
+ *   summary: Atualiza as a gestacão específica
  *   tags: [Gestacao]
  *   parameters: 
  *    - in: path
- *      name: animal_id
+ *      name: id
  *      required: true
  *      schema:
- *          type: animal_id
- *      description: nome do animal específico
+ *          type: id
  *   requestBody:
  *    required: true
  *    content:
@@ -80,6 +79,36 @@ router.post("/", gestacaoController.createGestacao);
  *                  $ref: '#components/schemas/Gestacao'
  */
 router.put("/:id", gestacaoController.updateGestacao);
+
+/**
+ * @swagger
+ * /gestacao/{id}:
+ *  put:
+ *   summary: Realiza o parto de um animal e atualiza o número de crias
+ *   tags: [Gestacao]
+ *   parameters: 
+ *    - in: path
+ *      name: id
+ *      required: true
+ *      schema:
+ *          type: id
+ *      description: id da gestação específica
+ *   requestBody:
+ *    required: true
+ *    content:
+ *     application/json:
+ *      schema:
+ *       type: int
+ *       description: nmero de crias
+ *   responses:
+ *      200:
+ *          description: Gestacao encontrada
+ *          content: 
+ *              application/json:
+ *               schema: 
+ *                  $ref: '#components/schemas/Gestacao'
+ */
+router.put('/parir/:id', gestacaoController.parirAnimal);
 
 /**
  * @swagger

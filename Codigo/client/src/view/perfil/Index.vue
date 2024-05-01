@@ -7,12 +7,15 @@ import Dialog from '@/components/Dialog.vue';
 import Button from '@/components/Button.vue';
 import Input from '@/components/Input.vue';
 import Icon from '@/components/Icon.vue';
+import { useIconLoader } from '@/store/iconLoader.js';
+import Loader from '@/components/Loader.vue';
 
 export default {
 	name: 'Perfil',
-	components: { Card, Dialog, Button, Input, Icon },
+	components: { Card, Dialog, Button, Input, Icon, Loader },
 	inject: ['Auth'],
 	setup() {
+		const { iconsLoaded } = useIconLoader();
 		return {
 			editing: ref(false),
 			changingPass: ref(false),
@@ -23,6 +26,7 @@ export default {
 			}),
 			passObject: ref({}),
 			userData: ref({}),
+			iconsLoaded,
 		};
 	},
 

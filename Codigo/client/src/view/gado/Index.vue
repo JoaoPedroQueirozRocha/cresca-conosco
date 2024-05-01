@@ -57,24 +57,24 @@
 							</router-link>
 							<div
 								class="action-option"
+								:class="{disabled: !getOptions(item.status).insemAvaliable}"
 								@click="openInsemDialog(item.id_animal, null, true)"
-								v-if="getOptions(item.status).insemAvaliable"
 							>
 								<Icon name="vaccines" />
 								Inseminar
 							</div>
 							<div
 								class="action-option"
+								:class="{disabled: !getOptions(item.status).editGestacaoAvaliable}"
 								@click="openInsemDialog(item.id_animal, item.id_gestacao)"
-								v-if="getOptions(item.status).editGestacaoAvaliable"
 							>
 								<Icon name="edit" />
 								Editar Gestão Atual
 							</div>
 							<div
 								class="action-option"
-								@click="parirAnimal(item.id)"
-								v-if="getOptions(item.status).parirAvaliable"
+								:class="{disabled: !getOptions(item.status).parirAvaliable}"
+								@click="openParirDialog(item.id_animal, null, true)"
 							>
 								<Icon name="heart_check" />
 								Parir
@@ -136,6 +136,14 @@
 				</template>
 			</Table>
 			<DialogTable v-model="moreDetails" :allData="allData" :isDialogLoading="isDialogLoading" />
+			<DialogParir
+				v-model="showParirDialog"
+				:isDialogLoading="isDialogLoading"
+				:animalData="animalData"
+				:isEdit="isEdit"
+				@change="loadBaseData"
+
+				></DialogParir>
 			<DialogInsem
 				v-model="showInsemDialog"
 				:animalData="animalData"
@@ -149,7 +157,6 @@
 
 <script>
 import { useGado } from "./composables/useGado.js";
-import { useEditDialog } from "./composables/useEditDialog.js";
 import { formatDate } from "../../util";
 import { useFilter } from "./composables/useFilter.js";
 import { ref } from "vue";
@@ -161,8 +168,10 @@ import Icon from "@/components/Icon.vue";
 import Filter from "@/components/Filter.vue";
 import Dialog from "@/components/Dialog.vue";
 import Tag from "@/components/Tag.vue";
+import Loader from "@/components/Loader.vue";
 import DialogTable from "./components/DialogTable.vue";
 import DialogInsem from "./components/DialogInsem.vue";
+import DialogParir from "./components/DialogParir.vue";
 import animalController from "@/controller/animal";
 
 export default {
@@ -174,10 +183,12 @@ export default {
 		Dialog,
 		DialogTable,
 		DialogInsem,
+		DialogParir,
 		Card,
 		Icon,
 		Filter,
 		Tag,
+		Loader,
 	},
 	inject: ["Auth"],
 	setup() {
@@ -192,10 +203,12 @@ export default {
 			filterOptions,
 			moreDetails,
 			showInsemDialog,
+			showParirDialog,
 			isEdit,
 			loadBaseData,
 			createDialog,
 			openInsemDialog,
+			openParirDialog,
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
@@ -204,6 +217,7 @@ export default {
 		} = useGado();
 
 		const searchValue = ref("");
+		const pageLoading = ref(false);
 		const { filteredData, getSelected } = useFilter(gadoData, filterOptions, searchValue);
 		const defaultAlert = ref({
 			top: true,
@@ -221,6 +235,7 @@ export default {
 			filterOptions,
 			moreDetails,
 			showInsemDialog,
+			showParirDialog,
 			filterOptions,
 			filterCard: ref(),
 			showFilter: ref(false),
@@ -233,17 +248,21 @@ export default {
 			loadBaseData,
 			createDialog,
 			openInsemDialog,
+			openParirDialog,
 			formatDate,
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
 			confirmarGestacao,
 			getOptions,
+			pageLoading,
 		};
 	},
 
 	async beforeMount() {
+		this.pageLoading = true;
 		await this.loadBaseData();
+		this.pageLoading = false;
 	},
 
 	mounted() {
@@ -322,7 +341,6 @@ export default {
 						...this.defaultAlert,
 					});
 				} catch (error) {
-					console.log(error);
 					this.$alert({
 						message: "Erro ao deletar a vaca. Tente novamente mais tarde",
 						...this.defaultAlert,
@@ -393,11 +411,11 @@ td {
 }
 
 .action-card {
-	@apply p-3 flex flex-col gap-2;
+	@apply p-3 flex flex-col cursor-default gap-2;
 }
 
 .action-option {
-	@apply flex items-center gap-4 cursor-pointer p-2 font-bold;
+	@apply flex items-center cursor-pointer gap-4 p-2 font-bold;
 	color: $gray-500;
 	border-radius: 8px;
 
@@ -412,6 +430,12 @@ td {
 	&:hover {
 		background: $red-light;
 	}
+}
+
+.action-option.disabled {
+	@apply pointer-events-none;
+	color: $gray-400;
+	background: $gray-200;
 }
 
 @media screen and (max-width: 768px) {

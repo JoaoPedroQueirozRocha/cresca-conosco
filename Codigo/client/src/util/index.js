@@ -1,3 +1,5 @@
+import Papa from 'papaparse';
+
 export function formatCurrency(value) {
     if (isNaN(Number(value))) return '$' + (0).toFixed(2);
     value = Number(value);
@@ -41,7 +43,7 @@ export function csvExport(data, name) {
         .join('\n')
         .replace(/(^\[)|(\]$)/gm, '');
 
-    const eData = encodeURIComponent(content);
+    const eData = encodeURI(content);
     const link = document.createElement('a');
     link.setAttribute('href', eData);
     link.setAttribute('download', `${name || 'export'}.csv`);
@@ -65,3 +67,47 @@ export function calculateSecar(date) {
     return new Date(parsedDate);
 }
 
+export function parseFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsText(file);
+
+        reader.onloadend = (e) => {
+            const content = e.target.result;
+            const result = Papa.parse(content, { skipEmptyLines: true });
+            resolve(result.data);
+        };
+
+        reader.onerror = (e) => {
+            reject(e);
+        };
+    });
+}
+
+export function checkValidImport(headers, values, map, options, name) {
+    let message = '';
+    const parsedHeaders = [];
+    const toExclude = [];
+    let isValid = true;
+    headers.forEach((header, index) => {
+        if (!header.map) toExclude.push(index);
+
+        if (!map && !options.includes(header.from)) isValid = false;
+        else if (!map) parsedHeaders.push(header.from);
+        else if (header.to) parsedHeaders.push(header.to);
+    });
+    const parsedValues = values.map((value) => {
+        return value.filter((_, index) => !toExclude.includes(index));
+    });
+
+    if (map && headers.find((header) => !header.to && header.map))
+        message = `Preencha todos os dados para salvar a ${name}`;
+    else if (!isValid)
+        message = `Algum dos cabeçalhos do arquivo não é compatível as opções. Mapeie os dados para importar`;
+    else if (parsedHeaders.length != options.length)
+        message = `É necessário ter um cabeçalho para cada opção`;
+    else if (!parsedValues.length)
+        message = `Insira mais linhas no arquivo .csv para importá-lo`;
+    
+    return { message, parsedHeaders, parsedValues };
+}

@@ -13,6 +13,7 @@ import despesasRouter from './routes/despesasRoutes.js';
 import lucroRouter from './routes/lucroRoutes.js';
 import financeRoutes from './routes/financeRoutes.js';
 import NotificationRouter from './routes/notificationRoutes.js'
+import importRouter from './routes/importRoutes.js'
 
 const app = express();
 const PORT = process.env.PORT;
@@ -41,6 +42,7 @@ app.use(
     .use('/lucro', lucroRouter)
     .use('/finance', financeRoutes)
     .use('/notification', NotificationRouter)
+    .use('/import', importRouter)
 
 app.listen(PORT, () => {
     console.log(process.env.POSTGRES_USER);
