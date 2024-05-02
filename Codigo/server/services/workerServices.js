@@ -28,8 +28,13 @@ async function updateWorker(body) {
 }
 
 async function deleteWorker(id) {
-    const result = await pool.query('DELETE FROM workers WHERE id = $1', [id])
+    const result = await pool.query('DELETE FROM mao_de_obra WHERE id = $1', [id])
     return result.rows[0];
 }
 
-export { listWorkers, getWorker, createWorker, updateWorker, deleteWorker }
+async function getDistinctCargos() {
+    const queryResult = await pool.query("SELECT DISTINCT descricao FROM mao_de_obra ORDER BY descricao")
+    return queryResult.rows;
+}
+
+export { listWorkers, getWorker, createWorker, updateWorker, deleteWorker, getDistinctCargos }

@@ -8,5 +8,6 @@ router.get('/:id', workerController.getWorker);
 router.post('/', workerController.createWorker);
 router.put('/:id', workerController.updateWorker);
 router.delete('/:id', workerController.deleteWorker);
+router.delete('/cargos', workerController.getDistinctCargos);
 
 export default router;
