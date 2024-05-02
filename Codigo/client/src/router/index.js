@@ -3,7 +3,7 @@ import lucroController from '@/controller/profit.js';
 import maoDeObraController from '@/controller/mao-de-obra.js';
 import despesaController from '@/controller/cost.js';
 import animalController from '@/controller/animal.js';
-import { COST_FIELDS, PROFIT_FIELDS, COW, WORKER_FIELDS } from './fields.js';
+import { COST_FIELDS, PROFIT_FIELDS, COW_FIELDS, WORKER_FIELDS } from './fields.js';
 import Auth0 from '../auth/index.js';
 
 const routes = [
@@ -27,7 +27,7 @@ const routes = [
         name: 'CriarVaca',
         props: {
             value: 'vaca',
-            fields: COW,
+            fields: COW_FIELDS,
             callback: animalController.createAnimal,
             returnTo: '/gado',
         },
@@ -40,7 +40,7 @@ const routes = [
         props: route => ({
             id: route.params.id,
             value: 'vaca',
-            fields: COW,
+            fields: COW_FIELDS,
             callback: animalController.updateAnimal,
             get: animalController.getAnimal,
             returnTo: '/gado',
@@ -118,12 +118,12 @@ const routes = [
     {
         path: '/mao-de-obra/criar',
         name: 'MaoDeObrasCriar',
-        props: route => ({
-            value: 'Trabalhador',
+        props: {
+            value: 'Mão de Obra',
             fields: WORKER_FIELDS,
             callback: maoDeObraController.createFuncionario,
             returnTo: '/mao-de-obra',
-        }),
+        },
         component: () => import('@/components/CreateEdit.vue'),
         beforeEnter: Auth0.routeGuard
     },
@@ -132,7 +132,7 @@ const routes = [
         name: 'MaoDeObraEditar',
         props: route => ({
             id: route.params.id,
-            value: 'Trabalhador',
+            value: 'Mão de Obra',
             fields: WORKER_FIELDS,
             callback: maoDeObraController.updateFuncionario,
             get: maoDeObraController.getFuncionario,
