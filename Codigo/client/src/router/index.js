@@ -3,7 +3,7 @@ import lucroController from '@/controller/profit.js';
 import maoDeObraController from '@/controller/mao-de-obra.js';
 import despesaController from '@/controller/cost.js';
 import animalController from '@/controller/animal.js';
-import { COST_FIELDS, PROFIT_FIELDS, COW } from './fields.js';
+import { COST_FIELDS, PROFIT_FIELDS, COW, WORKER_FIELDS } from './fields.js';
 import Auth0 from '../auth/index.js';
 
 const routes = [
@@ -119,10 +119,26 @@ const routes = [
         path: '/mao-de-obra/criar',
         name: 'MaoDeObrasCriar',
         props: route => ({
-            value: 'Mão de obra',
-            callback: maoDeObraController.createFuncionario
+            value: 'Trabalhador',
+            fields: WORKER_FIELDS,
+            callback: maoDeObraController.createFuncionario,
+            returnTo: '/mao-de-obra',
         }),
-        component: () => import('@/view/mao-de-obra/components/CreateEdit.vue'),
+        component: () => import('@/components/CreateEdit.vue'),
+        beforeEnter: Auth0.routeGuard
+    },
+    {
+        path: '/mao-de-obra/:id',
+        name: 'MaoDeObraEditar',
+        props: route => ({
+            id: route.params.id,
+            value: 'Trabalhador',
+            fields: WORKER_FIELDS,
+            callback: maoDeObraController.updateFuncionario,
+            get: maoDeObraController.getFuncionario,
+            returnTo: '/mao-de-obra',
+        }),
+        component: () => import('@/components/CreateEdit.vue'),
         beforeEnter: Auth0.routeGuard
     },
 ];

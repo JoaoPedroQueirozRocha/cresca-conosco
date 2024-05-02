@@ -41,6 +41,28 @@ const COST_FIELDS = [
     },
 ];
 
+const WORKER_FIELDS = [
+    {
+        label: 'Nome',
+        value: 'nome',
+        type: 'text',
+        required: true
+    },
+    {
+        label: 'Descrição',
+        value: 'descricao',
+        type: 'text',
+        required: true,
+    },
+    {
+        label: 'Salário',
+        value: 'salario',
+        type: 'number',
+        required: true,
+    },
+
+]
+
 const PROFIT_FIELDS = [
     {
         label: 'Descrição',
@@ -111,4 +133,4 @@ const COW = [
     },
 ];
 
-export { COST_FIELDS, PROFIT_FIELDS, COW };
+export { COST_FIELDS, PROFIT_FIELDS, COW, WORKER_FIELDS };
