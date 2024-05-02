@@ -1,18 +1,24 @@
 import * as importServices from '../services/importServices.js';
+import treatCsvEnums from '../util/util.js';
 
-async function insertMultiple(req, res) {
+async function insertMultipleBasic(req, res) {
     try {
         const { headers, data } = req.body;
         const { tableName } = req.params;
 
-        const insert = await importServices.insertMultiple(headers, data, tableName);
+        const isEnumValid = await Promise.resolve(treatCsvEnums(headers, data, tableName));
+
+        if (!isEnumValid) throw new Error('Tipos inválidos');
+
+        const insert = await importServices.insertMultipleBasic(headers, data, tableName);
         res.status(200).json(insert);
     } catch (e) {
         console.error(e);
-        res.status(e.status).send(e.message);
+        res.status(e.status || 500).send(e.message);
     }
 }
 
 export {
-    insertMultiple
+    insertMultipleBasic
 }
+
