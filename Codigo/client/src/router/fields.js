@@ -41,35 +41,6 @@ const COST_FIELDS = [
     },
 ];
 
-const WORKER_FIELDS = [
-    {
-        label: 'Nome',
-        value: 'nome',
-        type: 'text',
-        required: true
-    },
-    {
-        label: 'Descrição',
-        value: 'descricao',
-        type: 'text',
-        required: true,
-        group: 'descricao-salario'
-    },
-    {
-        label: 'Salário',
-        value: 'salario',
-        type: 'number',
-        required: true,
-        group: 'descricao-salario'
-    },
-    {
-        label: 'CLT',
-        value: 'clt',
-        type: 'boolean',
-        required: true,
-    },
-]
-
 const PROFIT_FIELDS = [
     {
         label: 'Descrição',
@@ -137,6 +108,34 @@ const COW_FIELDS = [
         value: 'lactante',
         type: 'boolean',
         required: true,
+    },
+];
+
+const WORKER_FIELDS = [
+    {
+        label: 'Nome',
+        value: 'nome',
+        type: 'text',
+        required: true
+    },
+    {
+        label: 'Descrição',
+        value: 'descricao',
+        type: 'text',
+        required: true,
+        group: 'descricao-salario'
+    },
+    {
+        label: 'Salário',
+        value: 'salario',
+        type: 'number',
+        required: true,
+        group: 'descricao-salario'
+    },
+    {
+        label: 'CLT',
+        value: 'clt',
+        type: 'boolean'
     },
 ];
 
