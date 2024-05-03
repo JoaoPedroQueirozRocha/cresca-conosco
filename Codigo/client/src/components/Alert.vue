@@ -90,7 +90,6 @@ export default {
     align-items: center;
     padding: 0.5em 0.7em;
     border-radius: 16px;
-    word-break: break-all;
     white-space: normal;
     width: fit-content;
     max-width: 50em;

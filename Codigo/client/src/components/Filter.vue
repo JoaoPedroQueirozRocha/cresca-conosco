@@ -40,7 +40,6 @@ export default {
         selectItem(index, cIndex) {
             if (cIndex != undefined || cIndex != null) {
                 this.model[index].childs[cIndex].selected = !this.model[index].childs[cIndex].selected;
-                console.log(this.model, this.model[index].childs[cIndex])
             } else {
                 this.model[index].selected = !this.model[index].selected;
             }
@@ -81,7 +80,7 @@ export default {
 @import "../style/var.scss";
 
 .filter-holder {
-    @apply flex flex-col p-0 overflow-hidden divide-y-[.1em] divide-gray-100;
+    @apply flex flex-col p-0 overflow-hidden divide-y-[.1em] divide-gray-100 min-w-[10em];
 }
 
 .have-childs-card {

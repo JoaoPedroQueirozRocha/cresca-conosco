@@ -3,15 +3,22 @@ import Menu from './components/Menu.vue';
 import Alert from './components/Alert.vue';
 import Confirm from './components/Confirm.vue';
 import Topbar from './components/Topbar.vue';
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { mapState, useStore } from 'vuex';
+import Loader from './components/Loader.vue';
 
 export default {
 	name: 'App',
-	components: { Menu, Alert, Topbar, Confirm },
+	components: { Menu, Alert, Topbar, Confirm, Loader },
 	setup() {
+		const store = useStore();
+		const iconsLoaded = computed(() => {
+			return store.state.iconsLoaded;
+		});
 		return {
 			expanded: ref(false),
 			isPhone: ref(window.innerWidth <= 768),
+			iconsLoaded,
 		};
 	},
 	beforeMount() {
@@ -37,7 +44,8 @@ export default {
 	<div class="grid-template" :class="{ small: expanded && !isPhone, 'is-phone': isPhone }">
 		<Menu @update:is-menu-opened="changeExpanded" />
 		<Topbar />
-		<div class="md:mt-14 mt-20 w-full h-fit md:px-8 content pb-4">
+		<div class="md:mt-14 mt-20 w-full h-fit md:px-8 content pb-8">
+			<Loader :isLoading="!iconsLoaded" v-if="!iconsLoaded && this.$route.path === '/'" />
 			<router-view />
 		</div>
 	</div>

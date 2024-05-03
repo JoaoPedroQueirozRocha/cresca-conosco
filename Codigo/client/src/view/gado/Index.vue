@@ -2,9 +2,9 @@
 	<div class="flex flex-col w-full mt-[3em]">
 		<div class="w-fullflex flex-col gap-4">
 			<div class="mb-6">
-				<div class="flex flex-row w-full justify-between align-middle mb-4">
-					<h2 class="title">Gado</h2>
-					<div class="flex flex-row flex-wrap gap-2 content-center">
+				<div class="flex flex-row w-full justify-between align-middle my-4">
+					<h2 class="title mt-0">Gado</h2>
+					<div class="flex flex-row items-center flex-wrap gap-2 content-center">
 						<Button @click="createDialog">Mais detalhes</Button>
 						<router-link to="/gado/vaca">
 							<Button>Adicionar</Button>
@@ -25,7 +25,7 @@
 						</Button>
 						<Filter
 							v-model="filterOptions"
-							class="top-12 right-0 absolute z-50 filter"
+							class="top-12 md:left-auto md:right-0 left-0 absolute z-50 filter"
 							v-show="showFilter"
 						/>
 					</div>
@@ -35,7 +35,7 @@
 				:items="filteredData ? filteredData : gadoData"
 				:headers="headers"
 				class="w-full gado-table"
-				:isLoading="isLoading"
+				:loading="isLoading"
 			>
 				<template #actions="{ item, index }">
 					<td class="w-2 cursor-pointer action">
@@ -49,13 +49,41 @@
 							tabindex="0"
 							@blur="item.expanded = false"
 						>
-							<router-link :to="`/gado/vaca/${item.nome}`">
-                                <div class="action-option">
-                                    <Icon name="edit" />
-                                    Editar
-                                </div>
-                            </router-link>
-							<div class="action-option delete" @click="confirmDeletion(item.id)">
+							<router-link :to="`/gado/vaca/${item.id_animal}`">
+								<div class="action-option">
+									<Icon name="edit" />
+									Editar
+								</div>
+							</router-link>
+							<div
+								class="action-option"
+								:class="{ disabled: !getOptions(item.status).insemAvaliable }"
+								@click="openInsemDialog(item.id_animal, null, true)"
+							>
+								<Icon name="vaccines" />
+								Inseminar
+							</div>
+							<div
+								class="action-option"
+								:class="{ disabled: !getOptions(item.status).editGestacaoAvaliable }"
+								@click="openInsemDialog(item.id_animal, item.id_gestacao)"
+							>
+								<Icon name="edit" />
+								Editar Gestão Atual
+							</div>
+							<div
+								class="action-option"
+								:class="{ disabled: !getOptions(item.status).parirAvaliable }"
+								@click="openParirDialog(item.id_animal, item.id_gestacao, true)"
+							>
+								<Icon name="heart_check" />
+								Parir
+							</div>
+							<div class="action-option" @click="secarAnimal(item.id)">
+								<Icon name="menstrual_health" />
+								Secar
+							</div>
+							<div class="action-option delete" @click="confirmDeletion(item.id_animal, index)">
 								<Icon name="delete" />
 								Deletar
 							</div>
@@ -67,19 +95,19 @@
 						{{ item.nome }}
 					</td>
 				</template>
-				<template #proxInseminacao="{ item, index }">
+				<template #dataInsem="{ item, index }">
 					<td>
-						{{ item.proxima_insem ? item.proxima_insem : '-' }}
+						{{ item.data_insem ? formatDate(new Date(item.data_insem)) : '-' }}
 					</td>
 				</template>
 				<template #prevParto="{ item, index }">
 					<td>
-						{{ item.prev_parto ? new Date(item.prev_parto).toLocaleDateString() : '-' }}
+						{{ item.prev_parto ? formatDate(new Date(item.prev_parto)) : '-' }}
 					</td>
 				</template>
-				<template #semen="{ item, index }">
+				<template #touro="{ item, index }">
 					<td class="text-center">
-						{{ item.semem }}
+						{{ item.touro }}
 						<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 					</td>
 				</template>
@@ -95,7 +123,7 @@
 				<template #status="{ item, index }">
 					<td>
 						<div class="flex justify-center">
-							<Tag :color="getColor(item.status)" :text="item.status" />
+							<Tag :color="getColor(item.status)" :text="item.status || 'Não inseminada'" />
 							<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
 						</div>
 					</td>
@@ -107,36 +135,29 @@
 					</div>
 				</template>
 			</Table>
-			<Dialog v-model="moreDetails" width="100%" overflowHidden>
-				<div class="flex flex-col gap-2">
-					<h1 class="title">Mais Detalhes</h1>
-					<div class="flex flex-row justify-between mb-4">
-						<Input v-model="searchValue" type="search" placeholder="Pesquisar" class="filter-input" />
-						<div class="relative filter-holder" ref="filterCard">
-							<Button class="filter-button" rounded @click="showFilter = true">
-								<Icon name="filter_list" class="round-icon" />
-							</Button>
-							<Filter
-								v-model="filterOptions"
-								class="top-12 right-0 absolute z-50 filter"
-								v-show="showFilter"
-							/>
-						</div>
-					</div>
-				</div>
-				<DialogTable
-					:headers="headersDialog"
-					:allData="filteredData ? filteredData : allData"
-					:isDialogLoading="isDialogLoading"
-				/>
-			</Dialog>
+			<DialogTable v-model="moreDetails" :allData="allData" :isDialogLoading="isDialogLoading" />
+			<DialogParir
+				v-model="showParirDialog"
+				:isDialogLoading="isDialogLoading"
+				:animalData="animalData"
+				:isEdit="isEdit"
+				@change="loadBaseData"
+			></DialogParir>
+			<DialogInsem
+				v-model="showInsemDialog"
+				:animalData="animalData"
+				:isDialogLoading="isDialogLoading"
+				:isEdit="isEdit"
+				@change="loadBaseData"
+			></DialogInsem>
 		</div>
 	</div>
 </template>
 
 <script>
-import { useGado } from './useGado.js';
-import { useFilter } from './userFilter.js';
+import { useGado } from './composables/useGado.js';
+import { formatDate } from '../../util';
+import { useFilter } from './composables/useFilter.js';
 import { ref } from 'vue';
 import Table from '@/components/Table.vue';
 import Button from '@/components/Button.vue';
@@ -146,39 +167,74 @@ import Icon from '@/components/Icon.vue';
 import Filter from '@/components/Filter.vue';
 import Dialog from '@/components/Dialog.vue';
 import Tag from '@/components/Tag.vue';
-import DialogTable from './DialogTable.vue';
+import Loader from '@/components/Loader.vue';
+import DialogTable from './components/DialogTable.vue';
+import DialogInsem from './components/DialogInsem.vue';
+import DialogParir from './components/DialogParir.vue';
+import animalController from '@/controller/animal';
 
 export default {
 	name: 'Gado',
-	components: { Table, Button, Input, Dialog, DialogTable, Card, Icon, Filter, Tag },
+	components: {
+		Table,
+		Button,
+		Input,
+		Dialog,
+		DialogTable,
+		DialogInsem,
+		DialogParir,
+		Card,
+		Icon,
+		Filter,
+		Tag,
+		Loader,
+	},
 	inject: ['Auth'],
 	setup() {
 		const {
 			gadoData,
 			allData,
+			animalData,
 			headersDialog,
 			headers,
 			isLoading,
 			isDialogLoading,
 			filterOptions,
+			moreDetails,
+			showInsemDialog,
+			showParirDialog,
+			isEdit,
 			loadBaseData,
 			createDialog,
-			moreDetails,
+			openInsemDialog,
+			openParirDialog,
+			parirAnimal,
+			secarAnimal,
+			deletarAnimal,
+			confirmarGestacao,
+			getOptions,
 		} = useGado();
 
 		const searchValue = ref('');
+		const pageLoading = ref(false);
 		const { filteredData, getSelected } = useFilter(gadoData, filterOptions, searchValue);
+		const defaultAlert = ref({
+			top: true,
+			right: true,
+			timeout: 3500,
+		});
 		return {
 			gadoData,
 			allData,
+			animalData,
 			headersDialog,
 			headers,
 			isLoading,
 			isDialogLoading,
 			filterOptions,
-			loadBaseData,
-			createDialog,
 			moreDetails,
+			showInsemDialog,
+			showParirDialog,
 			filterOptions,
 			filterCard: ref(),
 			showFilter: ref(false),
@@ -186,12 +242,26 @@ export default {
 			searchValue,
 			filteredData,
 			getSelected,
+			defaultAlert,
+			isEdit,
+			loadBaseData,
+			createDialog,
+			openInsemDialog,
+			openParirDialog,
+			formatDate,
+			parirAnimal,
+			secarAnimal,
+			deletarAnimal,
+			confirmarGestacao,
+			getOptions,
+			pageLoading,
 		};
 	},
 
 	async beforeMount() {
+		this.pageLoading = true;
 		await this.loadBaseData();
-		console.log('gadoData', this.gadoData);
+		this.pageLoading = false;
 	},
 
 	mounted() {
@@ -221,7 +291,7 @@ export default {
 				const windowHeight = window.innerHeight;
 				const cardHeight = card.offsetHeight;
 				const height = rect.top + 40 + cardHeight;
-				card.style.left = rect.left - 100 + 'px';
+				card.style.left = rect.left - 200 + 'px';
 				if (height > windowHeight) {
 					delete card.style.top;
 					card.style.bottom = 0;
@@ -256,17 +326,31 @@ export default {
 			this.opendedIndex = null;
 		},
 
-		async confirmDeletion(id) {
+		async confirmDeletion(id, index) {
 			const result = await this.$confirm({
 				title: 'Tem certeza que deseja deletar esse item?',
 			});
-			// Tratar dados
-			if (result) () => {};
+			if (result) {
+				try {
+					await animalController.deletarAnimal(id);
+					this.gadoData.splice(index, 1);
+					this.$alert({
+						message: 'Vaca deletada com sucesso',
+						type: 'success',
+						...this.defaultAlert,
+					});
+				} catch (error) {
+					this.$alert({
+						message: 'Erro ao deletar a vaca. Tente novamente mais tarde',
+						...this.defaultAlert,
+					});
+				}
+			}
 		},
 
 		getColor(status) {
-			switch(status) {
-				case 'falha':
+			switch (status) {
+				case 'falhou':
 					return 'red';
 				case 'pendente':
 					return 'yellow';
@@ -274,6 +358,8 @@ export default {
 					return 'blue';
 				case 'concluida':
 					return 'green';
+				default:
+					return 'gray';
 			}
 		},
 	},
@@ -282,6 +368,10 @@ export default {
 
 <style lang="scss" scoped>
 @import '../../style/var.scss';
+
+td {
+	color: $gray-500;
+}
 
 .icon-holder {
 	display: flex;
@@ -320,11 +410,11 @@ export default {
 }
 
 .action-card {
-	@apply p-3 flex flex-col gap-2;
+	@apply p-3 flex flex-col cursor-default gap-2;
 }
 
 .action-option {
-	@apply flex items-center gap-4 cursor-pointer p-2 font-bold;
+	@apply flex items-center cursor-pointer gap-4 p-2 font-bold;
 	color: $gray-500;
 	border-radius: 8px;
 
@@ -339,6 +429,12 @@ export default {
 	&:hover {
 		background: $red-light;
 	}
+}
+
+.action-option.disabled {
+	@apply pointer-events-none;
+	color: $gray-400;
+	background: $gray-200;
 }
 
 @media screen and (max-width: 768px) {
