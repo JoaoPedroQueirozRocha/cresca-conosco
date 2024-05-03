@@ -1,5 +1,6 @@
 <template>
 	<Dialog v-model="model" @update:model-value="cancelar" width="70%" height="fit-content">
+		{{ animalData }}
 		<div class="dialog-div">
 			<h1 class="title mt-0">Parir a {{ animalData.nome }}</h1>
 			<Input class="md:w-[49%] w-full" label="Crias" type="number" v-model="partoData.crias" />
@@ -26,7 +27,7 @@ export default {
 	name: 'DialogParto',
 	props: {
 		animalData: { type: Object, required: true },
-		modelValue: { type: Boolean, required: false }
+		modelValue: { type: Boolean, required: false },
 	},
 	emits: ['update:modelValue', 'change'],
 	watch: {
@@ -34,11 +35,11 @@ export default {
 			if (this.animalData) {
 				this.partoData = {
 					animal_id: this.animalData.id,
-					id_parto: this.animalData.id_parto ? this.animalData.id_parto : null,
-					crias: 0
+					id_gestacao: this.animalData.id_gestacao ? this.animalData.id_gestacao : null,
+					crias: 0,
 				};
 			} else {
-				this.partoData.animal_id = this.animalData.id;
+				this.partoData.animal_id = this.animalData.id_animal;
 			}
 		},
 		modelValue() {
@@ -65,7 +66,7 @@ export default {
 			secarAnimal,
 			deletarAnimal,
 			confirmarGestacao,
-			getOptions
+			getOptions,
 		} = useGado();
 
 		const defaultAlert = ref({
@@ -87,7 +88,7 @@ export default {
 			secarAnimal,
 			deletarAnimal,
 			confirmarGestacao,
-			getOptions
+			getOptions,
 		};
 	},
 
@@ -98,13 +99,13 @@ export default {
 	methods: {
 		changeModel(value) {
 			this.model = value;
-			this.$emit('update:modelValue', this.model); // Emitindo o evento
+			this.$emit('update:modelValue', this.model);
 		},
 		cancelar() {
 			this.changeModel(false);
 			this.partoData = {
 				animal_id: null,
-				id_parto: null,
+				id_gestacao: null,
 				status: '',
 				crias: null,
 				touro: '',
@@ -113,7 +114,7 @@ export default {
 			};
 		},
 
-		async validateData(partoData){	
+		async validateData(partoData) {
 			return partoData.crias >= 0;
 		},
 
@@ -123,12 +124,10 @@ export default {
 			} else {
 				this.loading = true;
 				try {
-					console.log(this.partoData.crias);
-					await this.parirAnimal(this.partoData.id, this.partoData.crias);
-					this.showAlert('Parto registrado com sucesso', 'success')
+					await this.parirAnimal(this.partoData.id_gestacao, this.partoData.crias);
+					this.showAlert('Parto registrado com sucesso', 'success');
 				} catch (error) {
 					console.error(error);
-
 				} finally {
 					this.cancelar();
 					this.$emit('change');
