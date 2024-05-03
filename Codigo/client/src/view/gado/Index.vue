@@ -38,7 +38,6 @@
 				:loading="isLoading"
 			>
 				<template #actions="{ item, index }">
-					{{ item }}
 					<td class="w-2 cursor-pointer action">
 						<div class="icon-holder" @click="positionCard(item, index)">
 							<Icon name="more_vert" @click="positionCard(item, index)" />

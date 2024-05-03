@@ -1,6 +1,5 @@
 <template>
 	<Dialog v-model="model" @update:model-value="cancelar" width="70%" height="fit-content">
-		{{ animalData }}
 		<div class="dialog-div">
 			<h1 class="title mt-0">Parir a {{ animalData.nome }}</h1>
 			<Input class="md:w-[49%] w-full" label="Crias" type="number" v-model="partoData.crias" />
