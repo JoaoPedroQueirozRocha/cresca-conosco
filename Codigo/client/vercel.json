@@ -1,20 +1,3 @@
 {
-	"rewrites": [
-		{
-			"source": "/gado",
-			"destination": "/gado"
-		},
-		{
-			"source": "/financas",
-			"destination": "/financas"
-		},
-		{
-			"source": "/mao-de-obra",
-			"destination": "/mao-de-obra"
-		},
-		{
-			"source": "/perfil",
-			"destination": "/perfil"
-		}
-	]
+	"rewrites": [{ "source": "/(.*)", "destination": "/" }]
 }
