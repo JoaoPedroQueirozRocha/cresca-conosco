@@ -13,9 +13,12 @@ import despesasRouter from './routes/despesasRoutes.js';
 import lucroRouter from './routes/lucroRoutes.js';
 import financeRoutes from './routes/financeRoutes.js';
 import NotificationRouter from './routes/notificationRoutes.js'
+import importRouter from './routes/importRoutes.js'
 
 const app = express();
 const PORT = process.env.PORT;
+
+
 app.use(
     cors({
         origin: [
@@ -35,12 +38,13 @@ app.use(
     .use("/auth", authRouter)
     .use("/animals", animalsRouter)
     .use("/gestacoes", gestacaoRouter)
-    .use('/worker', workerRouter)
+    .use('/mao-de-obra', workerRouter)
     .use('/gado', gadoRouter)
     .use('/despesas', despesasRouter)
     .use('/lucro', lucroRouter)
     .use('/finance', financeRoutes)
     .use('/notification', NotificationRouter)
+    .use('/import', importRouter)
 
 app.listen(PORT, () => {
     console.log(process.env.POSTGRES_USER);

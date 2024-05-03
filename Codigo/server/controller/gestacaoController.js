@@ -43,6 +43,19 @@ async function updateGestacao(req, res) {
     }
 }
 
+async function parirAnimal(req, res) {
+    try {
+        const { crias, data_finalizacao } = req.body;
+        const { id } = req.params;
+
+        const gestacao = await gestacaoServices.parirAnimal(id, crias, data_finalizacao);
+        res.status(200).json(gestacao);
+    } catch (error) {
+        console.error(error);
+        res.status(error.status).send("Erro ao executar a query " + error.message);
+    }
+}
+
 async function deleteGestacao(req, res) {
     try {
         const { animal_id } = req.params
@@ -58,4 +71,4 @@ async function deleteGestacao(req, res) {
     }
 }
 
-export { getGestacaoById, createGestacao, updateGestacao, deleteGestacao };
+export { getGestacaoById, createGestacao, updateGestacao, parirAnimal, deleteGestacao };

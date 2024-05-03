@@ -30,7 +30,8 @@ export default {
 	},
 
 	beforeMount() {
-		this.userData = JSON.parse(window.sessionStorage.getItem('user'));
+		const user = window.sessionStorage.getItem('user');
+		this.userData = JSON.parse(user == 'undefined' ? '{}' : user);
 		document.addEventListener("click", (event) => {
 			this.closeDropdown(
 				event,
@@ -69,7 +70,6 @@ export default {
 	},
 
 	methods: {
-
 		async setNotifications() {
 			try {
 				const notificationArray = await NotificationController.getAll()
@@ -98,7 +98,6 @@ export default {
 		},
 		async deleteNotification(item, index) {
 			try{
-				console.log(item);
 				await NotificationController.deleteNotification(item.id)
 				this.notifications.splice(index,1);
 				this.$alert({
