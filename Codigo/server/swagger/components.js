@@ -93,6 +93,14 @@ const components = {
                 descricao: "Trabalha na fazenda"
             }
         },
+        Imports: {
+            type: "object",
+            properties: {
+                tableName: { type: "string" },
+                headers: { type: "array", items: { type: "string" } },
+                data: { type: "array", items: { type: "object" } }
+            }
+        }
 
     },
 };

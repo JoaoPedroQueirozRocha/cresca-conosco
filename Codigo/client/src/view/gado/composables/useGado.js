@@ -8,6 +8,7 @@ export function useGado() {
     const state = reactive({
         moreDetails: ref(false),
         showInsemDialog: ref(false),
+        showParirDialog: ref(false),
         isEdit: ref(false),
         headersDialog: ref([
             { text: "Nome", value: "nome", sortable: true },
@@ -92,6 +93,12 @@ export function useGado() {
         allData: ref([]),
         gadoData: ref([]),
         animalData: ref([]),
+        partoData: reactive({
+            animal_id: 0 || null,
+            id_parto: 0,
+            crias: 0,
+        })
+
     })
 
     async function loadBaseData() {
@@ -130,17 +137,21 @@ export function useGado() {
         }
     }
 
-    async function parirAnimal(id) {
+
+    async function openParirDialog(id_animal, id_gestacao, isNew) {
         try {
-            await parir(id);
-            state.isLoading = true;
-            state.gadoData = await getBaseData();
+            state.isDialogLoading = true;
+            state.showParirDialog = true;
+            state.isEdit = !isNew;
+            state.animalData = state.gadoData.find((item) => item.id_gestacao == id_gestacao);
         } catch (e) {
             console.error(e);
         } finally {
-            state.isLoading = false;
+            state.isDialogLoading = false;
         }
     }
+
+
     async function secarAnimal(id) {
         try {
             await secar(id);
@@ -184,8 +195,17 @@ export function useGado() {
         return { parirAvaliable, editGestacaoAvaliable, insemAvaliable }
     }
 
-
-
+    async function parirAnimal(id, crias) {
+        try {
+            await parir(id, crias);
+            state.isLoading = true;
+            state.gadoData = await getBaseData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isLoading = false;
+        }
+    }
 
 
     return {
@@ -193,6 +213,7 @@ export function useGado() {
         createDialog,
         loadBaseData,
         openInsemDialog,
+        openParirDialog,
         parirAnimal,
         secarAnimal,
         deletarAnimal,

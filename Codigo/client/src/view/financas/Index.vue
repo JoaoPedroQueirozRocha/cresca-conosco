@@ -52,6 +52,8 @@ export default {
 			profit: [],
 			cost: [],
 		});
+		const categories = ref([]);
+		const overwriteCategories = ref([]);
 
 		return {
 			series,
@@ -62,6 +64,8 @@ export default {
 			loading,
 			defaultAlert,
 			data,
+			categories,
+			overwriteCategories,
 			formatCurrency,
 		};
 	},
@@ -79,6 +83,14 @@ export default {
 				markers: {
 					size: 0,
 				},
+                legend: {
+      				show: true,
+                    offsetY: 15,
+      				position: 'bottom',
+                    itemMargin: {
+                        vertical: 10,
+                    },
+                },
 				dataLabels: {
 					enabled: false,
 					style: {
@@ -86,7 +98,10 @@ export default {
 					},
 				},
 				colors: this.chartColors,
-				xaxis: {},
+				xaxis: {
+                    categories: this.categories,
+                    overwriteCategories: this.overwriteCategories,
+				},
 				yaxis: [
 					{
 						title: {
@@ -106,15 +121,13 @@ export default {
 					},
 				],
 				tooltip: {
-					enabled: true,
+                    shared: true,
 					custom: ({ s, seriesIndex, dataPointIndex, w }) => {
-						const template = { year: 'numeric', month: '2-digit', day: '2-digit' };
-						const rangeDate = this.series[0].data[dataPointIndex].x;
-						const compareDate = this.series[3]?.data[dataPointIndex]?.x;
+						const rangeDate = this.isCompare ? this.overwriteCategories[dataPointIndex] : this.categories[dataPointIndex];
 
 						return `<div class="custom-tooltip" style="width: max-content">
                             <div class="date" style="display: flex; justify-content: center; background: #eceff1; padding: 8px 8px;">
-                                ${this.isCompare ? `${rangeDate} - ${compareDate}` : rangeDate}
+                                ${this.isCompare ? this.getFormatedDate(rangeDate[0], rangeDate[1]) : this.getFormatedDate(rangeDate, null)}
                             </div>
                             <div class="data-tooltip" style="display: grid; gap: 12px; ${
 								this.isCompare ? 'grid-template-columns: 1fr 1fr;' : 'grid-template-columns: 1fr;'
@@ -132,7 +145,7 @@ export default {
                                                 ${s.name}:
                                             </p>
                                             <p style="font-weight: bold; font-size: 14px; margin-bottom: 0px;">
-                                                ${formatCurrency(s.data[dataPointIndex].y)}
+                                                ${formatCurrency(s.data[dataPointIndex])}
                                             </p>
                                         </div>`
 										)
@@ -154,7 +167,7 @@ export default {
                                                     ${s.name}:
                                                 </p>
                                                 <p style="font-weight: bold; font-size: 14px; margin-bottom: 0px;">
-                                                    ${formatCurrency(s.data[dataPointIndex].y)}
+                                                    ${formatCurrency(s.data[dataPointIndex])}
                                                 </p>
                                             </div>`
 											)
@@ -178,7 +191,7 @@ export default {
 					},
 					{
 						text: 'Mês/Ano',
-						value: 'updated_at',
+						value: 'data',
 						sortable: true,
 					},
 					{
@@ -190,6 +203,12 @@ export default {
 					{
 						text: 'Venda de gado',
 						value: 'venda',
+						sortable: true,
+						align: 'center',
+					},
+					{
+						text: 'Diversos',
+						value: 'diversos',
 						sortable: true,
 						align: 'center',
 					},
@@ -206,24 +225,24 @@ export default {
 					},
 					{
 						text: 'Mês/Ano',
-						value: 'updated_at',
+						value: 'data',
 						sortable: true,
 					},
 					{
 						text: 'Salários',
-						value: 'despesas trabalhistas',
-						sortable: true,
-						align: 'center',
-					},
-					{
-						text: 'Encargos',
-						value: 'encargos',
+						value: 'despesa_trabalhistas',
 						sortable: true,
 						align: 'center',
 					},
 					{
 						text: 'Compras',
 						value: 'compra',
+						sortable: true,
+						align: 'center',
+					},
+					{
+						text: 'Diversos',
+						value: 'diversos',
 						sortable: true,
 						align: 'center',
 					},
@@ -245,7 +264,7 @@ export default {
 	methods: {
 		async getAllData() {
 			const startDate = new Date();
-			startDate.setDate(startDate.getDate() - 30);
+			startDate.setDate(startDate.getDate() - 10);
 			startDate.setHours(0, 0, 0);
 
 			const endDate = new Date();
@@ -266,6 +285,14 @@ export default {
 				this.isCompare = !!compare.length;
 				const { data } = await financeController.generateReport(range, compare);
 
+				if (compare.length) {
+					this.overwriteCategories = this.getPairedDates(range, compare);
+				} else {
+					this.overwriteCategories = null;
+					this.categories = this.getDates(range[0], range[1]);
+				}
+
+
 				this.setTotals(data.totals.range, data.totals.compare);
 				this.setSeries(data.data.range, data.data.compare);
 			} catch (e) {
@@ -276,6 +303,45 @@ export default {
 			} finally {
 				this.loading.report = false;
 			}
+		},
+
+		getDates(startDate, endDate) {
+			const template = { year: "numeric", month: "2-digit", day: "2-digit" };
+			const dates = [];
+			const currentDate = new Date(startDate);
+
+			while (currentDate <= endDate) {
+				dates.push(formatDate(new Date(currentDate), template));
+				currentDate.setDate(currentDate.getDate() + 1);
+			}
+
+			return dates;
+		},
+
+		getPairedDates(period1, period2) {
+			const template = { year: "numeric", month: "2-digit", day: "2-digit" };
+			const pairedDates = [];
+			const currentDate1 = new Date(period1[0]);
+			const currentDate2 = new Date(period2[0]);
+			const endDate1 = new Date(period1[1]);
+			const endDate2 = new Date(period2[1]);
+
+			while (currentDate1 <= endDate1 || currentDate2 <= endDate2) {
+				let date1 = currentDate1 <= endDate1 ? formatDate(new Date(currentDate1), template) : null;
+				let date2 = currentDate2 <= endDate2 ? formatDate(new Date(currentDate2), template) : null;
+
+				if (!date2 && date1) {
+					date2 = date1;
+					date1 = null;
+				}
+
+				pairedDates.push([date1, date2]);
+
+				currentDate1.setDate(currentDate1.getDate() + 1);
+				currentDate2.setDate(currentDate2.getDate() + 1);
+			}
+
+			return pairedDates;
 		},
 
 		async getItems(period = [], type) {
@@ -349,38 +415,39 @@ export default {
 		},
 
 		setSeries(range, compare) {
-			const template = { year: 'numeric', month: '2-digit', day: '2-digit' };
 			this.series = [];
+			const parsedRange = [];
+			const parsedCompare = [];
+
+			if (this.isCompare) {
+				this.overwriteCategories.forEach((date) => {
+					const item = this.findItemByDate(range, date[0] || date[1]);
+					const compareItem = this.findItemByDate(compare, date[1]);
+					parsedRange.push(item);
+					parsedCompare.push(compareItem);
+				});
+			} else {
+				this.categories.forEach((date) => {
+					const item = this.findItemByDate(range, date);
+					parsedRange.push(item || {});
+				});
+			}
+
 			this.series.push(
 				{
 					name: 'Receita',
 					type: 'line',
-					data: range.map((value) => {
-						return {
-							x: formatDate(new Date(value.data), template),
-							y: value.receita,
-						};
-					}),
+					data: parsedRange.map((value) => value.receita || 0),
 				},
 				{
 					name: 'Despesas',
 					type: 'line',
-					data: range.map((value) => {
-						return {
-							x: formatDate(new Date(value.data), template),
-							y: value.despesas,
-						};
-					}),
+					data: parsedRange.map((value) => value.despesas || 0),
 				},
 				{
 					name: 'ROI',
 					type: 'line',
-					data: range.map((value) => {
-						return {
-							x: formatDate(new Date(value.data), template),
-							y: value.roi,
-						};
-					}),
+					data: parsedRange.map((value) => value.roi || 0),
 				}
 			);
 
@@ -389,40 +456,44 @@ export default {
 					{
 						name: 'Receita a comparar',
 						type: 'bar',
-						data: compare.map((value) => {
-							return {
-								x: formatDate(new Date(value.data), template),
-								y: value.receita,
-							};
-						}),
+						data: parsedCompare.map((value) => value.receita || 0),
 					},
 					{
 						name: 'Despesas a comparar',
 						type: 'bar',
-						data: compare.map((value) => {
-							return {
-								x: formatDate(new Date(value.data), template),
-								y: value.despesas,
-							};
-						}),
+						data: parsedCompare.map((value) => value.despesas || 0),
 					},
 					{
 						name: 'ROI a comparar',
 						type: 'bar',
-						data: compare.map((value) => {
-							return {
-								x: formatDate(new Date(value.data), template),
-								y: value.roi,
-							};
-						}),
+						data: parsedCompare.map((value) => value.roi || 0),
 					}
 				);
 			}
 		},
 
-		calculatePercentage(newValue, oldValue) {
-			return ((newValue - oldValue) / oldValue) * 100;
+		findItemByDate(array, date) {
+			const template = { year: "numeric", month: "2-digit", day: "2-digit" };
+			return array.find((value) => formatDate(new Date(value.data), template) == date) || {};
 		},
+
+		calculatePercentage(newValue, oldValue) {
+			const parsedNew = Number(newValue);
+			const parsedOld = Number(oldValue);
+			if (!parsedOld) return 0;
+			return ((parsedNew - parsedOld) / parsedOld) * 100;
+		},
+
+		getFormatedDate(range, compare =  null) {
+			if (range && compare) {
+				return `${range} - ${compare}`;
+			}
+			else if (!range) {
+				return compare;
+			} else {
+				return range;
+			}
+		}
 	},
 };
 </script>

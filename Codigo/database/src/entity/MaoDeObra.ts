@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Collection } from 'typeorm';
 
 @Entity()
 export class MaoDeObra {
@@ -6,11 +6,14 @@ export class MaoDeObra {
 	id: number;
 
 	@Column({ type: 'varchar', length: 280, nullable: false })
-	nnome: string;
+	nome: string;
 
 	@Column({ type: 'decimal', nullable: false })
 	salario: number;
 
 	@Column({ type: 'varchar', length: 280, nullable: true })
 	descricao: string;
+
+	@Column({ type: 'boolean', nullable: false, default: true })
+	clt: boolean;
 }

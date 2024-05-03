@@ -57,24 +57,24 @@
 							</router-link>
 							<div
 								class="action-option"
+								:class="{ disabled: !getOptions(item.status).insemAvaliable }"
 								@click="openInsemDialog(item.id_animal, null, true)"
-								v-if="getOptions(item.status).insemAvaliable"
 							>
 								<Icon name="vaccines" />
 								Inseminar
 							</div>
 							<div
 								class="action-option"
+								:class="{ disabled: !getOptions(item.status).editGestacaoAvaliable }"
 								@click="openInsemDialog(item.id_animal, item.id_gestacao)"
-								v-if="getOptions(item.status).editGestacaoAvaliable"
 							>
 								<Icon name="edit" />
 								Editar Gestão Atual
 							</div>
 							<div
 								class="action-option"
-								@click="parirAnimal(item.id)"
-								v-if="getOptions(item.status).parirAvaliable"
+								:class="{ disabled: !getOptions(item.status).parirAvaliable }"
+								@click="openParirDialog(item.id_animal, item.id_gestacao, true)"
 							>
 								<Icon name="heart_check" />
 								Parir
@@ -97,12 +97,12 @@
 				</template>
 				<template #dataInsem="{ item, index }">
 					<td>
-						{{ item.data_insem ? formatDate(new Date(item.data_insem)) : "-" }}
+						{{ item.data_insem ? formatDate(new Date(item.data_insem)) : '-' }}
 					</td>
 				</template>
 				<template #prevParto="{ item, index }">
 					<td>
-						{{ item.prev_parto ? formatDate(new Date(item.prev_parto)) : "-" }}
+						{{ item.prev_parto ? formatDate(new Date(item.prev_parto)) : '-' }}
 					</td>
 				</template>
 				<template #touro="{ item, index }">
@@ -136,6 +136,13 @@
 				</template>
 			</Table>
 			<DialogTable v-model="moreDetails" :allData="allData" :isDialogLoading="isDialogLoading" />
+			<DialogParir
+				v-model="showParirDialog"
+				:isDialogLoading="isDialogLoading"
+				:animalData="animalData"
+				:isEdit="isEdit"
+				@change="loadBaseData"
+			></DialogParir>
 			<DialogInsem
 				v-model="showInsemDialog"
 				:animalData="animalData"
@@ -148,25 +155,26 @@
 </template>
 
 <script>
-import { useGado } from "./composables/useGado.js";
-import { useEditDialog } from "./composables/useEditDialog.js";
-import { formatDate } from "../../util";
-import { useFilter } from "./composables/useFilter.js";
-import { ref } from "vue";
-import Table from "@/components/Table.vue";
-import Button from "@/components/Button.vue";
-import Input from "@/components/Input.vue";
-import Card from "@/components/Card.vue";
-import Icon from "@/components/Icon.vue";
-import Filter from "@/components/Filter.vue";
-import Dialog from "@/components/Dialog.vue";
-import Tag from "@/components/Tag.vue";
-import DialogTable from "./components/DialogTable.vue";
-import DialogInsem from "./components/DialogInsem.vue";
-import animalController from "@/controller/animal";
+import { useGado } from './composables/useGado.js';
+import { formatDate } from '../../util';
+import { useFilter } from './composables/useFilter.js';
+import { ref } from 'vue';
+import Table from '@/components/Table.vue';
+import Button from '@/components/Button.vue';
+import Input from '@/components/Input.vue';
+import Card from '@/components/Card.vue';
+import Icon from '@/components/Icon.vue';
+import Filter from '@/components/Filter.vue';
+import Dialog from '@/components/Dialog.vue';
+import Tag from '@/components/Tag.vue';
+import Loader from '@/components/Loader.vue';
+import DialogTable from './components/DialogTable.vue';
+import DialogInsem from './components/DialogInsem.vue';
+import DialogParir from './components/DialogParir.vue';
+import animalController from '@/controller/animal';
 
 export default {
-	name: "Gado",
+	name: 'Gado',
 	components: {
 		Table,
 		Button,
@@ -174,12 +182,14 @@ export default {
 		Dialog,
 		DialogTable,
 		DialogInsem,
+		DialogParir,
 		Card,
 		Icon,
 		Filter,
 		Tag,
+		Loader,
 	},
-	inject: ["Auth"],
+	inject: ['Auth'],
 	setup() {
 		const {
 			gadoData,
@@ -192,10 +202,12 @@ export default {
 			filterOptions,
 			moreDetails,
 			showInsemDialog,
+			showParirDialog,
 			isEdit,
 			loadBaseData,
 			createDialog,
 			openInsemDialog,
+			openParirDialog,
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
@@ -203,7 +215,8 @@ export default {
 			getOptions,
 		} = useGado();
 
-		const searchValue = ref("");
+		const searchValue = ref('');
+		const pageLoading = ref(false);
 		const { filteredData, getSelected } = useFilter(gadoData, filterOptions, searchValue);
 		const defaultAlert = ref({
 			top: true,
@@ -221,6 +234,7 @@ export default {
 			filterOptions,
 			moreDetails,
 			showInsemDialog,
+			showParirDialog,
 			filterOptions,
 			filterCard: ref(),
 			showFilter: ref(false),
@@ -233,39 +247,43 @@ export default {
 			loadBaseData,
 			createDialog,
 			openInsemDialog,
+			openParirDialog,
 			formatDate,
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
 			confirmarGestacao,
 			getOptions,
+			pageLoading,
 		};
 	},
 
 	async beforeMount() {
+		this.pageLoading = true;
 		await this.loadBaseData();
+		this.pageLoading = false;
 	},
 
 	mounted() {
-		document.addEventListener("click", this.closeCards);
-		const app = document.querySelector("#app");
-		app.addEventListener("scroll", this.closeCard);
-		const table = document.querySelector(".gado-table");
-		table.addEventListener("scroll", this.closeCard);
+		document.addEventListener('click', this.closeCards);
+		const app = document.querySelector('#app');
+		app.addEventListener('scroll', this.closeCard);
+		const table = document.querySelector('.gado-table');
+		table.addEventListener('scroll', this.closeCard);
 	},
 
 	beforeUnmount() {
-		document.removeEventListener("click", this.closeCards);
-		const app = document.querySelector("#app");
-		app.removeEventListener("scroll", this.closeCard);
-		const table = document.querySelector(".gado-table");
-		table.removeEventListener("scroll", this.closeCard);
+		document.removeEventListener('click', this.closeCards);
+		const app = document.querySelector('#app');
+		app.removeEventListener('scroll', this.closeCard);
+		const table = document.querySelector('.gado-table');
+		table.removeEventListener('scroll', this.closeCard);
 	},
 
 	methods: {
 		positionCard(item, index) {
 			this.setExpanded();
-			const card = this.$refs["card" + index]?.$el;
+			const card = this.$refs['card' + index]?.$el;
 			const rect = card.parentElement.getBoundingClientRect();
 
 			item.expanded = true;
@@ -273,12 +291,12 @@ export default {
 				const windowHeight = window.innerHeight;
 				const cardHeight = card.offsetHeight;
 				const height = rect.top + 40 + cardHeight;
-				card.style.left = rect.left - 200 + "px";
+				card.style.left = rect.left - 200 + 'px';
 				if (height > windowHeight) {
 					delete card.style.top;
 					card.style.bottom = 0;
 				} else {
-					card.style.top = rect.top + 40 + "px";
+					card.style.top = rect.top + 40 + 'px';
 				}
 			}, 10);
 
@@ -286,8 +304,8 @@ export default {
 		},
 
 		closeCard(event) {
-			const cardParent = this.$refs["card" + this.opendedIndex]?.$el?.parentElement;
-			if (this.opendedIndex == null || (cardParent && event.target.closest(".action") === cardParent)) return;
+			const cardParent = this.$refs['card' + this.opendedIndex]?.$el?.parentElement;
+			if (this.opendedIndex == null || (cardParent && event.target.closest('.action') === cardParent)) return;
 			this.setExpanded();
 		},
 
@@ -297,7 +315,7 @@ export default {
 		},
 
 		closeFilterCard(event) {
-			if (this.filterCard == event.target.closest(".filter-holder") || event.target.closest(".filter")) return;
+			if (this.filterCard == event.target.closest('.filter-holder') || event.target.closest('.filter')) return;
 			this.showFilter = false;
 		},
 
@@ -310,21 +328,20 @@ export default {
 
 		async confirmDeletion(id, index) {
 			const result = await this.$confirm({
-				title: "Tem certeza que deseja deletar esse item?",
+				title: 'Tem certeza que deseja deletar esse item?',
 			});
 			if (result) {
 				try {
 					await animalController.deletarAnimal(id);
 					this.gadoData.splice(index, 1);
 					this.$alert({
-						message: "Vaca deletada com sucesso",
-						type: "success",
+						message: 'Vaca deletada com sucesso',
+						type: 'success',
 						...this.defaultAlert,
 					});
 				} catch (error) {
-					console.log(error);
 					this.$alert({
-						message: "Erro ao deletar a vaca. Tente novamente mais tarde",
+						message: 'Erro ao deletar a vaca. Tente novamente mais tarde',
 						...this.defaultAlert,
 					});
 				}
@@ -333,16 +350,16 @@ export default {
 
 		getColor(status) {
 			switch (status) {
-				case "falhou":
-					return "red";
-				case "pendente":
-					return "yellow";
-				case "confirmada":
-					return "blue";
-				case "concluida":
-					return "green";
+				case 'falhou':
+					return 'red';
+				case 'pendente':
+					return 'yellow';
+				case 'confirmada':
+					return 'blue';
+				case 'concluida':
+					return 'green';
 				default:
-					return "gray";
+					return 'gray';
 			}
 		},
 	},
@@ -350,7 +367,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../style/var.scss";
+@import '../../style/var.scss';
 
 td {
 	color: $gray-500;
@@ -393,11 +410,11 @@ td {
 }
 
 .action-card {
-	@apply p-3 flex flex-col gap-2;
+	@apply p-3 flex flex-col cursor-default gap-2;
 }
 
 .action-option {
-	@apply flex items-center gap-4 cursor-pointer p-2 font-bold;
+	@apply flex items-center cursor-pointer gap-4 p-2 font-bold;
 	color: $gray-500;
 	border-radius: 8px;
 
@@ -412,6 +429,12 @@ td {
 	&:hover {
 		background: $red-light;
 	}
+}
+
+.action-option.disabled {
+	@apply pointer-events-none;
+	color: $gray-400;
+	background: $gray-200;
 }
 
 @media screen and (max-width: 768px) {
