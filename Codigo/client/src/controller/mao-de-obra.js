@@ -10,6 +10,10 @@ function getFuncionario(id) {
     return axios.get(`${APIURL}/${id}`);
 }
 
+function getDistinctCargos() {
+    return axios.get(`${APIURL}/cargos`);
+}
+
 function updateFuncionario(id, data) {
     return axios.put(`${APIURL}/${id}`, data);
 }
@@ -33,4 +37,5 @@ export default {
     createFuncionario,
     deleteFuncionario,
     importFile,
+    getDistinctCargos,
 }

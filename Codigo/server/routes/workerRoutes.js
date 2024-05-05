@@ -5,9 +5,9 @@ const router = express.Router();
 
 router.get('/list', workerController.listWorkers);
 router.get('/:id', workerController.getWorker);
+router.get('/cargos', workerController.getDistinctCargos);
 router.post('/', workerController.createWorker);
 router.put('/:id', workerController.updateWorker);
 router.delete('/:id', workerController.deleteWorker);
-router.delete('/cargos', workerController.getDistinctCargos);
 
 export default router;

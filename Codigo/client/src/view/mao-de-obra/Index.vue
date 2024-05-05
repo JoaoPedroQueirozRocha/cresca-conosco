@@ -148,23 +148,7 @@ export default {
 			{
 				text: 'Cargo',
 				value: 'cargo',
-				childs: [
-					{
-						text: 'Administrador',
-						value: 'administrador',
-						selected: false,
-					},
-					{
-						text: 'Administrador',
-						value: 'administrador',
-						selected: false,
-					},
-					{
-						text: 'Administrador',
-						value: 'administrador',
-						selected: false,
-					},
-				],
+				childs: [],
 			},
 		]);
 		const defaultAlert = ref({
@@ -189,6 +173,7 @@ export default {
 
 	async beforeMount() {
 		await this.getBaseData();
+		const { data } = await 
 	},
 
 	computed: {
