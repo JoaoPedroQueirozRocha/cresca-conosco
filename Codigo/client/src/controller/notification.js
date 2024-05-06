@@ -7,7 +7,7 @@ async function getAll() {
 }
 
 async function createNotification(data) {
-    return axios.post(`${APIURL}`, data);
+    return await axios.post(`${APIURL}`, data);
 }
 
 async function createFertilizacaoNotification(date, animal) {
@@ -17,6 +17,7 @@ async function createFertilizacaoNotification(date, animal) {
         vencimento: date,
         animal_id: animal.id,
     };
+    return await createNotification(data);
 }
 
 async function deleteNotification(id){
