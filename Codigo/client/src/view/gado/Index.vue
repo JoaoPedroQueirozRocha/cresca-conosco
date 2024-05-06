@@ -83,6 +83,13 @@
 								<Icon name="menstrual_health" />
 								Secar
 							</div>
+							<div
+								class="action-option"
+								@click="openAgendarDialog(item)"
+							>
+								<Icon name="event" />
+								Agendar Fertilização
+							</div>
 							<div class="action-option delete" @click="confirmDeletion(item.id_animal, index)">
 								<Icon name="delete" />
 								Deletar
@@ -151,6 +158,12 @@
 				:isEdit="isEdit"
 				@change="loadBaseData"
 			></DialogInsem>
+			<DialogFertilizar
+				v-model="showAgendarDialog"
+				:animalData="animalData"
+				:isDialogLoading="isDialogLoading"
+				@change="loadBaseData"
+			></DialogFertilizar>
 		</div>
 	</div>
 </template>
@@ -172,6 +185,7 @@ import Loader from "@/components/Loader.vue";
 import DialogTable from "./components/DialogTable.vue";
 import DialogInsem from "./components/DialogInsem.vue";
 import DialogParir from "./components/DialogParir.vue";
+import DialogFertilizar from "./components/DialogFertilizar.vue";
 import animalController from "@/controller/animal";
 
 export default {
@@ -184,6 +198,7 @@ export default {
 		DialogTable,
 		DialogInsem,
 		DialogParir,
+		DialogFertilizar,
 		Card,
 		Icon,
 		Filter,
@@ -204,11 +219,13 @@ export default {
 			moreDetails,
 			showInsemDialog,
 			showParirDialog,
+			showAgendarDialog,
 			isEdit,
 			loadBaseData,
 			createDialog,
 			openInsemDialog,
 			openParirDialog,
+			openAgendarDialog,
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
@@ -236,6 +253,7 @@ export default {
 			moreDetails,
 			showInsemDialog,
 			showParirDialog,
+			showAgendarDialog,
 			filterOptions,
 			filterCard: ref(),
 			showFilter: ref(false),
@@ -249,6 +267,7 @@ export default {
 			createDialog,
 			openInsemDialog,
 			openParirDialog,
+			openAgendarDialog,
 			formatDate,
 			parirAnimal,
 			secarAnimal,
@@ -292,7 +311,7 @@ export default {
 				const windowHeight = window.innerHeight;
 				const cardHeight = card.offsetHeight;
 				const height = rect.top + 40 + cardHeight;
-				card.style.left = rect.left - 200 + "px";
+				card.style.left = rect.left - 210 + "px";
 				if (height > windowHeight) {
 					delete card.style.top;
 					card.style.bottom = 0;

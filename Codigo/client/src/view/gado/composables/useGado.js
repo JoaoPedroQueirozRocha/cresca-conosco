@@ -9,6 +9,7 @@ export function useGado() {
         moreDetails: ref(false),
         showInsemDialog: ref(false),
         showParirDialog: ref(false),
+        showAgendarDialog: ref(false),
         isEdit: ref(false),
         headersDialog: ref([
             { text: "Nome", value: "nome", sortable: true },
@@ -151,6 +152,12 @@ export function useGado() {
         }
     }
 
+
+    async function openAgendarDialog(animal) {
+        state.animalData = animal;
+        state.showAgendarDialog = true;
+    }
+
     
     async function secarAnimal(id) {
         try {
@@ -214,6 +221,7 @@ export function useGado() {
         loadBaseData,
         openInsemDialog,
         openParirDialog,
+        openAgendarDialog,
         parirAnimal,
         secarAnimal,
         deletarAnimal,
