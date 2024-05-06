@@ -93,7 +93,6 @@ export function checkValidImport(headers, values, map, options, name) {
         if (!header.map) toExclude.push(index);
 
         if (!map && !options.includes(header.from)) isValid = false;
-        else if (!map) parsedHeaders.push(header.from);
         else if (header.to) parsedHeaders.push(header.to);
     });
     const parsedValues = values.map((value) => {

@@ -144,7 +144,7 @@ export function useGado() {
             state.isDialogLoading = true;
             state.showParirDialog = true;
             state.isEdit = !isNew;
-            state.animalData = isNew ? await getAnimal(id_animal) : state.gadoData.find((item) => item.id_gestacao == id_gestacao);
+            state.animalData = state.gadoData.find((item) => item.id_gestacao == id_gestacao);
         } catch (e) {
             console.error(e);
         } finally {

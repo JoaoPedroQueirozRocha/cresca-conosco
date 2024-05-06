@@ -71,8 +71,9 @@ async function createWorker(req, res) {
  */
 async function updateWorker(req, res) {
     try {
-        const body = req.body
-        const worker = await workerServices.updateWorker(body)
+        const { id } = req.params;
+        const body = req.body;
+        const worker = await workerServices.updateWorker(id, body)
         res.status(200).json(worker)
     } catch (error) {
         console.error(error);

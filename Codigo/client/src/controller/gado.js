@@ -27,13 +27,15 @@ function updateGado(gado) {
     return axios.put(`${APIURL}/animals/${gado.id}`, gado);
 }
 
-
-
 async function deleteGado(id) {
     const deleteGestacao = await gestacaoServices.deletarGestacao(id);
 
     const deleteAnimal = animalServices.deletarAnimal(id);
     return { deleteGestacao, deleteAnimal };
+}
+
+function importFile(data) {
+    return axios.post(`${import.meta.env.VITE_API_URL}/import/gado`, data);
 }
 
 export default {
@@ -43,4 +45,5 @@ export default {
     createGado,
     updateGado,
     deleteGado,
+    importFile,
 };

@@ -22,10 +22,15 @@ function deleteFuncionario(id) {
     return axios.delete(`${APIURL}/${id}`);
 }
 
+function importFile(data) {
+    return axios.post(`${import.meta.env.VITE_API_URL}/import/mao_de_obra`, data);
+}
+
 export default {
     getBase,
     getFuncionario,
     updateFuncionario,
     createFuncionario,
-    deleteFuncionario
+    deleteFuncionario,
+    importFile,
 }

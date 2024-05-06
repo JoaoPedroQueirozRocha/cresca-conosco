@@ -21,9 +21,17 @@ async function createWorker(body) {
     return result.rows[0];
 }
 
-async function updateWorker(body) {
-    const { nome, salario, descricao } = body;
-    const result = await pool.query('UPDATE mao_de_obra SET nome = $1, salario = $2, descricao = $3 WHERE nome = $1', [nome, salario, descricao])
+async function updateWorker(id, updates){
+    const worker = await getWorker(id);
+    if (!worker) throw new Error("Mão de Obra não encontrada");
+
+    const fields = Object.keys(updates)
+        .map(((field, index) => `${field} = $${index + 1}`))
+        .join(", ");
+
+    const values = Object.values(updates);
+    const query = `UPDATE mao_de_obra SET ${fields} WHERE id = $${values.length + 1} RETURNING *`;
+    const result = await pool.query(query, [...values, id]);
     return result.rows[0];
 }
 

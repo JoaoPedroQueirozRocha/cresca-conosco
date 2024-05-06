@@ -1,5 +1,3 @@
-
-
 <script>
 import { ref } from "vue";
 import Card from "./Card.vue";
@@ -83,11 +81,13 @@ export default {
             this.$emit('update:modelValue', this.headers);
         },
 
-        selectOption(value, index) {
+        selectOption(value, from) {
+            const index = this.headers.findIndex((header) => header.from == from);
+        
             this.headers.forEach((header, i) => {
                 if (header.to == value && i != index) header.to = '';
-                return header;
             });
+    
             this.$emit('update:modelValue', this.headers);
         },
 
@@ -102,7 +102,7 @@ export default {
                 return {
                     from: isFirstHeader ? header : ('Coluna ' + (index + 1)),
                     map: true,
-                    to: '',
+                    to: this.options.find((option) => header == option) || '',
                 };
             });
             if (isFirstHeader) parsedFile.splice(0, 1);
@@ -126,7 +126,7 @@ export default {
             <div v-for="(header, index) in headers.filter((h) => h.map)" :key="index" class="flex items-center gap-4">
                 <Input class="flex-1" v-model="header.from" disabled />
                 <Icon class="arrow-icon" name="arrow_forward" />
-                <Select class="flex-1" v-model="header.to" :items="options" @update:model-value="(value) => { selectOption(value, index) }" />
+                <Select class="flex-1" v-model="header.to" :items="options" @update:model-value="(value) => { selectOption(value, header.from); }" />
                 <Icon class="delete-icon" name="delete" @click="deleteHeader(headers.findIndex((h) => h.from == header.from))" />
             </div>
             <div v-if="deletedHeaders.length">
