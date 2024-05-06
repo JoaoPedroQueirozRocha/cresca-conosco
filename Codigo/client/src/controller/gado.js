@@ -34,10 +34,6 @@ async function deleteGado(id) {
     return { deleteGestacao, deleteAnimal };
 }
 
-function importFile(data) {
-    return axios.post(`${import.meta.env.VITE_API_URL}/import/gado`, data);
-}
-
 export default {
     getAll,
     getBase,
@@ -45,5 +41,4 @@ export default {
     createGado,
     updateGado,
     deleteGado,
-    importFile,
 };
