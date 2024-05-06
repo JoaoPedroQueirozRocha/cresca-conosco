@@ -16,8 +16,8 @@ async function getWorker(id) {
 }
 
 async function createWorker(body) {
-    const result = await pool.query('INSERT INTO mao_de_obra (nome, salario, descricao) VALUES ($1, $2, $3)', [body.nome,
-    body.salario, body.descricao])
+    const result = await pool.query('INSERT INTO mao_de_obra (nome, salario, descricao, clt) VALUES ($1, $2, $3, $4)', [body.nome,
+    body.salario, body.descricao, body.clt])
     return result.rows[0];
 }
 

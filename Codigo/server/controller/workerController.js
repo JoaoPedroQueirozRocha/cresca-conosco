@@ -90,7 +90,7 @@ async function updateWorker(req, res) {
  */
 async function deleteWorker(req, res) {
     try {
-        const { id } = req.body;
+        const { id } = req.params;
         const worker = await workerServices.deleteWorker(id)
         res.status(200).json(worker)
     } catch (error) {
