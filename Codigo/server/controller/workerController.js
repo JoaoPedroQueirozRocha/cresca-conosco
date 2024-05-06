@@ -45,7 +45,7 @@ async function getWorker(req, res) {
 
 /**
  * 
- * @param { nome, salario, descricao } req 
+ * @param { nome, salario, cargo, clt } req 
  * @param {*} res 
  * @returns {worker}
  * Função para criar um novo funcionário

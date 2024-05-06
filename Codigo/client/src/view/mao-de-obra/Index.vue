@@ -68,7 +68,7 @@
 				</template>
 
 				<template #cargo="{ item, index }">
-					<td>{{ item.descricao }}</td>
+					<td>{{ item.cargo }}</td>
 				</template>
 
 				<template #clt="{ item, index }">
@@ -333,11 +333,11 @@ export default {
 
 				const cargoFilter = {
 					text: 'Cargo',
-					value: 'descricao',
+					value: 'cargo',
 					childs: cargos.map((cargo) => {
 						return {
-							text: cargo.descricao,
-							value: cargo.descricao,
+							text: cargo.cargo,
+							value: cargo.cargo,
 							selected: false,
 						}
 					}),

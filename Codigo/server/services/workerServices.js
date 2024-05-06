@@ -16,8 +16,8 @@ async function getWorker(id) {
 }
 
 async function createWorker(body) {
-    const result = await pool.query('INSERT INTO mao_de_obra (nome, salario, descricao, clt) VALUES ($1, $2, $3, $4)', [body.nome,
-    body.salario, body.descricao, body.clt])
+    const result = await pool.query('INSERT INTO mao_de_obra (nome, salario, cargo, clt) VALUES ($1, $2, $3, $4)', [body.nome,
+    body.salario, body.cargo, body.clt])
     return result.rows[0];
 }
 
@@ -41,7 +41,7 @@ async function deleteWorker(id) {
 }
 
 async function getDistinctCargos() {
-    const queryResult = await pool.query("SELECT DISTINCT descricao FROM mao_de_obra ORDER BY descricao")
+    const queryResult = await pool.query("SELECT DISTINCT cargo FROM mao_de_obra ORDER BY cargo")
     return queryResult.rows;
 }
 
