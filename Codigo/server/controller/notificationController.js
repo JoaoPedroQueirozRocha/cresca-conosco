@@ -42,6 +42,18 @@ async function createNewNotification(req,res) {
 
 }
 
+async function updateNotification(req,res) {
+    try{
+        const { id } = req.params 
+        const notification = await notificationServices.updateNotification(id)
+        res.json(notification)
+    } catch (error){
+        console.error(error)
+        res.status(error.status).send('Erro ao fazer post' + error.message) 
+    }
+
+}
+
 async function deleteNotificationById(req,res) {
     try{
         const { id } = req.params
@@ -53,4 +65,4 @@ async function deleteNotificationById(req,res) {
     }   
 }
 
-export {getNotification, createNewNotification, deleteNotificationById, getAllNotifications}
+export {getNotification, createNewNotification, updateNotification, deleteNotificationById, getAllNotifications}

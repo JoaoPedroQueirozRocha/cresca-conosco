@@ -5,8 +5,13 @@ const router = express.Router()
 
 router.use(express.json())
 
+async function getNotificationById(id) {
+    const queryResult = await pool.query("SELECT * FROM notificacoes WHERE id = $1", [ id ])
+    return queryResult.rows[0]
+}
+
 async function getNotification(animal_id, title) {
-    const queryResult = await pool.query("SELECT * FROM notificacoes WHERE animal_id = $1 AND titulo = $2", [animal_id, title])
+    const queryResult = await pool.query("SELECT * FROM notificacoes WHERE animal_id = $1 AND titulo = $2", [ animal_id, title ])
     return queryResult.rows[0]
 }
 
@@ -20,8 +25,22 @@ async function getAllNotifications() {
 }
 
 async function createNewNotification(body) {
-    const queryResult = await pool.query('INSERT INTO notificacoes (titulo, descricao, animal_id) VALUES ($1,$2) RETURNING *', [body.titulo, body.descricao, body.animal_id])
-    return queryResult
+    const queryResult = await pool.query('INSERT INTO notificacoes (titulo, descricao, vencimento, animal_id) VALUES ($1, $2, $3, $4) RETURNING *', [body.titulo, body.descricao, body.vencimento, body.animal_id])
+    return queryResult.rows[0];
+}
+
+async function updateNotification(id, updates){
+    const notication = await getNotificationById(id);
+    if (!notication) throw new Error("Notificação não encontrada");
+
+    const fields = Object.keys(updates)
+        .map(((field, index) => `${field} = $${index + 1}`))
+        .join(", ");
+
+    const values = Object.values(updates);
+    const query = `UPDATE notificacoes SET ${fields} WHERE id = $${values.length + 1} RETURNING *`;
+    const result = await pool.query(query, [...values, id]);
+    return result.rows[0];
 }
 
 async function deleteNotificationById(id) {
@@ -29,4 +48,4 @@ async function deleteNotificationById(id) {
     return queryResult
 }
 
-export {getNotification, createNewNotification, deleteNotificationById, getAllNotifications}
+export {getNotification, createNewNotification, updateNotification, deleteNotificationById, getAllNotifications}

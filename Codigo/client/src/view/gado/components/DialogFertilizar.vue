@@ -87,7 +87,18 @@ export default {
 			} else {
 				this.loading = true;
 				try {
-					await notificationController.createFertilizacaoNotification(date, animalData);
+					const oldNotification = await getOldNotification();
+					if (oldNotification) {
+						const result = await this.$confirm({
+							title: 'Deseja mudar a data do agendamento?',
+							description: `A fertlização da ${animalData.nome} já foi marcada para o dia ${oldNotification.vencimento}`
+						});
+						if (!result) return;
+						await notificationController.updateNotification(oldNotification.id, date);
+					} else {
+						await notificationController.createFertilizacaoNotification(date, animalData);
+					}
+
 					this.showAlert('Agendamento feito com sucesso', 'success')
 				} catch (error) {
 					this.showAlert('Error ao agendar fertilização. Tente novamente mais tarde', 'error');
@@ -106,6 +117,14 @@ export default {
 				...this.defaultAlert,
 			});
 		},
+
+		async getOldNotification() {
+			try {
+				return await notificationController.getFertilizacaoNotification(animalData.animal_id);
+			} catch (e) {
+				return null
+			}
+		}
 	},
 };
 </script>
