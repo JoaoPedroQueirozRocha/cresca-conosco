@@ -14,7 +14,7 @@ async function createFertilizacaoNotification(date, animal) {
     const data = {
         titulo: 'Fertilização',
         descricao: `O dia de fertilizar a ${animal.nome} está chegando`,
-        date: date,
+        vencimento: date,
         animal_id: animal.id,
     };
 }
