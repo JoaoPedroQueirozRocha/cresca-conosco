@@ -122,7 +122,8 @@ export default {
 <template>
 	<div class="top-holder">
 		<div class="relative flex gap-2">
-			<div>
+			<div class="relative">
+				<span v-if="notifications.length" class="have-item" />
 				<Icon
 					class="top-icon"
 					name="circle_notifications"
@@ -226,6 +227,16 @@ export default {
 
 .top-icon {
 	background: $gray-200;
+	border-radius: 50%;
+}
+
+.have-item {
+	z-index: 10;
+	position: absolute;
+	right: 0;
+	height: 20px;
+	width: 20px;
+	background: $orange-strong;
 	border-radius: 50%;
 }
 
