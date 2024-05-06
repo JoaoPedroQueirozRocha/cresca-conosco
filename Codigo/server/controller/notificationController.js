@@ -2,8 +2,8 @@ import * as notificationServices from '../services/notificationServices.js'
 
 async function getNotification(req,res) {
     try {
-        const { id } = req.params; 
-        const notification = await notificationServices.getNotificationById(id)
+        const { aniamal_id, title } = req.params; 
+        const notification = await notificationServices.getNotification(aniamal_id, title)
 
         if (!notification) throw new Error('Notificação não encontrada')
 
@@ -53,4 +53,4 @@ async function deleteNotificationById(req,res) {
     }   
 }
 
-export {getNotification,createNewNotification,deleteNotificationById, getAllNotifications}
+export {getNotification, createNewNotification, deleteNotificationById, getAllNotifications}

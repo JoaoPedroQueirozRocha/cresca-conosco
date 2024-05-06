@@ -24,6 +24,7 @@ import Select from '@/components/Select.vue';
 import DatePicker from '@/components/DatePicker.vue';
 import Button from '@/components/Button.vue';
 import Icon from '@/components/Icon.vue';
+import notificationController from '@/controller/notification';
 import { ref } from 'vue';
 
 export default {
@@ -86,8 +87,7 @@ export default {
 			} else {
 				this.loading = true;
 				try {
-					// console.log(this.fertilizacaoData.crias);
-					// await this.fertilizarAnimal(this.fertilizacaoData.id, this.fertilizacaoData.crias);
+					await notificationController.createFertilizacaoNotification(date, animalData);
 					this.showAlert('Agendamento feito com sucesso', 'success')
 				} catch (error) {
 					this.showAlert('Error ao agendar fertilização. Tente novamente mais tarde', 'error');

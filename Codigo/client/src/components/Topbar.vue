@@ -5,6 +5,7 @@ import Notification from "./Notification.vue";
 import Button from "./Button.vue";
 import Icon from './Icon.vue';
 import NotificationController from "../controller/notification"
+import { formatDate } from "../util";
 
 
 export default {
@@ -151,7 +152,7 @@ export default {
 						<div class="flex justify-between items-start gap-2 px-2 py-1">
 							<div class="flex flex-col gap-2">
 								<h5 class="text-xl font-bold">{{ item.titulo }}</h5>
-								<p class="description">{{ item.descricao }}</p>
+								<p class="description">{{ item.descricao }}. Data prevista para {{ formatDate(item.date) }}</p>
 							</div>
 							<Icon
 								class="delete-icon"
