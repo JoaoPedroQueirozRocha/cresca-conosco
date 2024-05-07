@@ -18,10 +18,10 @@ async function getNotification(animal_id, title) {
 async function getAllNotifications() {
     const today = new Date();
     const maxDate = new Date();
-    maxDate.setDate(maxDate.getDate() + 5)
+    maxDate.setDate(maxDate.getDate() + 5);
 
-    const queryResult = await pool.query("SELECT * FROM notificacoes WHERE vencimento BETWEEN $1 AND $2", [ today, maxDate ])
-    return queryResult.rows
+    const queryResult = await pool.query("SELECT * FROM notificacoes WHERE vencimento BETWEEN $1 AND $2", [ today, maxDate ]);
+    return queryResult.rows;
 }
 
 async function createNewNotification(body) {
