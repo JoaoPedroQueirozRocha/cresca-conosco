@@ -23,7 +23,7 @@ async function createFertilizacaoNotification(date, animal) {
         titulo: 'Fertilização',
         descricao: `O dia de fertilizar a ${animal.nome} está chegando`,
         vencimento: date,
-        animal_id: animal.id,
+        animal_id: animal.id_animal,
     };
     return await createNotification(data);
 }
@@ -32,7 +32,7 @@ async function updateNotification(id, date){
     return axios.put(`${APIURL}/${id}`, { vencimento: date });
 }
 
-async function deleteNotification(id){
+async function deleteNotification(id) {
     return axios.delete(`${APIURL}/${id}`);
 }
 

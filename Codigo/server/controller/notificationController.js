@@ -2,10 +2,8 @@ import * as notificationServices from '../services/notificationServices.js'
 
 async function getNotification(req,res) {
     try {
-        const { aniamal_id, title } = req.params; 
-        const notification = await notificationServices.getNotification(aniamal_id, title)
-
-        if (!notification) throw new Error('Notificação não encontrada')
+        const { animal_id, title } = req.params; 
+        const notification = await notificationServices.getNotification(animal_id, title)
 
         res.json(notification)
 
@@ -32,7 +30,7 @@ async function getAllNotifications(req,res) {
 
 async function createNewNotification(req,res) {
     try{
-        const body = req.body 
+        const body = req.body;
         const notification = await notificationServices.createNewNotification(body)
         res.json(notification) 
     } catch (error){

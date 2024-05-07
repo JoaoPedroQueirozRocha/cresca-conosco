@@ -7,7 +7,7 @@
 					<Icon name="close" @click="changeModel(false)" />
 				</div>
 			</div>
-			<DatePicker label="Data" v-model="date" v-model:expanded="isDateOpened" />
+			<DatePicker label="Data" v-model="date" v-model:expanded="isDateOpened" :min-date="new Date()" />
 			<div class="flex flex-row gap-4 justify-end">
 				<Button @click="cancelar" only-border :disabled="loading">Cancelar</Button>
 				<Button @click="salvarFertilizacao" :loading="loading">Agendar</Button>
@@ -25,6 +25,7 @@ import DatePicker from '@/components/DatePicker.vue';
 import Button from '@/components/Button.vue';
 import Icon from '@/components/Icon.vue';
 import notificationController from '@/controller/notification';
+import { formatDate } from '@/util';
 import { ref } from 'vue';
 
 export default {
@@ -87,16 +88,16 @@ export default {
 			} else {
 				this.loading = true;
 				try {
-					const oldNotification = await getOldNotification();
+					const oldNotification = await this.getOldNotification();
 					if (oldNotification) {
 						const result = await this.$confirm({
 							title: 'Deseja mudar a data do agendamento?',
-							description: `A fertlização da ${animalData.nome} já foi marcada para o dia ${oldNotification.vencimento}`
+							description: `A fertlização da ${this.animalData.nome} já foi marcada para o dia ${formatDate(new Date(oldNotification.vencimento))}`
 						});
 						if (!result) return;
-						await notificationController.updateNotification(oldNotification.id, date);
+						await notificationController.updateNotification(oldNotification.id, this.date);
 					} else {
-						await notificationController.createFertilizacaoNotification(date, animalData);
+						await notificationController.createFertilizacaoNotification(this.date, this.animalData);
 					}
 
 					this.showAlert('Agendamento feito com sucesso', 'success')
@@ -120,9 +121,10 @@ export default {
 
 		async getOldNotification() {
 			try {
-				return await notificationController.getFertilizacaoNotification(animalData.animal_id);
+				const { data } = await notificationController.getFertilizacaoNotification(this.animalData.id_animal);
+				return data;
 			} catch (e) {
-				return null
+				return null;
 			}
 		}
 	},
