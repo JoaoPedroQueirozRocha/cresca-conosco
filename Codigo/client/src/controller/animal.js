@@ -23,7 +23,7 @@ async function deletarAnimal(id) {
 }
 
 function importFile(data) {
-    return axios.post(`${import.meta.env.VITE_API_URL}/import/animais`, data);
+    return axios.post(`${import.meta.env.VITE_API_URL}/import/animal`, data);
 }
 
 export default {

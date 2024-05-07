@@ -12,7 +12,7 @@ router.use(express.json());
  */
 async function getAnimalById(id) {
     const queryResult = await pool.query(
-        "SELECT * FROM animais WHERE id = $1",
+        "SELECT * FROM animal WHERE id = $1",
         [id]
     );
     if (!queryResult.rows.length) throw new Error("Animal não encontrado");
@@ -24,7 +24,7 @@ async function createNewAnimal(body) {
     const { nome, crias, num_insem, lactante } = body;
 
     const result = await pool.query(
-        "INSERT INTO animais(nome, crias, num_insem, lactante) VALUES ($1, $2, $3, $4)",
+        "INSERT INTO animal(nome, crias, num_insem, lactante) VALUES ($1, $2, $3, $4)",
         [nome, crias, num_insem, lactante ? true : false]
     );
     return result.rows[0];
@@ -41,7 +41,7 @@ async function updateAnimalById(id, updates) {
 
     const values = Object.values(updates);
 
-    const query = `UPDATE animais SET ${fields} WHERE id = $${values.length + 1
+    const query = `UPDATE animal SET ${fields} WHERE id = $${values.length + 1
         } RETURNING *`;
     const result = await pool.query(query, [...values, id]);
     return result.rows[0];
@@ -52,7 +52,7 @@ async function deleteAnimalById(id) {
 
     if (!animal) throw new Error("Animal não encontrado");
 
-    const result = await pool.query("DELETE FROM animais WHERE id = $1", [
+    const result = await pool.query("DELETE FROM animal WHERE id = $1", [
         id,
     ]);
 
