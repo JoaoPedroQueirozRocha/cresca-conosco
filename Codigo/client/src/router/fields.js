@@ -119,18 +119,18 @@ const WORKER_FIELDS = [
         required: true
     },
     {
-        label: 'Descrição',
-        value: 'descricao',
+        label: 'Cargo',
+        value: 'cargo',
         type: 'text',
         required: true,
-        group: 'descricao-salario'
+        group: 'cargo-salario'
     },
     {
         label: 'Salário',
         value: 'salario',
         type: 'number',
         required: true,
-        group: 'descricao-salario'
+        group: 'cargo-salario'
     },
     {
         label: 'CLT',

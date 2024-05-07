@@ -6,23 +6,23 @@ const router = express.Router()
 router.use(express.json())
 
 async function getNotificationById(id){
-    // const queryResult = await pool.query("SELECT * FROM notificacoes WHERE id = $1", [id])
+    // const queryResult = await pool.query("SELECT * FROM notificacao WHERE id = $1", [id])
     // return queryResult.rows[0]
 }
 
 async function getAllNotifications(){
-    const queryResult = await pool.query("SELECT * FROM notificacoes")
+    const queryResult = await pool.query("SELECT * FROM notificacao")
     return queryResult.rows
 }
 
 
 async function createNewNotification(body){
-    const queryResult = await pool.query('INSERT INTO notificacoes (titulo, descricao) VALUES ($1,$2) RETURNING *', [body.titulo, body.descricao])
+    const queryResult = await pool.query('INSERT INTO notificacao (titulo, descricao) VALUES ($1,$2) RETURNING *', [body.titulo, body.descricao])
     return queryResult
 }
 
 async function deleteNotificationById(id){
-    const queryResult = await pool.query('DELETE FROM notificacoes WHERE id = $1',[id])
+    const queryResult = await pool.query('DELETE FROM notificacao WHERE id = $1',[id])
     return queryResult
 }
 
