@@ -1,4 +1,4 @@
-import express, {query, response} from 'express'
+import express from 'express'
 import pool from '../db/index.js'
 
 const router = express.Router()
