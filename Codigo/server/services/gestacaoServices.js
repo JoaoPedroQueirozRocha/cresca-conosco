@@ -90,6 +90,28 @@ async function parirAnimal(id, numCrias, data_finalizacao) {
 }
 
 /**
+ * @param {number} id - O ID da gestação a ser atualizada.
+ * Realiza a fertilização de um animal.
+ */
+async function fertilizarAnimal() {
+    await pool.query("BEGIN");
+    try {
+        // Operação para atualizar o status da gestação
+        const queryGestacao = ``
+        const resultGestacao = await pool.query(queryGestacao, [id, data_finalizacao])
+
+        const resultAnimal = await pool.query(queryAnimal, [id, numCrias])
+
+        await pool.query("COMMIT");
+        return { gestacao: resultGestacao.rows[0], animal: resultAnimal.rows[0] }
+
+    } catch (error) {
+        await pool.query("ROLLBACK");
+        throw error;
+    }
+}
+
+/**
  * @param {number} animal_id - O ID do animal para excluir o registro de gestação.
  * @returns {Promise<Gestacao>} Uma promessa que resolve para os dados de gestação do animal especificado.
  * Exclui um registro de gestação pelo ID do animal.

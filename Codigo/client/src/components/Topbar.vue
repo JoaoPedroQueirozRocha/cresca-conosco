@@ -4,15 +4,17 @@ import Card from "./Card.vue";
 import Notification from "./Notification.vue";
 import Button from "./Button.vue";
 import Icon from './Icon.vue';
+import Spinner from './Spinner.vue';
 import NotificationController from "../controller/notification"
-
+import { formatDate } from "../util";
 
 export default {
 	name: "Topbar",
-	components: { Card, Notification, Button, Icon },
+	components: { Card, Notification, Button, Icon, Spinner },
 	inject: ["Auth"],
 	setup() {
 		return {
+			formatDate,
 			notificationActive: ref(false),
 			perfilDropdownActive: ref(false),
 			notifications: ref([]),
@@ -21,6 +23,7 @@ export default {
 			perfilDropdown: ref(),
 			perfilIcon: ref(),
 			userData: ref(),
+			loading: ref({}),
 			defaultAlert: ref({
 				top: true,
 				right: true,
@@ -88,7 +91,7 @@ export default {
 
 		closeDropdown(event, dropdown, icon, key) {
 			if (!dropdown || !icon) return;
-			if (!dropdown.contains(event.target) && !icon.contains(event.target))
+			if (!dropdown.contains(event.target) && !icon.contains(event.target) && !event.target.closest('.delete-icon'))
 				this[key] = false;
 		},
 
@@ -97,9 +100,10 @@ export default {
 			this.$route.push({ path: "/" });
 		},
 		async deleteNotification(item, index) {
+			this.loading[index] = true;
 			try{
-				await NotificationController.deleteNotification(item.id)
-				this.notifications.splice(index,1);
+				await NotificationController.deleteNotification(item.id);
+				this.notifications.splice(index, 1);
 				this.$alert({
 					message: 'Notificação deletada com sucesso',
 					type: 'success',
@@ -111,7 +115,8 @@ export default {
 					message: 'Erro ao deletar notificação. Tente novamente mais tarde',
 					...this.defaultAlert,
 				});
-				
+			} finally {
+				this.loading[index] = false;
 			}
 		},
 	},
@@ -121,7 +126,8 @@ export default {
 <template>
 	<div class="top-holder">
 		<div class="relative flex gap-2">
-			<div>
+			<div class="relative">
+				<span v-if="notifications.length" class="have-item" />
 				<Icon
 					class="top-icon"
 					name="circle_notifications"
@@ -151,9 +157,13 @@ export default {
 						<div class="flex justify-between items-start gap-2 px-2 py-1">
 							<div class="flex flex-col gap-2">
 								<h5 class="text-xl font-bold">{{ item.titulo }}</h5>
-								<p class="description">{{ item.descricao }}</p>
+								<p class="description">
+									{{ item.descricao }}. Data prevista para {{ formatDate(new Date(item.vencimento)) }}
+								</p>
 							</div>
+							<Spinner v-if="loading[index]" />
 							<Icon
+								v-else
 								class="delete-icon"
 								name="delete"
 								@click="deleteNotification(item, index)"
@@ -225,6 +235,16 @@ export default {
 
 .top-icon {
 	background: $gray-200;
+	border-radius: 50%;
+}
+
+.have-item {
+	z-index: 10;
+	position: absolute;
+	right: 0;
+	height: 20px;
+	width: 20px;
+	background: $orange-strong;
 	border-radius: 50%;
 }
 
