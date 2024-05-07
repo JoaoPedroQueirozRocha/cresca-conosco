@@ -84,13 +84,15 @@ const components = {
             properties: {
                 nome: { type: "string" },
                 salario: { type: "number" },
-                descricao: { type: "string" }
+                cargo: { type: "string" },
+                clt: { type: "boolean" }
             },
-            required: ["nome", "salario"],
+            required: ["nome", "salario", "cargo"],
             example: {
                 nome: "João",
                 salario: 1500.0,
-                descricao: "Trabalha na fazenda"
+                cargo: "Vaqueiro",
+                clt: true
             }
         },
         Imports: {
