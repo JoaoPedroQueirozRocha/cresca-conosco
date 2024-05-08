@@ -41,6 +41,11 @@ export default {
             event.emit('cancel');
         },
 
+        handleChange(value) {
+            if (value) return;
+            this.handleCancel();
+        },
+
         openDialog(options) {
             Object.keys(options).forEach((key) => {
                 this[key] = options[key];
@@ -57,8 +62,8 @@ export default {
 </script>
 
 <template>
-    <Dialog v-model="show">
-        <div class="flex flex-col xs:gap-6 gap-4 p-2">
+    <Dialog v-model="show" class="confirm-dialog" @update:model-value="handleChange">
+        <div class="flex flex-col xs:gap-6 gap-4 p-2 z-50 relative">
             <h1 class="xs:text-4xl text-2xl font-bold whitespace-normal break-words">{{ title }}</h1>
             <p class="xs:text-lg text-sm whitespace-normal break-words">{{ description }}</p>
             <div class="flex xs:flex-row flex-col justify-end gap-2">
@@ -71,6 +76,11 @@ export default {
 
 <style scoped lang="scss">
 @import "../style/var.scss";
+
+.confirm-dialog.dialog-bg {
+    z-index: 2000;
+    @apply relative;
+}
 
 h1 {
     color: $green-dark;
