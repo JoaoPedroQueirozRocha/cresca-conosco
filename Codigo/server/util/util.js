@@ -20,6 +20,6 @@ export default async function treatCsvEnums(headers, data, tableName) {
 
 async function validadeEnums(headers, data, validTypes) {
     const typeIndex = headers.indexOf('tipo');
-    return data.every(row => validTypes.includes(row[typeIndex]));
+    return data.every(row => validTypes.includes(row[typeIndex].toLowerCase()));
 }
 
