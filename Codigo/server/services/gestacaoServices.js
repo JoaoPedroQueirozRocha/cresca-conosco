@@ -13,7 +13,7 @@ router.use(express.json());
  */
 async function getGestacaoById(animal_id) {
     const queryResult = await pool.query(
-        "SELECT * FROM gestacoes WHERE animal_id = $1",
+        "SELECT * FROM gestacao WHERE animal_id = $1",
         [animal_id]
     );
     return queryResult.rows[0];
@@ -26,7 +26,7 @@ async function getGestacaoById(animal_id) {
  */
 async function createGestacao(body) {
     const { animal_id, status, prev_parto, touro, data_insem, data_finalizacao } = body;
-    const queryText = "INSERT INTO gestacoes (animal_id, status, prev_parto, touro, data_insem, data_finalizacao) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
+    const queryText = "INSERT INTO gestacao (animal_id, status, prev_parto, touro, data_insem, data_finalizacao) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
     const result = await pool.query(queryText, [animal_id, status, prev_parto, touro, data_insem, data_finalizacao]);
     return result.rows[0];
 }
@@ -43,7 +43,7 @@ async function updateGestacao(id, updates) {
         .join(", ");
 
     const values = Object.values(updates);
-    const query = `UPDATE gestacoes SET ${fields} WHERE id = $${values.length + 1} RETURNING *`;
+    const query = `UPDATE gestacao SET ${fields} WHERE id = $${values.length + 1} RETURNING *`;
     const result = await pool.query(query, [...values, id]);
     return result.rows[0];
 }
@@ -61,7 +61,7 @@ async function parirAnimal(id, numCrias, data_finalizacao) {
     try {
         // Operação para atualizar o status da gestação
         const queryGestacao = `
-            UPDATE gestacoes SET 
+            UPDATE gestacao SET 
                 status  = 'concluida',
                 data_finalizacao = $2
             where id = $1
@@ -71,13 +71,35 @@ async function parirAnimal(id, numCrias, data_finalizacao) {
 
         // Operação para atualizar o número de crias do animal
         const queryAnimal = `
-            UPDATE animais SET
+            UPDATE animal SET
                 crias = crias + $2
             WHERE id = (
-                SELECT animal_id from gestacoes where id = $1
+                SELECT animal_id from gestacao where id = $1
             )
             RETURNING *
         `
+        const resultAnimal = await pool.query(queryAnimal, [id, numCrias])
+
+        await pool.query("COMMIT");
+        return { gestacao: resultGestacao.rows[0], animal: resultAnimal.rows[0] }
+
+    } catch (error) {
+        await pool.query("ROLLBACK");
+        throw error;
+    }
+}
+
+/**
+ * @param {number} id - O ID da gestação a ser atualizada.
+ * Realiza a fertilização de um animal.
+ */
+async function fertilizarAnimal() {
+    await pool.query("BEGIN");
+    try {
+        // Operação para atualizar o status da gestação
+        const queryGestacao = ``
+        const resultGestacao = await pool.query(queryGestacao, [id, data_finalizacao])
+
         const resultAnimal = await pool.query(queryAnimal, [id, numCrias])
 
         await pool.query("COMMIT");
@@ -96,7 +118,7 @@ async function parirAnimal(id, numCrias, data_finalizacao) {
  */
 async function deleteGestacao(animal_id) {
     const result = await pool.query(
-        "DELETE FROM gestacoes WHERE animal_id = $1",
+        "DELETE FROM gestacao WHERE animal_id = $1",
         [animal_id]
     );
     return result.rows[0];

@@ -2,10 +2,8 @@ import * as notificationServices from '../services/notificationServices.js'
 
 async function getNotification(req,res) {
     try {
-        const { id } = req.params; 
-        const notification = await notificationServices.getNotificationById(id)
-
-        if (!notification) throw new Error('Notificação não encontrada')
+        const { animal_id, title } = req.params; 
+        const notification = await notificationServices.getNotification(animal_id, title)
 
         res.json(notification)
 
@@ -32,9 +30,21 @@ async function getAllNotifications(req,res) {
 
 async function createNewNotification(req,res) {
     try{
-        const body = req.body 
+        const body = req.body;
         const notification = await notificationServices.createNewNotification(body)
         res.json(notification) 
+    } catch (error){
+        console.error(error)
+        res.status(error.status).send('Erro ao fazer post' + error.message) 
+    }
+
+}
+
+async function updateNotification(req,res) {
+    try{
+        const { id } = req.params 
+        const notification = await notificationServices.updateNotification(id)
+        res.json(notification)
     } catch (error){
         console.error(error)
         res.status(error.status).send('Erro ao fazer post' + error.message) 
@@ -53,4 +63,4 @@ async function deleteNotificationById(req,res) {
     }   
 }
 
-export {getNotification,createNewNotification,deleteNotificationById, getAllNotifications}
+export {getNotification, createNewNotification, updateNotification, deleteNotificationById, getAllNotifications}

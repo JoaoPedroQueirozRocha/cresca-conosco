@@ -67,7 +67,7 @@ header {
 }
 
 .notifications {
-    @apply flex items-center flex-col w-full mt-4 gap-4 overflow-auto;
+    @apply flex items-center flex-col w-full mt-4 gap-2 overflow-auto;
     max-height: 260px;
 }
 
