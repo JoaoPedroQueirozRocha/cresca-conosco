@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { Usuarios } from './entity/Usuarios';
-import { Animais } from './entity/Animais';
-import { Gestacoes } from './entity/Gestacoes';
+import { Usuario } from './entity/Usuario';
+import { Animal } from './entity/Animal';
+import { Gestacao } from './entity/Gestacao';
 import { MaoDeObra } from './entity/MaoDeObra';
-import { Notificacoes } from './entity/Notificacoes';
+import { Notificacao } from './entity/Notificacao';
 import { Receita } from './entity/Receita';
 import { Despesa } from './entity/Despesa';
 import 'dotenv/config';
@@ -18,7 +18,7 @@ export const AppDataSource = new DataSource({
 	database: process.env.POSTGRES_DATABASE,
 	synchronize: true,
 	logging: false,
-	entities: [Animais, Despesa, Gestacoes, MaoDeObra, Notificacoes, Receita, Usuarios],
+	entities: [Animal, Despesa, Gestacao, MaoDeObra, Notificacao, Receita, Usuario],
 	migrations: [__dirname + '/migration/*.ts'],
 	subscribers: [],
 	ssl: true,

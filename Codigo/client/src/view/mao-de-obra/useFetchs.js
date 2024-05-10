@@ -13,14 +13,26 @@ export function useFetchs() {
         try {
             state.maoDeObraData = await maoDeObraController.getBase();
         } catch (error) {
-            console.error(error);
         } finally {
             state.isLoading = false;
         }
     }
 
+    async function deleteMaoDeObra(id) {
+        await maoDeObraController.deleteMaoDeObra(id);
+    }
+
+    async function getCargos() {
+        state.isLoading = true;
+        const { data } = await maoDeObraController.getDistinctCargos();
+        state.isLoading = false;
+        return data;
+    }
+
     return {
         ...toRefs(state),
-        getBaseData
+        getBaseData,
+        deleteMaoDeObra,
+        getCargos,
     }
 }

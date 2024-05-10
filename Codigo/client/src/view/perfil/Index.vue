@@ -9,6 +9,7 @@ import Input from '@/components/Input.vue';
 import Icon from '@/components/Icon.vue';
 import { useIconLoader } from '@/store/iconLoader.js';
 import Loader from '@/components/Loader.vue';
+import axios from 'axios';
 
 export default {
 	name: 'Perfil',
@@ -16,6 +17,7 @@ export default {
 	inject: ['Auth'],
 	setup() {
 		const { iconsLoaded } = useIconLoader();
+		const loading = ref(false);
 		return {
 			editing: ref(false),
 			changingPass: ref(false),
@@ -26,6 +28,8 @@ export default {
 			}),
 			passObject: ref({}),
 			userData: ref({}),
+			userDataDatabase: ref({}),
+			loading,
 			iconsLoaded,
 		};
 	},
@@ -36,8 +40,11 @@ export default {
 		},
 	},
 
-	beforeMount() {
+	async beforeMount() {
 		this.userData = JSON.parse(window.sessionStorage.getItem('user'));
+		const { data } = await axios.get(`http://localhost:3000/user/${this.userData.email}`);
+		this.userDataDatabase = data;
+		sessionStorage.setItem('userDatabase', JSON.stringify(data));
 	},
 
 	methods: {
@@ -72,9 +79,12 @@ export default {
 				return;
 			}
 
+			this.loading = true;
 			try {
-				await userController.updateUser(this.userData.sub, this.userData);
-				window.sessionStorage.setItem('user', JSON.stringify(this.userData));
+				const data = JSON.parse(JSON.stringify(this.userDataDatabase));
+				delete data.id;
+				await userController.updateUser(this.userDataDatabase.id, data);
+				window.sessionStorage.setItem('userDatabase', JSON.stringify(this.userDataDatabase));
 
 				this.$alert({
 					message: 'Usuário alterado com sucesso',
@@ -86,6 +96,9 @@ export default {
 					message: 'Error ao alterar o usuário. Tente novamente mais tarde',
 					...this.defaultAlert,
 				});
+			} finally {
+				this.loading = false;
+				this.editing = false;
 			}
 		},
 
@@ -105,9 +118,8 @@ export default {
 			}
 
 			try {
-				await authController.changeUser(this.userData.sub, {
-					...this.userData,
-					password: this.passObject.newPass,
+				await authController.changeUser(this.userDataDatabase.id, {
+					...this.userDataDatabase,
 				});
 				this.$alert({
 					message: 'Senha alterada com sucesso',
@@ -123,7 +135,7 @@ export default {
 		},
 
 		isValid() {
-			return this.userData.name && this.userData.email;
+			return this.userDataDatabase.nome;
 		},
 
 		isValidPass() {
@@ -152,23 +164,28 @@ export default {
 			</div>
 			<div class="photo-name">
 				<Icon name="account_circle" />
-				<input v-model="userData.name" class="name-input" :disabled="!editing" :class="{ active: editing }" />
+				<input
+					v-model="userDataDatabase.nome"
+					class="name-input"
+					:disabled="!editing"
+					:class="{ active: editing }"
+				/>
 			</div>
 			<div class="flex flex-col gap-4">
-				<Input v-model="userData.description" label="Descrição" :disabled="!editing" text-area />
+				<Input v-model="userDataDatabase.descricao" label="Descrição" :disabled="!editing" text-area />
 				<Input
-					v-model="userData.email"
+					v-model="userDataDatabase.email"
 					error-message="E-mail inválido"
 					label="E-mail"
-					:disabled="!editing"
+					disabled
 					type="email"
 				/>
-				<Button class="w-fit" @click="changingPass = true">Alterar Senha</Button>
+				<!-- <Button class="w-fit" @click="changingPass = true">Alterar Senha</Button> -->
 			</div>
 		</Card>
 		<div class="flex w-full justify-end gap-2">
-			<Button v-if="editing" @click="editing = false" only-border> Cancelar </Button>
-			<Button v-if="editing" @click="salveUser">Salvar</Button>
+			<Button v-if="editing" :disabled="loading" @click="editing = false" only-border> Cancelar </Button>
+			<Button v-if="editing" :loading="loading" @click="salveUser">Salvar</Button>
 		</div>
 		<Dialog v-model="changingPass" @update:model-value="resetPassForm">
 			<div class="flex flex-col xs:gap-6 gap-4 p-2">
@@ -184,8 +201,8 @@ export default {
 					/>
 				</div>
 				<div class="flex gap-2 justify-center xs:flex-row flex-col">
-					<Button only-border :size="size" @click="resetPassForm">Cancelar</Button>
-					<Button :size="size" @click="handleChangePass">Salvar</Button>
+					<Button only-border :size="size" :disabled="loading" @click="resetPassForm">Cancelar</Button>
+					<Button :size="size" :loading="loading" @click="handleChangePass">Salvar</Button>
 				</div>
 			</div>
 		</Dialog>
@@ -241,6 +258,7 @@ export default {
 		border-radius: 16px;
 		border: 0.1em transparent solid;
 		max-width: 100%;
+		background: transparent;
 
 		&:focus {
 			outline: none;

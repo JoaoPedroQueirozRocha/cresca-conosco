@@ -16,13 +16,23 @@ async function getUserByToken(token) {
 }
 
 async function createNewUser(body) {
-    const result = await pool.query('INSERT INTO usuarios (nome, email, token, descricao) VALUES ($1,$2,$3,$4) RETURNING *', [body.name, body.email, body.token, body.description])
+    const result = await pool.query('INSERT INTO usuarios (nome, email, token, descricao) VALUES ($1,$2,$3,$4) RETURNING *', [body.nome, body.email, body.token, body.description])
     return result;
 }
 
-async function updateUser(body) {
-    const result = await pool.query('UPDATE usuarios SET nome = $1, email = $2, token = $3,  descricao = $4 WHERE email = $2', [body.name, body.email, body.token, body.description])
-    return result;
+async function updateUser(id, updates) {
+
+    const fields = Object.keys(updates)
+        .map((field, index) => `${field} = $${index + 1}`)
+        .join(", ");
+
+    const values = Object.values(updates);
+
+    const query = `UPDATE usuarios SET ${fields} WHERE id = $${values.length + 1
+        } RETURNING *`;
+    const result = await pool.query(query, [...values, id]);
+    return result.rows[0];
+
 }
 
 async function deleteUser(body) {
