@@ -27,8 +27,6 @@ function updateGado(gado) {
     return axios.put(`${APIURL}/animals/${gado.id}`, gado);
 }
 
-
-
 async function deleteGado(id) {
     const deleteGestacao = await gestacaoServices.deletarGestacao(id);
 

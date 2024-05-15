@@ -17,6 +17,8 @@ import importRouter from './routes/importRoutes.js'
 
 const app = express();
 const PORT = process.env.PORT;
+
+
 app.use(
     cors({
         origin: [
@@ -35,7 +37,7 @@ app.use(
     .use("/user", userRouter)
     .use("/auth", authRouter)
     .use("/animals", animalsRouter)
-    .use("/gestacoes", gestacaoRouter)
+    .use("/gestacao", gestacaoRouter)
     .use('/mao-de-obra', workerRouter)
     .use('/gado', gadoRouter)
     .use('/despesas', despesasRouter)

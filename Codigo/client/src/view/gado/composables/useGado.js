@@ -9,6 +9,7 @@ export function useGado() {
         moreDetails: ref(false),
         showInsemDialog: ref(false),
         showParirDialog: ref(false),
+        showAgendarDialog: ref(false),
         isEdit: ref(false),
         headersDialog: ref([
             { text: "Nome", value: "nome", sortable: true },
@@ -143,12 +144,18 @@ export function useGado() {
             state.isDialogLoading = true;
             state.showParirDialog = true;
             state.isEdit = !isNew;
-            state.animalData = isNew ? await getAnimal(id_animal) : state.gadoData.find((item) => item.id_gestacao == id_gestacao);
+            state.animalData = state.gadoData.find((item) => item.id_gestacao == id_gestacao);
         } catch (e) {
             console.error(e);
         } finally {
             state.isDialogLoading = false;
         }
+    }
+
+
+    async function openAgendarDialog(animal) {
+        state.animalData = animal;
+        state.showAgendarDialog = true;
     }
 
     
@@ -214,6 +221,7 @@ export function useGado() {
         loadBaseData,
         openInsemDialog,
         openParirDialog,
+        openAgendarDialog,
         parirAnimal,
         secarAnimal,
         deletarAnimal,

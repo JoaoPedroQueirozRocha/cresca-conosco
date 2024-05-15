@@ -45,7 +45,7 @@ async function getWorker(req, res) {
 
 /**
  * 
- * @param { nome, salario, descricao } req 
+ * @param { nome, salario, cargo, clt } req 
  * @param {*} res 
  * @returns {worker}
  * Função para criar um novo funcionário
@@ -71,8 +71,9 @@ async function createWorker(req, res) {
  */
 async function updateWorker(req, res) {
     try {
-        const body = req.body
-        const worker = await workerServices.updateWorker(body)
+        const { id } = req.params;
+        const body = req.body;
+        const worker = await workerServices.updateWorker(id, body)
         res.status(200).json(worker)
     } catch (error) {
         console.error(error);
@@ -89,7 +90,7 @@ async function updateWorker(req, res) {
  */
 async function deleteWorker(req, res) {
     try {
-        const { id } = req.body;
+        const { id } = req.params;
         const worker = await workerServices.deleteWorker(id)
         res.status(200).json(worker)
     } catch (error) {
@@ -98,4 +99,21 @@ async function deleteWorker(req, res) {
     }
 }
 
-export { listWorkers, getWorker, createWorker, updateWorker, deleteWorker }
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {cargo[]}
+ * Função para pegar todos os cargos de usuário
+ */
+async function getDistinctCargos(req, res) {
+    try {
+        const worker = await workerServices.getDistinctCargos();
+        res.status(200).json(worker);
+    } catch (error) {
+        console.error(error);
+        res.status(error.status).send('Erro ao deletar funcionário' + error.message)
+    }
+}
+
+export { listWorkers, getWorker, createWorker, updateWorker, deleteWorker, getDistinctCargos }

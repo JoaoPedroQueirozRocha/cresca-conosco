@@ -82,7 +82,7 @@ const PROFIT_FIELDS = [
     },
 ];
 
-const COW = [
+const COW_FIELDS = [
     {
         label: 'Nome',
         value: 'nome',
@@ -111,4 +111,32 @@ const COW = [
     },
 ];
 
-export { COST_FIELDS, PROFIT_FIELDS, COW };
+const WORKER_FIELDS = [
+    {
+        label: 'Nome',
+        value: 'nome',
+        type: 'text',
+        required: true
+    },
+    {
+        label: 'Cargo',
+        value: 'cargo',
+        type: 'text',
+        required: true,
+        group: 'cargo-salario'
+    },
+    {
+        label: 'Salário',
+        value: 'salario',
+        type: 'number',
+        required: true,
+        group: 'cargo-salario'
+    },
+    {
+        label: 'CLT',
+        value: 'clt',
+        type: 'boolean'
+    },
+];
+
+export { COST_FIELDS, PROFIT_FIELDS, COW_FIELDS, WORKER_FIELDS };

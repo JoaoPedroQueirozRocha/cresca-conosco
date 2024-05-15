@@ -1,18 +1,20 @@
 <script>
-import { ref } from "vue";
-import Card from "./Card.vue";
-import Notification from "./Notification.vue";
-import Button from "./Button.vue";
+import { ref } from 'vue';
+import Card from './Card.vue';
+import Notification from './Notification.vue';
+import Button from './Button.vue';
 import Icon from './Icon.vue';
-import NotificationController from "../controller/notification"
-
+import Spinner from './Spinner.vue';
+import NotificationController from '../controller/notification';
+import { formatDate } from '../util';
 
 export default {
-	name: "Topbar",
-	components: { Card, Notification, Button, Icon },
-	inject: ["Auth"],
+	name: 'Topbar',
+	components: { Card, Notification, Button, Icon, Spinner },
+	inject: ['Auth'],
 	setup() {
 		return {
+			formatDate,
 			notificationActive: ref(false),
 			perfilDropdownActive: ref(false),
 			notifications: ref([]),
@@ -21,6 +23,7 @@ export default {
 			perfilDropdown: ref(),
 			perfilIcon: ref(),
 			userData: ref(),
+			loading: ref({}),
 			defaultAlert: ref({
 				top: true,
 				right: true,
@@ -30,37 +33,18 @@ export default {
 	},
 
 	beforeMount() {
-		this.userData = JSON.parse(window.sessionStorage.getItem('user'));
-		document.addEventListener("click", (event) => {
-			this.closeDropdown(
-				event,
-				this.notification?.$el,
-				this.notificationIcon?.$el,
-				"notificationActive"
-			);
-			this.closeDropdown(
-				event,
-				this.perfilDropdown?.$el,
-				this.perfilIcon?.$el,
-				"perfilDropdownActive"
-			);
+		const user = window.sessionStorage.getItem('user');
+		this.userData = JSON.parse(user == 'undefined' ? '{}' : user);
+		document.addEventListener('click', (event) => {
+			this.closeDropdown(event, this.notification?.$el, this.notificationIcon?.$el, 'notificationActive');
+			this.closeDropdown(event, this.perfilDropdown?.$el, this.perfilIcon?.$el, 'perfilDropdownActive');
 		});
 	},
 
 	beforeUnmount() {
-		document.removeEventListener("click", (event) => {
-			this.closeDropdown(
-				event,
-				this.notification?.$el,
-				this.notificationIcon,
-				"notificationActive"
-			);
-			this.closeDropdown(
-				event,
-				this.perfilDropdown?.$el,
-				this.perfilIcon,
-				"perfilDropdownActive"
-			);
+		document.removeEventListener('click', (event) => {
+			this.closeDropdown(event, this.notification?.$el, this.notificationIcon, 'notificationActive');
+			this.closeDropdown(event, this.perfilDropdown?.$el, this.perfilIcon, 'perfilDropdownActive');
 		});
 	},
 
@@ -69,49 +53,49 @@ export default {
 	},
 
 	methods: {
-
 		async setNotifications() {
 			try {
-				const notificationArray = await NotificationController.getAll()
+				const notificationArray = await NotificationController.getAll();
 				this.notifications = notificationArray || [];
-
-			} catch (error) {
-
-			}
+			} catch (error) {}
 		},
 
 		async activate(activateNotication, activateUser) {
 			this.notificationActive = activateNotication;
 			this.perfilDropdownActive = activateUser;
-
 		},
 
 		closeDropdown(event, dropdown, icon, key) {
 			if (!dropdown || !icon) return;
-			if (!dropdown.contains(event.target) && !icon.contains(event.target))
+			if (
+				!dropdown.contains(event.target) &&
+				!icon.contains(event.target) &&
+				!event.target.closest('.delete-icon')
+			)
 				this[key] = false;
 		},
 
 		logout() {
 			this.Auth.logout();
-			this.$route.push({ path: "/" });
+			this.$route.push({ path: '/' });
 		},
 		async deleteNotification(item, index) {
-			try{
-				await NotificationController.deleteNotification(item.id)
-				this.notifications.splice(index,1);
+			this.loading[index] = true;
+			try {
+				await NotificationController.deleteNotification(item.id);
+				this.notifications.splice(index, 1);
 				this.$alert({
 					message: 'Notificação deletada com sucesso',
 					type: 'success',
 					...this.defaultAlert,
 				});
-			}
-			catch(error){
+			} catch (error) {
 				this.$alert({
 					message: 'Erro ao deletar notificação. Tente novamente mais tarde',
 					...this.defaultAlert,
 				});
-				
+			} finally {
+				this.loading[index] = false;
 			}
 		},
 	},
@@ -121,7 +105,8 @@ export default {
 <template>
 	<div class="top-holder">
 		<div class="relative flex gap-2">
-			<div>
+			<div class="relative">
+				<span v-if="notifications.length" class="have-item" />
 				<Icon
 					class="top-icon"
 					name="circle_notifications"
@@ -151,22 +136,24 @@ export default {
 						<div class="flex justify-between items-start gap-2 px-2 py-1">
 							<div class="flex flex-col gap-2">
 								<h5 class="text-xl font-bold">{{ item.titulo }}</h5>
-								<p class="description">{{ item.descricao }}</p>
+								<p class="description">
+									{{ item.descricao }}. Data prevista para {{ formatDate(new Date(item.vencimento)) }}
+								</p>
 							</div>
-							<Icon
-								class="delete-icon"
-								name="delete"
-								@click="deleteNotification(item, index)"
-							/>
+							<Spinner v-if="loading[index]" />
+							<Icon v-else class="delete-icon" name="delete" @click="deleteNotification(item, index)" />
 						</div>
 					</template>
 				</Notification>
-				<Card v-else-if="perfilDropdownActive" ref="perfilDropdown"
-					class="flex flex-col items-center gap-4 w-fit">
+				<Card
+					v-else-if="perfilDropdownActive"
+					ref="perfilDropdown"
+					class="flex flex-col items-center gap-4 w-fit"
+				>
 					<h3 class="user-name">{{ userData.name }}</h3>
-					<div class="flex flex-col gap-2">
+					<div class="flex flex-col gap-2 w-full">
 						<router-link to="/perfil" @click="activate(false, false)">
-							<Button class="whitespace-nowrap">Editar Perfil</Button>
+							<Button class="whitespace-nowrap w-full">Editar Perfil</Button>
 						</router-link>
 						<Button only-border class="w-full" @click="logout()">Logout</Button>
 					</div>
@@ -177,7 +164,7 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import "../style/var.scss";
+@import '../style/var.scss';
 
 .delete-icon.material-symbols-rounded {
 	font-size: 25px;
@@ -225,6 +212,16 @@ export default {
 
 .top-icon {
 	background: $gray-200;
+	border-radius: 50%;
+}
+
+.have-item {
+	z-index: 10;
+	position: absolute;
+	right: 0;
+	height: 20px;
+	width: 20px;
+	background: $orange-strong;
 	border-radius: 50%;
 }
 

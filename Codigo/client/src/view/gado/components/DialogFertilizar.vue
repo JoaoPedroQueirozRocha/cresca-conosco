@@ -1,11 +1,16 @@
 <template>
-	<Dialog v-model="model" @update:model-value="cancelar" width="70%" height="fit-content">
-		<div class="dialog-div">
-			<h1 class="title mt-0">Agendar fertilização da {{ animalData.nome }}</h1>
-			<Input class="md:w-[49%] w-full" label="Crias" type="number" v-model="fertilizacaoData.crias" />
+	<Dialog v-model="model" @update:model-value="cancelar" no-overflow>
+		<div class="dialog-div" :class="{ bigger: isDateOpened }">
+			<div class="flex justify-between gap-8">
+				<h1 class="title mt-0">Agendar fertilização da {{ animalData.nome }}</h1>
+				<div class="close-dialog">
+					<Icon name="close" @click="changeModel(false)" />
+				</div>
+			</div>
+			<DatePicker label="Data" v-model="date" v-model:expanded="isDateOpened" :min-date="new Date()" />
 			<div class="flex flex-row gap-4 justify-end">
 				<Button @click="cancelar" only-border :disabled="loading">Cancelar</Button>
-				<Button @click="salvarFertilizacao()" :loading="loading">Agendar</Button>
+				<Button @click="salvarFertilizacao" :loading="loading">Agendar</Button>
 			</div>
 		</div>
 	</Dialog>
@@ -15,12 +20,13 @@
 import Dialog from '@/components/Dialog.vue';
 import Card from '@/components/Card.vue';
 import Tab from '@/components/Tab.vue';
-import Input from '@/components/Input.vue';
 import Select from '@/components/Select.vue';
 import DatePicker from '@/components/DatePicker.vue';
 import Button from '@/components/Button.vue';
-import { useGado } from '../composables/useGado.js';
-import { ref, reactive, watch } from 'vue';
+import Icon from '@/components/Icon.vue';
+import notificationController from '@/controller/notification';
+import { formatDate } from '@/util';
+import { ref } from 'vue';
 
 export default {
 	name: 'DialogFertilizacao',
@@ -29,66 +35,37 @@ export default {
 		modelValue: { type: Boolean, required: false }
 	},
 	emits: ['update:modelValue', 'change'],
-	watch: {
-		animalData() {
-			if (this.animalData) {
-				this.fertilizacaoData = {
-					animal_id: this.animalData.id,
-					id_fertilizacao: this.animalData.id_fertilizacao ? this.animalData.id_fertilizacao : null,
-					crias: 0
-				};
-			} else {
-				this.fertilizacaoData.animal_id = this.animalData.id;
-			}
-		},
-		modelValue() {
-			this.model = this.modelValue;
-		},
-	},
 	components: {
 		Dialog,
 		Card,
 		Tab,
-		Input,
 		Select,
 		DatePicker,
 		Button,
+		Icon,
 	},
 	setup() {
-		const {
-			fertilizacaoData,
-            createDialog,
-			loadBaseData,
-			openInsemDialog,
-			openParirDialog,
-			parirAnimal,
-			secarAnimal,
-			deletarAnimal,
-			confirmarGestacao,
-			getOptions
-		} = useGado();
-
 		const defaultAlert = ref({
 			top: true,
 			right: true,
 			timeout: 3500,
 		});
 
+		const date = ref(null);
+		const isDateOpened = ref(false);
+
 		return {
 			model: ref(false),
-			defaultAlert,
 			loading: ref(false),
-			fertilizacaoData,
-			createDialog,
-			loadBaseData,
-			openInsemDialog,
-			openParirDialog,
-			parirAnimal,
-			secarAnimal,
-			deletarAnimal,
-			confirmarGestacao,
-			getOptions
+			defaultAlert,
+			isDateOpened,
+			date,
 		};
+	},
+	watch: {
+		modelValue() {
+			this.model = this.modelValue;
+		},
 	},
 
 	mounted() {
@@ -98,36 +75,34 @@ export default {
 	methods: {
 		changeModel(value) {
 			this.model = value;
-			this.$emit('update:modelValue', this.model); // Emitindo o evento
+			this.$emit('update:modelValue', this.model);
 		},
 		cancelar() {
 			this.changeModel(false);
-			this.fertilizacaoData = {
-				animal_id: null,
-				id_fertilizacao: null,
-				status: '',
-				crias: null,
-				touro: '',
-				data_insem: '',
-				prev_parto: '' || null,
-			};
-		},
-
-		async validateData(fertilizacaoData){	
-			return fertilizacaoData.crias >= 0;
+			this.date = null;
 		},
 
 		async salvarFertilizacao() {
-			if (!this.validateData(this.fertilizacaoData)) {
-				this.showAlert('Verifique o valor dos campos para a fertilização da vaca', 'error');
+			if (!this.date) {
+				this.showAlert('Insirar a data para agendar a fertilização', 'error');
 			} else {
 				this.loading = true;
 				try {
-					console.log(this.fertilizacaoData.crias);
-					await this.fertilizarAnimal(this.fertilizacaoData.id, this.fertilizacaoData.crias);
-					this.showAlert('Fertilização registrado com sucesso', 'success')
+					const oldNotification = await this.getOldNotification();
+					if (oldNotification) {
+						const result = await this.$confirm({
+							title: 'Deseja mudar a data do agendamento?',
+							description: `A fertlização da ${this.animalData.nome} já foi marcada para o dia ${formatDate(new Date(oldNotification.vencimento))}`
+						});
+						if (!result) return;
+						await notificationController.updateNotification(oldNotification.id, this.date);
+					} else {
+						await notificationController.createFertilizacaoNotification(this.date, this.animalData);
+					}
+
+					this.showAlert('Agendamento feito com sucesso', 'success')
 				} catch (error) {
-					console.error(error);
+					this.showAlert('Error ao agendar fertilização. Tente novamente mais tarde', 'error');
 				} finally {
 					this.cancelar();
 					this.$emit('change');
@@ -143,17 +118,51 @@ export default {
 				...this.defaultAlert,
 			});
 		},
+
+		async getOldNotification() {
+			try {
+				const { data } = await notificationController.getFertilizacaoNotification(this.animalData.id_animal);
+				return data;
+			} catch (e) {
+				return null;
+			}
+		}
 	},
 };
 </script>
 <style scoped lang="scss">
+@import '../../../style/var.scss';
+
 .dialog-div {
 	display: flex;
 	flex-direction: column;
 	height: fit-content;
+	min-height: 240px;
 	gap: 3em;
 	padding: 1em;
 	transition-duration: 1s;
+	
+	.close-dialog {
+		display: flex;
+		align-items: center;
+		border-radius: 50%;
+		padding: 0.1em 0.2em;
+		cursor: pointer;
+		color: $green-dark;
+		transition-duration: 0.3s;
+
+		&:hover {
+			background: $gray-200;
+		}
+
+		.material-symbols-rounded {
+			font-size: 35px;
+		}
+	}
+}
+
+.dialog-div.bigger {
+	min-height: 90vh;
 }
 
 @media screen and (max-width: 768px) {

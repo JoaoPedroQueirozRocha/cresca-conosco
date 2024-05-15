@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Animais } from './Animais';
+import { Animal } from './Animal';
 
 export enum GestacaoStatus {
 	PENDENTE = 'pendente',
@@ -16,7 +16,7 @@ export enum TouroType {
 }
 
 @Entity()
-export class Gestacoes {
+export class Gestacao {
 	@PrimaryGeneratedColumn()
 	id: number;
 
@@ -35,7 +35,7 @@ export class Gestacoes {
 	@Column({ type: 'date', nullable: true })
 	data_finalizacao: Date;
 
-	@ManyToOne(() => Animais, (animal) => animal.gestacoes)
+	@ManyToOne(() => Animal, (animal) => animal.gestacoes)
 	@JoinColumn({ name: 'animal_id' })
-	animal: Animais;
+	animal: Animal;
 }

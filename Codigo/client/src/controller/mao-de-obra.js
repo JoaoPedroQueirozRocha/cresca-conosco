@@ -6,26 +6,37 @@ async function getBase() {
     return response.data;
 }
 
-function getFuncionario(id) {
+function getMaoDeObra(id) {
     return axios.get(`${APIURL}/${id}`);
 }
 
-function updateFuncionario(id, data) {
+async function getDistinctCargos() {
+    const response = await axios.get(`${APIURL}/cargos`);
+    return response;
+}
+
+function updateMaoDeObra(id, data) {
     return axios.put(`${APIURL}/${id}`, data);
 }
 
-function createFuncionario(data) {
+function createMaoDeObra(data) {
     return axios.post(`${APIURL}/`, data);
 }
 
-function deleteFuncionario(id) {
+function deleteMaoDeObra(id) {
     return axios.delete(`${APIURL}/${id}`);
+}
+
+function importFile(data) {
+    return axios.post(`${import.meta.env.VITE_API_URL}/import/mao_de_obra`, data);
 }
 
 export default {
     getBase,
-    getFuncionario,
-    updateFuncionario,
-    createFuncionario,
-    deleteFuncionario
+    getMaoDeObra,
+    updateMaoDeObra,
+    createMaoDeObra,
+    deleteMaoDeObra,
+    importFile,
+    getDistinctCargos,
 }

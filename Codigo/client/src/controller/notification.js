@@ -6,13 +6,44 @@ async function getAll() {
     return response.data;
 }
 
-async function deleteNotification(id){
+async function getNotification(animal_id, title) {
+    return await axios.get(`${APIURL}/${animal_id}/${title}`);
+}
+
+async function getFertilizacaoNotification(animal_id) {
+    return await getNotification(animal_id, 'Fertilização');
+}
+
+async function createNotification(data) {
+    return await axios.post(`${APIURL}`, data);
+}
+
+async function createFertilizacaoNotification(date, animal) {
+    const data = {
+        titulo: 'Fertilização',
+        descricao: `O dia de fertilizar a ${animal.nome} está chegando`,
+        vencimento: date,
+        animal_id: animal.id_animal,
+    };
+    return await createNotification(data);
+}
+
+async function updateNotification(id, date){
+    return axios.put(`${APIURL}/${id}`, { vencimento: date });
+}
+
+async function deleteNotification(id) {
     return axios.delete(`${APIURL}/${id}`);
 }
 
 export default {
     getAll,
-    deleteNotification
+    deleteNotification,
+    createNotification,
+    createFertilizacaoNotification,
+    getNotification,
+    getFertilizacaoNotification,
+    updateNotification
 }
 
 

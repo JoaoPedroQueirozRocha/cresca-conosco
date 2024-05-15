@@ -1,5 +1,5 @@
 import axios from "axios";
-const APIURL = `${import.meta.env.VITE_API_URL}/gestacoes`
+const APIURL = `${import.meta.env.VITE_API_URL}/gestacao`
 
 async function getGestacao(animal_id) {
     return await axios.get(`${APIURL}/${animal_id}`);
@@ -10,7 +10,7 @@ function salvarGestacao(gestacao) {
 }
 
 async function parir(id, crias) {
-    return await axios.put(`${APIURL}/parir/${id}`, { status: 'concluida', data_finalizacao: new Date(), crias: crias });
+    return await axios.put(`${APIURL}/parir/${id}`, { status: 'concluida', crias: crias, data_finalizacao: new Date() });
 
 }
 

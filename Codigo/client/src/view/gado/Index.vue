@@ -57,7 +57,7 @@
 							</router-link>
 							<div
 								class="action-option"
-								:class="{disabled: !getOptions(item.status).insemAvaliable}"
+								:class="{ disabled: !getOptions(item.status).insemAvaliable }"
 								@click="openInsemDialog(item.id_animal, null, true)"
 							>
 								<Icon name="vaccines" />
@@ -65,7 +65,7 @@
 							</div>
 							<div
 								class="action-option"
-								:class="{disabled: !getOptions(item.status).editGestacaoAvaliable}"
+								:class="{ disabled: !getOptions(item.status).editGestacaoAvaliable }"
 								@click="openInsemDialog(item.id_animal, item.id_gestacao)"
 							>
 								<Icon name="edit" />
@@ -73,8 +73,8 @@
 							</div>
 							<div
 								class="action-option"
-								:class="{disabled: !getOptions(item.status).parirAvaliable}"
-								@click="openParirDialog(item.id_animal, null, true)"
+								:class="{ disabled: !getOptions(item.status).parirAvaliable }"
+								@click="openParirDialog(item.id_animal, item.id_gestacao, true)"
 							>
 								<Icon name="heart_check" />
 								Parir
@@ -82,6 +82,13 @@
 							<div class="action-option" @click="secarAnimal(item.id)">
 								<Icon name="menstrual_health" />
 								Secar
+							</div>
+							<div
+								class="action-option"
+								@click="openAgendarDialog(item)"
+							>
+								<Icon name="event" />
+								Agendar Fertilização
 							</div>
 							<div class="action-option delete" @click="confirmDeletion(item.id_animal, index)">
 								<Icon name="delete" />
@@ -97,12 +104,12 @@
 				</template>
 				<template #dataInsem="{ item, index }">
 					<td>
-						{{ item.data_insem ? formatDate(new Date(item.data_insem)) : "-" }}
+						{{ item.data_insem ? formatDate(new Date(item.data_insem)) : '-' }}
 					</td>
 				</template>
 				<template #prevParto="{ item, index }">
 					<td>
-						{{ item.prev_parto ? formatDate(new Date(item.prev_parto)) : "-" }}
+						{{ item.prev_parto ? formatDate(new Date(item.prev_parto)) : '-' }}
 					</td>
 				</template>
 				<template #touro="{ item, index }">
@@ -142,8 +149,7 @@
 				:animalData="animalData"
 				:isEdit="isEdit"
 				@change="loadBaseData"
-
-				></DialogParir>
+			></DialogParir>
 			<DialogInsem
 				v-model="showInsemDialog"
 				:animalData="animalData"
@@ -151,6 +157,12 @@
 				:isEdit="isEdit"
 				@change="loadBaseData"
 			></DialogInsem>
+			<DialogFertilizar
+				v-model="showAgendarDialog"
+				:animalData="animalData"
+				:isDialogLoading="isDialogLoading"
+				@change="loadBaseData"
+			></DialogFertilizar>
 		</div>
 	</div>
 </template>
@@ -172,10 +184,11 @@ import Loader from "@/components/Loader.vue";
 import DialogTable from "./components/DialogTable.vue";
 import DialogInsem from "./components/DialogInsem.vue";
 import DialogParir from "./components/DialogParir.vue";
+import DialogFertilizar from "./components/DialogFertilizar.vue";
 import animalController from "@/controller/animal";
 
 export default {
-	name: "Gado",
+	name: 'Gado',
 	components: {
 		Table,
 		Button,
@@ -184,13 +197,14 @@ export default {
 		DialogTable,
 		DialogInsem,
 		DialogParir,
+		DialogFertilizar,
 		Card,
 		Icon,
 		Filter,
 		Tag,
 		Loader,
 	},
-	inject: ["Auth"],
+	inject: ['Auth'],
 	setup() {
 		const {
 			gadoData,
@@ -204,11 +218,13 @@ export default {
 			moreDetails,
 			showInsemDialog,
 			showParirDialog,
+			showAgendarDialog,
 			isEdit,
 			loadBaseData,
 			createDialog,
 			openInsemDialog,
 			openParirDialog,
+			openAgendarDialog,
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
@@ -216,7 +232,7 @@ export default {
 			getOptions,
 		} = useGado();
 
-		const searchValue = ref("");
+		const searchValue = ref('');
 		const pageLoading = ref(false);
 		const { filteredData, getSelected } = useFilter(gadoData, filterOptions, searchValue);
 		const defaultAlert = ref({
@@ -236,6 +252,7 @@ export default {
 			moreDetails,
 			showInsemDialog,
 			showParirDialog,
+			showAgendarDialog,
 			filterOptions,
 			filterCard: ref(),
 			showFilter: ref(false),
@@ -249,6 +266,7 @@ export default {
 			createDialog,
 			openInsemDialog,
 			openParirDialog,
+			openAgendarDialog,
 			formatDate,
 			parirAnimal,
 			secarAnimal,
@@ -266,25 +284,25 @@ export default {
 	},
 
 	mounted() {
-		document.addEventListener("click", this.closeCards);
-		const app = document.querySelector("#app");
-		app.addEventListener("scroll", this.closeCard);
-		const table = document.querySelector(".gado-table");
-		table.addEventListener("scroll", this.closeCard);
+		document.addEventListener('click', this.closeCards);
+		const app = document.querySelector('#app');
+		app.addEventListener('scroll', this.closeCard);
+		const table = document.querySelector('.gado-table');
+		table.addEventListener('scroll', this.closeCard);
 	},
 
 	beforeUnmount() {
-		document.removeEventListener("click", this.closeCards);
-		const app = document.querySelector("#app");
-		app.removeEventListener("scroll", this.closeCard);
-		const table = document.querySelector(".gado-table");
-		table.removeEventListener("scroll", this.closeCard);
+		document.removeEventListener('click', this.closeCards);
+		const app = document.querySelector('#app');
+		app.removeEventListener('scroll', this.closeCard);
+		const table = document.querySelector('.gado-table');
+		table.removeEventListener('scroll', this.closeCard);
 	},
 
 	methods: {
 		positionCard(item, index) {
 			this.setExpanded();
-			const card = this.$refs["card" + index]?.$el;
+			const card = this.$refs['card' + index]?.$el;
 			const rect = card.parentElement.getBoundingClientRect();
 
 			item.expanded = true;
@@ -292,12 +310,12 @@ export default {
 				const windowHeight = window.innerHeight;
 				const cardHeight = card.offsetHeight;
 				const height = rect.top + 40 + cardHeight;
-				card.style.left = rect.left - 200 + "px";
+				card.style.left = rect.left - 210 + "px";
 				if (height > windowHeight) {
 					delete card.style.top;
 					card.style.bottom = 0;
 				} else {
-					card.style.top = rect.top + 40 + "px";
+					card.style.top = rect.top + 40 + 'px';
 				}
 			}, 10);
 
@@ -305,8 +323,8 @@ export default {
 		},
 
 		closeCard(event) {
-			const cardParent = this.$refs["card" + this.opendedIndex]?.$el?.parentElement;
-			if (this.opendedIndex == null || (cardParent && event.target.closest(".action") === cardParent)) return;
+			const cardParent = this.$refs['card' + this.opendedIndex]?.$el?.parentElement;
+			if (this.opendedIndex == null || (cardParent && event.target.closest('.action') === cardParent)) return;
 			this.setExpanded();
 		},
 
@@ -316,7 +334,7 @@ export default {
 		},
 
 		closeFilterCard(event) {
-			if (this.filterCard == event.target.closest(".filter-holder") || event.target.closest(".filter")) return;
+			if (this.filterCard == event.target.closest('.filter-holder') || event.target.closest('.filter')) return;
 			this.showFilter = false;
 		},
 
@@ -329,20 +347,20 @@ export default {
 
 		async confirmDeletion(id, index) {
 			const result = await this.$confirm({
-				title: "Tem certeza que deseja deletar esse item?",
+				title: 'Tem certeza que deseja deletar esse item?',
 			});
 			if (result) {
 				try {
 					await animalController.deletarAnimal(id);
 					this.gadoData.splice(index, 1);
 					this.$alert({
-						message: "Vaca deletada com sucesso",
-						type: "success",
+						message: 'Vaca deletada com sucesso',
+						type: 'success',
 						...this.defaultAlert,
 					});
 				} catch (error) {
 					this.$alert({
-						message: "Erro ao deletar a vaca. Tente novamente mais tarde",
+						message: 'Erro ao deletar a vaca. Tente novamente mais tarde',
 						...this.defaultAlert,
 					});
 				}
@@ -351,16 +369,16 @@ export default {
 
 		getColor(status) {
 			switch (status) {
-				case "falhou":
-					return "red";
-				case "pendente":
-					return "yellow";
-				case "confirmada":
-					return "blue";
-				case "concluida":
-					return "green";
+				case 'falhou':
+					return 'red';
+				case 'pendente':
+					return 'yellow';
+				case 'confirmada':
+					return 'blue';
+				case 'concluida':
+					return 'green';
 				default:
-					return "gray";
+					return 'gray';
 			}
 		},
 	},
@@ -368,7 +386,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../style/var.scss";
+@import '../../style/var.scss';
 
 td {
 	color: $gray-500;

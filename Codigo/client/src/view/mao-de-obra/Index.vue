@@ -1,7 +1,7 @@
 <template>
 	<div class="flex flex-col w-full mt-[3em]">
 		<div class="w-full flex flex-col gap-3">
-			<div>
+			<div class="mb-4">
 				<div class="flex flex-row w-full justify-between items-center align-middle my-4">
 					<h2 class="title mt-0">Mão de Obra</h2>
 					<router-link to="/mao-de-obra/criar">
@@ -9,7 +9,7 @@
 					</router-link>
 				</div>
 
-				<div class="w-full flex items-center justify-between gap-4 flex-wrap mb-8">
+				<div class="w-full flex items-center justify-between gap-4 flex-wrap">
 					<Input
 						v-model="searchValue"
 						:disabled="isLoading"
@@ -68,7 +68,7 @@
 				</template>
 
 				<template #cargo="{ item, index }">
-					<td>{{ item.descricao }}</td>
+					<td>{{ item.cargo }}</td>
 				</template>
 
 				<template #clt="{ item, index }">
@@ -114,7 +114,7 @@ export default {
 		Filter,
 	},
 	setup() {
-		const { getBaseData, isLoading, maoDeObraData } = useFetchs();
+		const { getBaseData, deleteMaoDeObra, getCargos, isLoading, maoDeObraData } = useFetchs();
 		const headers = ref([
 			{
 				text: 'Nome',
@@ -145,27 +145,7 @@ export default {
 				value: 'clt',
 				selected: false,
 			},
-			{
-				text: 'Cargo',
-				value: 'cargo',
-				childs: [
-					{
-						text: 'Administrador',
-						value: 'administrador',
-						selected: false,
-					},
-					{
-						text: 'Administrador',
-						value: 'administrador',
-						selected: false,
-					},
-					{
-						text: 'Administrador',
-						value: 'administrador',
-						selected: false,
-					},
-				],
-			},
+			
 		]);
 		const defaultAlert = ref({
 			top: true,
@@ -176,6 +156,8 @@ export default {
 		return {
 			maoDeObraData,
 			getBaseData,
+			deleteMaoDeObra,
+			getCargos,
 			headers,
 			filterOptions,
 			isLoading,
@@ -189,6 +171,7 @@ export default {
 
 	async beforeMount() {
 		await this.getBaseData();
+		await this.addCargos();
 	},
 
 	computed: {
@@ -307,8 +290,29 @@ export default {
 			const result = await this.$confirm({
 				title: 'Tem certeza que deseja deletar esse item?',
 			});
-			// Tratar dados
-			if (result) () => {};
+			if (!result) return;
+
+			try {
+				this.isLoading = true;
+				await this.deleteMaoDeObra(id);
+				const index = this.maoDeObraData.findIndex((data) => data.id == id);
+				this.maoDeObraData.splice(index, 1);
+				this.$alert({
+					type: 'success',
+					message: 'Mão de obra deletada com sucesso',
+					...this.defaultAlert,
+				});
+			} catch (e) {
+				console.log(e)
+				this.$alert({
+					message: 'Erro ao deletar mão de obra. Tente novamente mais tarde',
+					...this.defaultAlert,
+				});
+			} finally {
+				this.isLoading = false;
+			}
+
+			await this.addCargos();
 		},
 
 		downloadCSV() {
@@ -321,6 +325,36 @@ export default {
 				});
 			}
 		},
+
+		async addCargos() {
+			try {
+				const cargos = await this.getCargos();
+				if (!cargos.length) return;
+
+				const cargoFilter = {
+					text: 'Cargo',
+					value: 'cargo',
+					childs: cargos.map((cargo) => {
+						return {
+							text: cargo.cargo,
+							value: cargo.cargo,
+							selected: false,
+						}
+					}),
+				}
+
+				if (this.filterOptions.length > 1) {
+					this.filterOptions[1].childs = cargoFilter.childs;
+				} else {
+					this.filterOptions.push(cargoFilter);
+				}
+			} catch (e) {
+				this.$alert({
+					message: 'Erro ao regatrar cargos',
+					...this.defaultAlert,
+				});
+			}
+		}
 	},
 };
 </script>
