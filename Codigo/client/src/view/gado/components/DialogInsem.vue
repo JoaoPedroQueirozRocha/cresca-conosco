@@ -52,6 +52,7 @@ import Select from '@/components/Select.vue';
 import DatePicker from '@/components/DatePicker.vue';
 import Button from '@/components/Button.vue';
 import gestacaoController from '@/controller/gestacao.js';
+import notificationController from '@/controller/notification';
 import { useEditDialog } from '../composables/useEditDialog.js';
 import { ref, reactive, watch } from 'vue';
 
@@ -147,6 +148,9 @@ export default {
 				this.loading = true;
 				try {
 					await this.processarGestacao(this.gestacaoData, this.isEdit);
+
+					await notificationController.createBirthNotification(this.gestacaoData.prev_parto, this.animalData);
+					
 					this.showAlert('Gestação salva com sucesso', 'success');
 				} catch (error) {
 					console.error(error);

@@ -88,16 +88,21 @@ export default {
 			} else {
 				this.loading = true;
 				try {
-					const oldNotification = await this.getOldNotification();
-					if (oldNotification) {
+					const oldFertilizationNotification = await this.getOldFertilizationNotification();
+					const oldBirthNotification = await this.getOldBirthNotification();
+					if (oldFertilizationNotification) {
 						const result = await this.$confirm({
 							title: 'Deseja mudar a data do agendamento?',
-							description: `A fertlização da ${this.animalData.nome} já foi marcada para o dia ${formatDate(new Date(oldNotification.vencimento))}`
+							description: `A fertlização da ${this.animalData.nome} já foi marcada para o dia ${formatDate(new Date(oldFertilizationNotification.vencimento))}`
 						});
 						if (!result) return;
-						await notificationController.updateNotification(oldNotification.id, this.date);
+						await notificationController.updateNotification(oldFertilizationNotification.id, this.date);
 					} else {
 						await notificationController.createFertilizacaoNotification(this.date, this.animalData);
+					}
+
+					if (!oldBirthNotification) {
+						await notificationController.createBirthNotification(this.date, this.animalData);
 					}
 
 					this.showAlert('Agendamento feito com sucesso', 'success')
@@ -119,9 +124,17 @@ export default {
 			});
 		},
 
-		async getOldNotification() {
+		async getOldFertilizationNotification() {
 			try {
 				const { data } = await notificationController.getFertilizacaoNotification(this.animalData.id_animal);
+				return data;
+			} catch (e) {
+				return null;
+			}
+		},
+		async getOldBirthNotification() {
+			try {
+				const { data } = await notificationController.getPartoNotification(this.animalData.id_animal);
 				return data;
 			} catch (e) {
 				return null;
@@ -141,7 +154,7 @@ export default {
 	gap: 3em;
 	padding: 1em;
 	transition-duration: 1s;
-	
+
 	.close-dialog {
 		display: flex;
 		align-items: center;
