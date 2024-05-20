@@ -29,7 +29,7 @@ import { formatDate } from '@/util';
 import { ref } from 'vue';
 
 export default {
-	name: 'DialogFertilizacao',
+	name: 'DialogAgendarFertilizacao',
 	props: {
 		animalData: { type: Object, required: true },
 		modelValue: { type: Boolean, required: false }
@@ -88,21 +88,18 @@ export default {
 			} else {
 				this.loading = true;
 				try {
-					const oldFertilizationNotification = await this.getOldFertilizationNotification();
-					const oldBirthNotification = await this.getOldBirthNotification();
-					if (oldFertilizationNotification) {
+					const oldNotification = await this.getOldNotification();
+
+					if (oldNotification) {
 						const result = await this.$confirm({
 							title: 'Deseja mudar a data do agendamento?',
-							description: `A fertlização da ${this.animalData.nome} já foi marcada para o dia ${formatDate(new Date(oldFertilizationNotification.vencimento))}`
+							description: `A fertlização da ${this.animalData.nome} já foi marcada para o dia ${formatDate(new Date(oldNotification.vencimento))}`
 						});
 						if (!result) return;
-						await notificationController.updateNotification(oldFertilizationNotification.id, this.date);
+						await notificationController.updateNotification(oldNotification.id, this.date);
 					} else {
+						this.animalData.id = this.animalData.id_animal;
 						await notificationController.createFertilizacaoNotification(this.date, this.animalData);
-					}
-
-					if (!oldBirthNotification) {
-						await notificationController.createBirthNotification(this.date, this.animalData);
 					}
 
 					this.showAlert('Agendamento feito com sucesso', 'success')
@@ -124,7 +121,7 @@ export default {
 			});
 		},
 
-		async getOldFertilizationNotification() {
+		async getOldNotification() {
 			try {
 				const { data } = await notificationController.getFertilizacaoNotification(this.animalData.id_animal);
 				return data;
@@ -132,14 +129,6 @@ export default {
 				return null;
 			}
 		},
-		async getOldBirthNotification() {
-			try {
-				const { data } = await notificationController.getPartoNotification(this.animalData.id_animal);
-				return data;
-			} catch (e) {
-				return null;
-			}
-		}
 	},
 };
 </script>

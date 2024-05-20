@@ -40,10 +40,11 @@ async function createNewNotification(req,res) {
 
 }
 
-async function updateNotification(req,res) {
+async function updateNotification(req, res) {
     try{
-        const { id } = req.params 
-        const notification = await notificationServices.updateNotification(id)
+        const { id } = req.params;
+        const { body } = req;
+        const notification = await notificationServices.updateNotification(id, body)
         res.json(notification)
     } catch (error){
         console.error(error)

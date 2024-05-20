@@ -26,7 +26,7 @@ export function useEditDialog() {
         })
     })
 
-    async function validateData(gestacaoData) {
+    function validateData(gestacaoData) {
         if (gestacaoData.status === "confirmada") {
             return (
                 gestacaoData.data_insem &&
@@ -82,6 +82,7 @@ export function useEditDialog() {
         validateData,
         processarGestacao,
         changeDisabled,
+        adjustPrevPartoDate,
     }
 }
 

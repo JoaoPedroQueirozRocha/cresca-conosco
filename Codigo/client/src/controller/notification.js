@@ -27,7 +27,7 @@ async function createFertilizacaoNotification(date, animal) {
         titulo: 'Fertilização',
         descricao: `O dia de fertilizar a ${animal.nome} está chegando`,
         vencimento: date,
-        animal_id: animal.id_animal,
+        animal_id: animal.id,
     };
     return await createNotification(data);
 }
@@ -37,7 +37,7 @@ async function createBirthNotification(date, animal) {
         titulo: 'Parto',
         descricao: `O dia de ${animal.nome} parir está chegando`,
         vencimento: date,
-        animal_id: animal.id_animal,
+        animal_id: animal.id,
     };
     return await createNotification(data);
 }
