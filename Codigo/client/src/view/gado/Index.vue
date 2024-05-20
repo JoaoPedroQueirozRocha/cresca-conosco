@@ -149,20 +149,20 @@
 				:animalData="animalData"
 				:isEdit="isEdit"
 				@change="loadBaseData"
-			></DialogParir>
+			/>
 			<DialogInsem
 				v-model="showInsemDialog"
 				:animalData="animalData"
 				:isDialogLoading="isDialogLoading"
 				:isEdit="isEdit"
 				@change="loadBaseData"
-			></DialogInsem>
-			<DialogFertilizar
+			/>
+			<DialogAgendarFertilizacao
 				v-model="showAgendarDialog"
 				:animalData="animalData"
 				:isDialogLoading="isDialogLoading"
 				@change="loadBaseData"
-			></DialogFertilizar>
+			/>
 		</div>
 	</div>
 </template>
@@ -184,7 +184,7 @@ import Loader from "@/components/Loader.vue";
 import DialogTable from "./components/DialogTable.vue";
 import DialogInsem from "./components/DialogInsem.vue";
 import DialogParir from "./components/DialogParir.vue";
-import DialogFertilizar from "./components/DialogFertilizar.vue";
+import DialogAgendarFertilizacao from "./components/DialogAgendarFertilizacao.vue";
 import animalController from "@/controller/animal";
 
 export default {
@@ -197,7 +197,7 @@ export default {
 		DialogTable,
 		DialogInsem,
 		DialogParir,
-		DialogFertilizar,
+		DialogAgendarFertilizacao,
 		Card,
 		Icon,
 		Filter,
