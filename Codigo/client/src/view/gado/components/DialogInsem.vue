@@ -38,7 +38,7 @@
 			</div>
 			<div class="flex flex-row gap-4 justify-end">
 				<Button @click="cancelar" only-border :disabled="loading">Cancelar</Button>
-				<Button @click="salvarGestacao()" :loading="loading">Salvar</Button>
+				<Button @click="salvarGestacao" :loading="loading">Salvar</Button>
 			</div>
 		</div>
 	</Dialog>
