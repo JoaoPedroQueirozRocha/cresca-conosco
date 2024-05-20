@@ -20,13 +20,11 @@ export default {
 		const loading = ref(false);
 		return {
 			editing: ref(false),
-			changingPass: ref(false),
 			defaultAlert: ref({
 				top: true,
 				right: true,
 				timeout: 3500,
 			}),
-			passObject: ref({}),
 			userData: ref({}),
 			userDataDatabase: ref({}),
 			loading,
@@ -102,49 +100,8 @@ export default {
 			}
 		},
 
-		async handleChangePass() {
-			if (!this.isValidPass()) {
-				this.$alert({
-					message: 'Preencha todos os campos para alterar sua senha',
-					...this.defaultAlert,
-				});
-				return;
-			} else if (this.passObject.newPass !== this.passObject.confirmNewPass) {
-				this.$alert({
-					message: 'Sua senha e a confirmação devem ser iguais',
-					...this.defaultAlert,
-				});
-				return;
-			}
-
-			try {
-				await authController.changeUser(this.userDataDatabase.id, {
-					...this.userDataDatabase,
-				});
-				this.$alert({
-					message: 'Senha alterada com sucesso',
-					type: 'success',
-					...this.defaultAlert,
-				});
-			} catch (e) {
-				this.$alert({
-					message: 'Error ao alterar a senha. Tente novamente mais tarde',
-					...this.defaultAlert,
-				});
-			}
-		},
-
 		isValid() {
 			return this.userDataDatabase.nome;
-		},
-
-		isValidPass() {
-			return this.passObject.actualPass && this.passObject.newPass && this.passObject.confirmNewPass;
-		},
-
-		resetPassForm() {
-			this.changingPass = false;
-			this.passObject = {};
 		},
 	},
 };
@@ -184,28 +141,9 @@ export default {
 			</div>
 		</Card>
 		<div class="flex w-full justify-end gap-2">
-			<Button v-if="editing" :disabled="loading" @click="editing = false" only-border> Cancelar </Button>
+			<Button v-if="editing" :disabled="loading" @click="editing = false" only-border>Cancelar</Button>
 			<Button v-if="editing" :loading="loading" @click="salveUser">Salvar</Button>
 		</div>
-		<Dialog v-model="changingPass" @update:model-value="resetPassForm">
-			<div class="flex flex-col xs:gap-6 gap-4 p-2">
-				<h1 class="xs:text-4xl text-2xl font-bold whitespace-normal break-words">Alterar Senha</h1>
-				<div class="w-full flex flex-col gap-2">
-					<Input v-model="passObject.actualPass" label="Senha Atual" type="password" class="input-pass" />
-					<Input v-model="passObject.newPass" label="Nova Senha" type="password" class="input-pass" />
-					<Input
-						v-model="passObject.confirmNewPass"
-						label="Confirme sua nova senha"
-						type="password"
-						class="input-pass"
-					/>
-				</div>
-				<div class="flex gap-2 justify-center xs:flex-row flex-col">
-					<Button only-border :size="size" :disabled="loading" @click="resetPassForm">Cancelar</Button>
-					<Button :size="size" :loading="loading" @click="handleChangePass">Salvar</Button>
-				</div>
-			</div>
-		</Dialog>
 	</div>
 </template>
 
@@ -272,10 +210,6 @@ export default {
 
 h1 {
 	color: $green-dark;
-}
-
-.input-pass {
-	min-width: 60vw;
 }
 
 @media screen and (max-width: 768px) {
