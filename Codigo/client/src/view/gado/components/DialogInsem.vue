@@ -19,7 +19,7 @@
 						v-model="gestacaoData.status"
 						:items="options"
 					/>
-					<Select class="flex-1" label="Touro (semem)" v-model="gestacaoData.touro" :items="optionsTouro" />
+					<Select class="flex-1" label="Touro (sêmen)" v-model="gestacaoData.touro" :items="optionsTouro" />
 				</div>
 				<DatePicker
 					label="Data Inseminação"
