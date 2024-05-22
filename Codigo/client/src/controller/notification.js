@@ -14,6 +14,14 @@ async function getFertilizacaoNotification(animal_id) {
     return await getNotification(animal_id, 'Fertilização');
 }
 
+async function getBirthNotification(animal_id) {
+    return await getNotification(animal_id, 'Parto');
+}
+
+async function getDryNotification(animal_id) {
+    return await getNotification(animal_id, 'Secagem');
+}
+
 async function createNotification(data) {
     return await axios.post(`${APIURL}`, data);
 }
@@ -23,12 +31,34 @@ async function createFertilizacaoNotification(date, animal) {
         titulo: 'Fertilização',
         descricao: `O dia de fertilizar a ${animal.nome} está chegando`,
         vencimento: date,
-        animal_id: animal.id_animal,
+        animal_id: animal.id,
     };
     return await createNotification(data);
 }
 
-async function updateNotification(id, date){
+async function createBirthNotification(date, animal) {
+    const data = {
+        titulo: 'Parto',
+        descricao: `O dia de ${animal.nome} parir está chegando`,
+        vencimento: date,
+        animal_id: animal.id,
+    };
+    return await createNotification(data);
+}
+
+async function createDryNotification(date, animal) {
+    const data = {
+        titulo: 'Secagem',
+        descricao: `O dia de secar ${animal.nome} está chegando`,
+        vencimento: date,
+        animal_id: animal.id,
+    };
+    return await createNotification(data);
+}
+
+
+
+async function updateNotification(id, date) {
     return axios.put(`${APIURL}/${id}`, { vencimento: date });
 }
 
@@ -41,9 +71,13 @@ export default {
     deleteNotification,
     createNotification,
     createFertilizacaoNotification,
+    createBirthNotification,
     getNotification,
     getFertilizacaoNotification,
-    updateNotification
+    getBirthNotification,
+    updateNotification,
+    getDryNotification,
+    createDryNotification
 }
 
 

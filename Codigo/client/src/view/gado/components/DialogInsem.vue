@@ -19,13 +19,14 @@
 						v-model="gestacaoData.status"
 						:items="options"
 					/>
-					<Select class="flex-1" label="Touro (semem)" v-model="gestacaoData.touro" :items="optionsTouro" />
+					<Select class="flex-1" label="Touro (sêmen)" v-model="gestacaoData.touro" :items="optionsTouro" />
 				</div>
 				<DatePicker
 					label="Data Inseminação"
 					v-model:expanded="dateOpened.data_insem"
 					:max-date="new Date()"
 					v-model="gestacaoData.data_insem"
+					@update:model-value="adjustPrevPartoDate(gestacaoData.status)"
 				/>
 				<DatePicker
 					label="Previsão parto"
@@ -37,7 +38,7 @@
 			</div>
 			<div class="flex flex-row gap-4 justify-end">
 				<Button @click="cancelar" only-border :disabled="loading">Cancelar</Button>
-				<Button @click="salvarGestacao()" :loading="loading">Salvar</Button>
+				<Button @click="salvarGestacao" :loading="loading">Salvar</Button>
 			</div>
 		</div>
 	</Dialog>
@@ -51,9 +52,9 @@ import Input from '@/components/Input.vue';
 import Select from '@/components/Select.vue';
 import DatePicker from '@/components/DatePicker.vue';
 import Button from '@/components/Button.vue';
-import gestacaoController from '@/controller/gestacao.js';
+import notificationController from '@/controller/notification';
 import { useEditDialog } from '../composables/useEditDialog.js';
-import { ref, reactive, watch } from 'vue';
+import { ref } from 'vue';
 
 export default {
 	name: 'DialogInsem',
@@ -103,6 +104,7 @@ export default {
 			validateData,
 			processarGestacao,
 			changeDisabled,
+			adjustPrevPartoDate,
 		} = useEditDialog();
 
 		return {
@@ -117,6 +119,7 @@ export default {
 			validateData,
 			processarGestacao,
 			changeDisabled,
+			adjustPrevPartoDate,
 		};
 	},
 
@@ -132,6 +135,7 @@ export default {
 		cancelar() {
 			this.changeModel(false);
 			this.gestacaoData = {
+				animal: '',
 				animal_id: null,
 				id_gestacao: null,
 				status: '',
@@ -142,11 +146,27 @@ export default {
 		},
 		async salvarGestacao() {
 			if (!this.validateData(this.gestacaoData)) {
-				this.showAlert('Preencha todos os campos para salvar a vaca', 'error');
+				this.showAlert('Preencha todos os campos para salvar a vaca');
 			} else {
 				this.loading = true;
 				try {
-					await this.processarGestacao(this.gestacaoData, this.isEdit);
+					await this.processarGestacao(this.gestacaoData, this.isEdit, this.animalData);
+
+					if (this.gestacaoData.prev_parto) {
+						const oldNotification = await this.getOldBirthNotification();
+						if (oldNotification) {
+							await notificationController.updateNotification(
+								oldNotification.id,
+								this.gestacaoData.prev_parto
+							);
+						} else {
+							await notificationController.createBirthNotification(
+								this.gestacaoData.prev_parto,
+								this.animalData
+							);
+						}
+					}
+
 					this.showAlert('Gestação salva com sucesso', 'success');
 				} catch (error) {
 					console.error(error);
@@ -159,12 +179,21 @@ export default {
 			}
 		},
 
-		showAlert(message, type) {
+		showAlert(message, type = 'error') {
 			this.$alert({
 				message: message,
 				type: type,
 				...this.defaultAlert,
 			});
+		},
+
+		async getOldBirthNotification() {
+			try {
+				const { data } = await notificationController.getPartoNotification(this.gestacaoData.animal_id);
+				return data;
+			} catch (e) {
+				return null;
+			}
 		},
 	},
 };
