@@ -24,7 +24,8 @@ export function useEditDialog() {
             touro: '',
             data_insem: '',
             prev_parto: '' || null,
-        })
+        }),
+
     })
 
     function validateData(gestacaoData) {
@@ -44,21 +45,32 @@ export function useEditDialog() {
         }
     }
 
-    async function processarGestacao(dataGestacao, isEdit) {
-        this.gestacaoData.animal_id = dataGestacao.animal_id;
+    async function processarGestacao(dataGestacao, isEdit, animalData) {
         if (isEdit) {
             if (dataGestacao.status === 'confirmada') {
-                console.log(dataGestacao.prev_parto);
                 const datePrevParto = new Date(dataGestacao.prev_parto);
                 const dryDate = new Date(datePrevParto.getDate() - 60);
-                console.log(dataGestacao.animal);
-                await notificationController.createDryNotification(dryDate, dataGestacao.animal);
+                const oldNotification = await getOldDryNotification();
+                if (oldNotification) {
+                    await notificationController.updateNotification(oldNotification.id, dryDate);
+                } else {
+                    await notificationController.createDryNotification(dryDate, animalData);
+                }
             }
             delete dataGestacao.animal;
             await gestacaoController.editarGestacao(dataGestacao.id_gestacao, dataGestacao);
         } else {
 
             await gestacaoController.salvarGestacao(dataGestacao);
+        }
+    }
+
+    async function getOldDryNotification() {
+        try {
+            const { data } = await notificationController.getDryNotification(dataGestacao.animal_id);
+            return data;
+        } catch (e) {
+            return null;
         }
     }
 

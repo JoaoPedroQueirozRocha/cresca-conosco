@@ -19,7 +19,7 @@ async function getBirthNotification(animal_id) {
 }
 
 async function getDryNotification(animal_id) {
-    return await getNotification(animal_id, 'Secar');
+    return await getNotification(animal_id, 'Secagem');
 }
 
 async function createNotification(data) {
@@ -48,8 +48,8 @@ async function createBirthNotification(date, animal) {
 
 async function createDryNotification(date, animal) {
     const data = {
-        titulo: 'Secar',
-        descricao: `O dia de secar ${animal} está chegando`,
+        titulo: 'Secagem',
+        descricao: `O dia de secar ${animal.nome} está chegando`,
         vencimento: date,
         animal_id: animal.id,
     };

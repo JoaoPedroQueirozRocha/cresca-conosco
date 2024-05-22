@@ -52,10 +52,9 @@ import Input from '@/components/Input.vue';
 import Select from '@/components/Select.vue';
 import DatePicker from '@/components/DatePicker.vue';
 import Button from '@/components/Button.vue';
-import gestacaoController from '@/controller/gestacao.js';
 import notificationController from '@/controller/notification';
 import { useEditDialog } from '../composables/useEditDialog.js';
-import { ref, reactive, watch } from 'vue';
+import { ref } from 'vue';
 
 export default {
 	name: 'DialogInsem',
@@ -69,7 +68,6 @@ export default {
 		animalData() {
 			if (this.animalData.status) {
 				this.gestacaoData = {
-					animal: this.animalData.nome,
 					animal_id: this.animalData.id,
 					id_gestacao: this.animalData.id_gestacao ? this.animalData.id_gestacao : null,
 					status: this.animalData.status,
@@ -152,7 +150,7 @@ export default {
 			} else {
 				this.loading = true;
 				try {
-					await this.processarGestacao(this.gestacaoData, this.isEdit);
+					await this.processarGestacao(this.gestacaoData, this.isEdit, this.animalData);
 
 					if (this.gestacaoData.prev_parto) {
 						const oldNotification = await this.getOldBirthNotification();
