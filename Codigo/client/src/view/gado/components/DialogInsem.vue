@@ -52,10 +52,9 @@ import Input from '@/components/Input.vue';
 import Select from '@/components/Select.vue';
 import DatePicker from '@/components/DatePicker.vue';
 import Button from '@/components/Button.vue';
-import gestacaoController from '@/controller/gestacao.js';
 import notificationController from '@/controller/notification';
 import { useEditDialog } from '../composables/useEditDialog.js';
-import { ref, reactive, watch } from 'vue';
+import { ref } from 'vue';
 
 export default {
 	name: 'DialogInsem',
@@ -136,6 +135,7 @@ export default {
 		cancelar() {
 			this.changeModel(false);
 			this.gestacaoData = {
+				animal: '',
 				animal_id: null,
 				id_gestacao: null,
 				status: '',
@@ -150,17 +150,23 @@ export default {
 			} else {
 				this.loading = true;
 				try {
-					await this.processarGestacao(this.gestacaoData, this.isEdit);
+					await this.processarGestacao(this.gestacaoData, this.isEdit, this.animalData);
 
 					if (this.gestacaoData.prev_parto) {
 						const oldNotification = await this.getOldBirthNotification();
 						if (oldNotification) {
-							await notificationController.updateNotification(oldNotification.id, this.gestacaoData.prev_parto);
+							await notificationController.updateNotification(
+								oldNotification.id,
+								this.gestacaoData.prev_parto
+							);
 						} else {
-							await notificationController.createBirthNotification(this.gestacaoData.prev_parto, this.animalData);
+							await notificationController.createBirthNotification(
+								this.gestacaoData.prev_parto,
+								this.animalData
+							);
 						}
 					}
-					
+
 					this.showAlert('Gestação salva com sucesso', 'success');
 				} catch (error) {
 					console.error(error);
@@ -180,7 +186,7 @@ export default {
 				...this.defaultAlert,
 			});
 		},
-		
+
 		async getOldBirthNotification() {
 			try {
 				const { data } = await notificationController.getPartoNotification(this.gestacaoData.animal_id);
@@ -188,7 +194,7 @@ export default {
 			} catch (e) {
 				return null;
 			}
-		}
+		},
 	},
 };
 </script>
