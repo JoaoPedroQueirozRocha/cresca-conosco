@@ -29,7 +29,7 @@ import { formatDate } from '@/util';
 import { ref } from 'vue';
 
 export default {
-	name: 'DialogFertilizacao',
+	name: 'DialogAgendarFertilizacao',
 	props: {
 		animalData: { type: Object, required: true },
 		modelValue: { type: Boolean, required: false }
@@ -89,6 +89,7 @@ export default {
 				this.loading = true;
 				try {
 					const oldNotification = await this.getOldNotification();
+
 					if (oldNotification) {
 						const result = await this.$confirm({
 							title: 'Deseja mudar a data do agendamento?',
@@ -97,6 +98,7 @@ export default {
 						if (!result) return;
 						await notificationController.updateNotification(oldNotification.id, this.date);
 					} else {
+						this.animalData.id = this.animalData.id_animal;
 						await notificationController.createFertilizacaoNotification(this.date, this.animalData);
 					}
 
@@ -126,7 +128,7 @@ export default {
 			} catch (e) {
 				return null;
 			}
-		}
+		},
 	},
 };
 </script>
@@ -141,7 +143,7 @@ export default {
 	gap: 3em;
 	padding: 1em;
 	transition-duration: 1s;
-	
+
 	.close-dialog {
 		display: flex;
 		align-items: center;

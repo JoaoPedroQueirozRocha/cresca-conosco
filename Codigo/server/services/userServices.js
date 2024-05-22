@@ -6,7 +6,7 @@ const router = express.Router()
 router.use(express.json())
 
 async function getUserByEmail(email) {
-    const queryResult = await pool.query("SELECT * FROM usuario WHERE email = $1", [email])
+    const queryResult = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email])
     return queryResult.rows[0];
 }
 
@@ -20,9 +20,19 @@ async function createNewUser(body) {
     return result;
 }
 
-async function updateUser(body) {
-    const result = await pool.query('UPDATE usuarios SET nome = $1, email = $2, token = $3,  descricao = $4 WHERE email = $2', [body.nome, body.email, body.token, body.description])
-    return result;
+async function updateUser(id, updates) {
+
+    const fields = Object.keys(updates)
+        .map((field, index) => `${field} = $${index + 1}`)
+        .join(", ");
+
+    const values = Object.values(updates);
+
+    const query = `UPDATE usuarios SET ${fields} WHERE id = $${values.length + 1
+        } RETURNING *`;
+    const result = await pool.query(query, [...values, id]);
+    return result.rows[0];
+
 }
 
 async function deleteUser(body) {

@@ -5,8 +5,8 @@ function getUser(id) {
     return axios.get(`${APIURL}/${id}`);
 }
 
-function updateUser(id) {
-    return axios.put(`${APIURL}/${id}`);
+function updateUser(id, body) {
+    return axios.put(`${APIURL}/${id}`, body);
 }
 
 function createUser() {

@@ -16,7 +16,11 @@ async function getNotification(animal_id, title) {
 }
 
 async function getAllNotifications(){
-    const queryResult = await pool.query("SELECT * FROM notificacao")
+    const minDate = new Date();
+    const maxDate = new Date();
+    maxDate.setDate(maxDate.getDate() + 7);
+
+    const queryResult = await pool.query("SELECT * FROM notificacao WHERE vencimento BETWEEN $1 AND $2 ORDER BY vencimento", [ minDate, maxDate ]);
     return queryResult.rows
 }
 
