@@ -49,7 +49,8 @@ export function useEditDialog() {
         if (isEdit) {
             if (dataGestacao.status === 'confirmada') {
                 const datePrevParto = new Date(dataGestacao.prev_parto);
-                const dryDate = new Date(datePrevParto.getDate() - 60);
+                const dryDate = new Date(datePrevParto);
+                dryDate.setDate(datePrevParto.getDate() - 60);
                 const oldNotification = await getOldDryNotification();
                 if (oldNotification) {
                     await notificationController.updateNotification(oldNotification.id, dryDate);
