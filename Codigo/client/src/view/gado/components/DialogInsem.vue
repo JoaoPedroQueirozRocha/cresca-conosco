@@ -69,6 +69,7 @@ export default {
 		animalData() {
 			if (this.animalData.status) {
 				this.gestacaoData = {
+					animal: this.animalData.nome,
 					animal_id: this.animalData.id,
 					id_gestacao: this.animalData.id_gestacao ? this.animalData.id_gestacao : null,
 					status: this.animalData.status,
@@ -136,6 +137,7 @@ export default {
 		cancelar() {
 			this.changeModel(false);
 			this.gestacaoData = {
+				animal: '',
 				animal_id: null,
 				id_gestacao: null,
 				status: '',
@@ -155,12 +157,18 @@ export default {
 					if (this.gestacaoData.prev_parto) {
 						const oldNotification = await this.getOldBirthNotification();
 						if (oldNotification) {
-							await notificationController.updateNotification(oldNotification.id, this.gestacaoData.prev_parto);
+							await notificationController.updateNotification(
+								oldNotification.id,
+								this.gestacaoData.prev_parto
+							);
 						} else {
-							await notificationController.createBirthNotification(this.gestacaoData.prev_parto, this.animalData);
+							await notificationController.createBirthNotification(
+								this.gestacaoData.prev_parto,
+								this.animalData
+							);
 						}
 					}
-					
+
 					this.showAlert('Gestação salva com sucesso', 'success');
 				} catch (error) {
 					console.error(error);
@@ -180,7 +188,7 @@ export default {
 				...this.defaultAlert,
 			});
 		},
-		
+
 		async getOldBirthNotification() {
 			try {
 				const { data } = await notificationController.getPartoNotification(this.gestacaoData.animal_id);
@@ -188,7 +196,7 @@ export default {
 			} catch (e) {
 				return null;
 			}
-		}
+		},
 	},
 };
 </script>
