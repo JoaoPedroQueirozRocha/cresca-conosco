@@ -5,7 +5,7 @@
 	<Tab v-model="tabIndex" :items="tabItems" v-if="!id" class="mb-6" />
 
 	<div>
-		<Card class="flex flex-col gap-4 mb-4" v-if="tabIndex == 0">
+		<Card class="flex flex-col gap-4" v-if="tabIndex == 0">
 			<template v-for="field in parsedFields">
 				<div class="flex gap-6 flex-wrap items-end" v-if="Array.isArray(field)">
 					<template v-for="item in field">
@@ -40,7 +40,7 @@
 			v-else
 		/>
 
-		<div class="flex flex-row flex-wrap gap-2 justify-end">
+		<div class="flex flex-row flex-wrap gap-2 justify-end mt-4">
 			<Button class="only-border" :disabled="loading" @click="$router.push(`${returnTo}`)">Cancelar</Button>
 			<Button @click="salvar" :loading="loading">{{ buttonText }}</Button>
 		</div>
