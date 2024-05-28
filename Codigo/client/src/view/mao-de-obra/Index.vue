@@ -2,7 +2,7 @@
 	<div class="flex flex-col w-full mt-[3em]">
 		<div class="w-full flex flex-col gap-3">
 			<div class="mb-4">
-				<div class="flex flex-row w-full justify-between items-center align-middle my-4">
+				<div class="flex flex-row w-full gap-4 flex-wrap justify-between items-center align-middle my-4">
 					<h2 class="title mt-0">Mão de Obra</h2>
 					<router-link to="/mao-de-obra/criar">
 						<Button>Adicionar</Button>
