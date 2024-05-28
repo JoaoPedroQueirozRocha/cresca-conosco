@@ -117,7 +117,7 @@ export default {
 	gap: 2em;
 	width: 60vw;
 	min-height: 290px;
-	padding: 1em;
+	padding: .5em;
 	transition-duration: 1s;
 
 	.close-dialog {

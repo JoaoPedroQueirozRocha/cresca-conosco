@@ -107,7 +107,6 @@ const COW_FIELDS = [
         label: 'Lactante',
         value: 'lactante',
         type: 'boolean',
-        required: true,
     },
 ];
 
