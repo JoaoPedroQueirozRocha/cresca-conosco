@@ -29,7 +29,7 @@ export function useGado() {
                 align: "center",
             },
             // { text: "Num.Insem", value: "numInsem", sortable: true },
-            { text: "Status", value: "status", sortable: true },
+            { text: "Status", value: "status", align: "center", sortable: true },
             { text: "Secar em", value: 'secarEm' },
         ]),
         headers: ref([
