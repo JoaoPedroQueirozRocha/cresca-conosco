@@ -10,9 +10,7 @@ import * as userServices from '../services/userServices.js'
 async function getUserByEmail(req, res) {
     try {
         const email = req.params.email
-        const user = await userServices.getUserByEmail(email)  
-
-        if (!user) throw new Error('Usuário não encontrado')
+        const user = await userServices.getUserByEmail(email)
 
         res.json(user)
 
