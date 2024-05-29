@@ -79,14 +79,11 @@
 								<Icon name="heart_check" />
 								Parir
 							</div>
-							<div class="action-option" @click="secarAnimal(item.id)">
+							<div class="action-option" @click="secarAnimal(item.id_animal)">
 								<Icon name="menstrual_health" />
 								Secar
 							</div>
-							<div
-								class="action-option"
-								@click="openAgendarDialog(item)"
-							>
+							<div class="action-option" @click="openAgendarDialog(item)">
 								<Icon name="event" />
 								Agendar Fertilização
 							</div>
@@ -168,24 +165,24 @@
 </template>
 
 <script>
-import { useGado } from "./composables/useGado.js";
-import { formatDate } from "../../util";
-import { useFilter } from "./composables/useFilter.js";
-import { ref } from "vue";
-import Table from "@/components/Table.vue";
-import Button from "@/components/Button.vue";
-import Input from "@/components/Input.vue";
-import Card from "@/components/Card.vue";
-import Icon from "@/components/Icon.vue";
-import Filter from "@/components/Filter.vue";
-import Dialog from "@/components/Dialog.vue";
-import Tag from "@/components/Tag.vue";
-import Loader from "@/components/Loader.vue";
-import DialogTable from "./components/DialogTable.vue";
-import DialogInsem from "./components/DialogInsem.vue";
-import DialogParir from "./components/DialogParir.vue";
-import DialogAgendarFertilizacao from "./components/DialogAgendarFertilizacao.vue";
-import animalController from "@/controller/animal";
+import { useGado } from './composables/useGado.js';
+import { formatDate } from '../../util';
+import { useFilter } from './composables/useFilter.js';
+import { ref } from 'vue';
+import Table from '@/components/Table.vue';
+import Button from '@/components/Button.vue';
+import Input from '@/components/Input.vue';
+import Card from '@/components/Card.vue';
+import Icon from '@/components/Icon.vue';
+import Filter from '@/components/Filter.vue';
+import Dialog from '@/components/Dialog.vue';
+import Tag from '@/components/Tag.vue';
+import Loader from '@/components/Loader.vue';
+import DialogTable from './components/DialogTable.vue';
+import DialogInsem from './components/DialogInsem.vue';
+import DialogParir from './components/DialogParir.vue';
+import DialogAgendarFertilizacao from './components/DialogAgendarFertilizacao.vue';
+import animalController from '@/controller/animal';
 
 export default {
 	name: 'Gado',
@@ -310,7 +307,7 @@ export default {
 				const windowHeight = window.innerHeight;
 				const cardHeight = card.offsetHeight;
 				const height = rect.top + 40 + cardHeight;
-				card.style.left = rect.left - 210 + "px";
+				card.style.left = rect.left - 210 + 'px';
 				if (height > windowHeight) {
 					delete card.style.top;
 					card.style.bottom = 0;
