@@ -1,11 +1,13 @@
 import { createAuth0Client } from "@auth0/auth0-spa-js";
 import { reactive, computed } from "vue";
+import axios from "axios";
 
 let client;
 const state = reactive({
     loading: true,
     isAuthenticated: false,
     user: {},
+    userDatabase: {},
     error: null
 })
 
@@ -45,7 +47,6 @@ async function getUserID() {
             await handleRedirectCallback();
         }
         const user = await client.getUser();
-        console.log("this is user",user);
         state.user = user;
         state.isAuthenticated = true;
         return user.sub; // Retorna o ID do usuário
@@ -125,7 +126,9 @@ async function init(options) {
         window.history.replaceState({}, document.title, window.location.pathname)
         state.isAuthenticated = await client.isAuthenticated();
         state.user = await client.getUser();
+        // state.userDatabase = await getUserOnDatabase();
         sessionStorage.setItem("user", JSON.stringify(state.user));
+        // sessionStorage.setItem("userDatabase", JSON.stringify(state.userDatabase));
         state.loading = false;
     }
 

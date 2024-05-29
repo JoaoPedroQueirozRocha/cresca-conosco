@@ -3,7 +3,7 @@ import Card from './Card.vue';
 
 export default {
     name: 'Notification',
-    components: { Card },
+    components: { Card},
     props: {
         items: {
             type: Array,
@@ -22,6 +22,7 @@ export default {
             </div>
         </header>
         <main v-if="!items.length" class="flex justify-center items-center w-full py-4">
+
             <slot name="empty-state" />
         </main>
         <main v-else class="notifications">
@@ -66,7 +67,7 @@ header {
 }
 
 .notifications {
-    @apply flex items-center flex-col w-full mt-4 gap-4 overflow-auto;
+    @apply flex items-center flex-col w-full mt-4 gap-2 overflow-auto;
     max-height: 260px;
 }
 

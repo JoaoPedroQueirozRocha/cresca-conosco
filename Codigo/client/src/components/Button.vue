@@ -1,8 +1,9 @@
 <script>
-import { ref } from 'vue';
+import Spinner from './Spinner.vue';
 
 export default {
     name: 'Button',
+    components: { Spinner },
     props: {
         variant: {
             type: String,
@@ -14,6 +15,8 @@ export default {
         },
         onlyBorder: Boolean,
         disabled: Boolean,
+        rounded: Boolean,
+        loading: Boolean,
     },
     emits: ['click'],
 }
@@ -22,10 +25,11 @@ export default {
 <template>
     <button
         class="button"
-        :class="[variant, size, { 'only-border': onlyBorder , 'disabled': disabled}]"
+        :class="[variant, size, { 'only-border': onlyBorder , 'disabled': disabled, 'rounded-button': rounded, 'pointer-events-none': loading, 'min-w-[5em]': !rounded }]"
         @click="$emit('click')"
     >
-        <slot />
+        <Spinner v-if="loading" />
+        <slot v-else />
     </button>
 </template>
 
@@ -35,13 +39,18 @@ export default {
 .button {
     display: flex;
     justify-content: center;
+    height: fit-content;
     text-transform: uppercase;
     border-radius: 8px;
     border-width: 0.15em;
     border-style: solid;
     padding: 0.4em 1em;
     font-weight: 600;
-    height: fit-content;
+}
+
+.button.rounded-button {
+    border-radius: 50%;
+    padding: 0.2em 0.2em;
 }
 
 .button.disabled {

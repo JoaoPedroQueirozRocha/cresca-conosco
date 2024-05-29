@@ -1,8 +1,10 @@
 <script>
 import { ref } from 'vue';
+import Icon from './Icon.vue';
 
 export default {
     name: 'Input',
+    components: { Icon },
     props: {
         modelValue: [String, Number],
         type: {
@@ -47,7 +49,7 @@ export default {
         focusout() {
             setTimeout(() => {
                 this.onFocus = false;
-            }, 100);
+            }, 200);
         }
     }
 }
@@ -57,20 +59,19 @@ export default {
     <div class="holder">
         <label v-if="label" class="label">{{ label }}</label>
         <div tabindex="0"  class="input-holder" v-if="!textArea">
-            <span
+            <Icon
                 v-if="type === 'search'"
-                class="material-symbols-rounded search-icon icon"
+                name="search"
+                class="search-icon icon"
                 :class="{'on-focus': onFocus}"
-            >
-                search
-            </span>
+            />
             <input
                 class="input"
                 :class="[type, {'disabled': disabled, 'error': isError || error}]"
                 v-model="model"
                 :placeholder="placeholder"
                 :disabled="disabled"
-                :type="(type === 'password' && !hidePass) || type === 'email' ? 'text': type"
+                :type="(type === 'password' && !hidePass) || type === 'email' || type === 'search' ? 'text': type"
                 :value="model"
                 @focusin="onFocus = true"
                 @focusout="focusout"
@@ -82,21 +83,19 @@ export default {
                 }"
                 @blur="$emit('blur')"
             />
-            <span
+            <Icon
                 v-if="type === 'password'"
-                class="material-symbols-rounded eye icon"
+                :name="hidePass ? 'visibility_off' : 'visibility'"
+                class="eye icon"
                 :class="{'on-focus': onFocus}"
                 @click="hidePass = !hidePass"
-            >
-                {{ hidePass ? 'visibility_off' : 'visibility' }}
-            </span>
-            <span
+            />
+            <Icon
                 v-if="type === 'search' && onFocus"
-                class="material-symbols-rounded eye icon on-focus"
+                name="close"
+                class="eye icon on-focus"
                 @click="resetModel"
-            >
-                close
-            </span>
+            />
         </div>
         <textarea 
             v-else
@@ -123,7 +122,6 @@ export default {
     flex-direction: column;
     gap: 0.2em;
     height: fit-content;
-    width: 100%;
 }
 
 .input-holder {
@@ -142,6 +140,7 @@ export default {
     border: 0.15em $gray-300 solid;
     padding: 0.5em;
     color: $gray-500;
+    background: white;
 
     &::placeholder {
         color: $gray-400;
@@ -159,13 +158,13 @@ export default {
 }
 
 .search {
-    padding-left: 2.3em;
+    padding-left: 2.5em;
     padding-right: 2.3em;
 }
 
 .input.disabled {
     @apply pointer-events-none;
-    color: $gray-300;
+    color: $gray-400;
     border-color: $gray-300;
     background: $gray-200;
 }

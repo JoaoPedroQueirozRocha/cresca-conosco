@@ -1,8 +1,10 @@
 <script>
 import { ref } from 'vue';
+import Icon from './Icon.vue';
 
 export default {
     name: 'Table',
+    components: { Icon },
     props: {
         headers: {
             type: Array,
@@ -12,8 +14,12 @@ export default {
             type: Array,
             default: []
         },
+        maxHeight: {
+            type: String,
+            default: "50vh",
+        },
         options: Object,
-        isLoading: Boolean,
+        loading: Boolean,
     },
 
     setup() {
@@ -64,7 +70,7 @@ export default {
 
         setSort() {
             if (this.options) {
-                this.sortDesc[this.sortByName] = this.options.isDesc;
+                this.sortDesc[this.options.sortBy] = this.options.isDesc;
                 this.sortBy(this.options.sortBy, this.options.isDesc);
             }
         }
@@ -73,9 +79,9 @@ export default {
 </script>
 
 <template>
-    <div class="table-holder" :class="{'overflow-auto': items.length || isLoading}">
-        <table>
-            <thead v-if="isLoading">
+    <div class="table-holder overflow-auto" :style="{'max-height': maxHeight}">
+        <table class="rounded-t-2xl" :class="{'overflow-hidden': !items.length && !loading}">
+            <thead v-if="loading">
                 <tr>
                     <th v-for="header in (headers.length || 3)" :key="header" class="skeleton-table-cell pointer-events-none">
                         <div class="skeleton-table-div" />
@@ -102,20 +108,15 @@ export default {
                                 class="h-fit w-fit flex items-center transition-transform ease-in-out duration-300 icon"
                                 :class="{'rotate-180': sortDesc[header.value], 'icon-active': header.value === sortByName}"
                             >
-                                <span class="material-symbols-rounded text-xl">
-                                    arrow_upward
-                                </span>
+                                <Icon name="arrow_upward" class="text-xl" />
                             </span>
                         </div>
                     </th>
                     <th v-if="$slots.actions" class="pointer-events-none" />
                 </tr>
             </thead>
-            <tbody v-if="isLoading">
+            <tbody v-if="loading">
                 <tr v-for="index in 6" :key="index">
-                    <td v-if="enableSelection" class="skeleton-table-cell">
-                        <div class="skeleton-table-div" />
-                    </td>
                     <td v-for="header in (headers.length || 3)" :key="header" class="skeleton-table-cell">
                         <div class="skeleton-table-div" />
                     </td>
@@ -135,7 +136,7 @@ export default {
 
             </tbody>
         </table>
-        <div class="empty" v-if="!items.length && !isLoading">
+        <div class="empty" v-if="!items.length && !loading">
             <slot name="empty-state" />
         </div>
     </div>
@@ -169,9 +170,10 @@ table {
     }
 
     thead {
-        @apply border-b-[.1em] border-b-stone-100 w-full;
+        @apply border-b-[.1em] border-b-stone-100 w-full z-10;
         border-top-right-radius: 16px;
         border-top-left-radius: 16px;
+
         th {
             @apply py-[.7em] px-[1em];
             color: $gray-500;
