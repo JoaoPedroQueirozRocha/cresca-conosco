@@ -2,7 +2,7 @@
 	<Dialog
 		v-model="model"
 		@update:model-value="cancelar"
-		width="70%"
+		:width="dialogWidth"
 		height="fit-content"
 		:noOverflow="!(dateOpened.data_insem || dateOpened.prev_parto)"
 	>
@@ -10,7 +10,7 @@
 			<div>
 				<h1 class="title">{{ animalData.nome }}</h1>
 			</div>
-			<div class="w-[100%] flex flex-col gap-4">
+			<div class="w-full flex flex-col gap-4">
 				<div class="flex md:flex-row flex-col gap-4">
 					<Select
 						class="flex-1"
@@ -109,6 +109,7 @@ export default {
 
 		return {
 			model: ref(false),
+			dialogWidth: ref('70%'),
 			options,
 			optionsTouro,
 			gestacaoData,
@@ -125,12 +126,18 @@ export default {
 
 	mounted() {
 		this.model = this.dialogModel;
+		this.handleResize();
+        window.addEventListener('resize', this.handleResize);
 	},
+
+    beforeUnmount() {
+        window.removeEventListener('resize', this.handleResize);
+    },
 
 	methods: {
 		changeModel(value) {
 			this.model = value;
-			this.$emit('update:modelValue', this.model); // Emitindo o evento
+			this.$emit('update:modelValue', this.model);
 		},
 		cancelar() {
 			this.changeModel(false);
@@ -195,6 +202,10 @@ export default {
 				return null;
 			}
 		},
+
+		handleResize() {
+			this.dialogWidth = window.innerWidth <= 768 ? '100%' : '70%';
+		}
 	},
 };
 </script>
