@@ -20,6 +20,19 @@ async function getGestacaoById(animal_id) {
 }
 
 /**
+ * @param {number} animal_id - O ID do animal para recuperar os dados de gestação.
+ * @returns {Promise<Gestacao>} Uma promessa que resolve para os dados de gestação do animal especificado.
+ * Recupera todos os registros de gestação pelo ID do animal.
+ */
+async function getAllGestacoesByAnimalId(animal_id) {
+    const queryResult = await pool.query(
+        "SELECT * FROM gestacao WHERE animal_id = $1",
+        [animal_id]
+    );
+    return queryResult.rows;
+}
+
+/**
  * @param {object} body - O corpo da requisição com os dados de gestação.
  * @returns {Promise<Gestacao>} Uma promessa que resolve para os dados de gestação do animal especificado.
  * Cria um novo registro de gestação.
@@ -124,4 +137,4 @@ async function deleteGestacao(animal_id) {
     return result.rows[0];
 }
 
-export { getGestacaoById, createGestacao, updateGestacao, parirAnimal, deleteGestacao };
+export { getGestacaoById, createGestacao, updateGestacao, parirAnimal, deleteGestacao, getAllGestacoesByAnimalId };
