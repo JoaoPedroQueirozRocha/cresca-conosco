@@ -1,4 +1,6 @@
 import * as animalsServices from "../services/animalsServices.js";
+import * as gestacoesServices from "../services/gestacaoServices.js";
+import * as notificacoesServices from "../services/notificationServices.js";
 
 async function getAnimalById(req, res) {
     try {
@@ -42,6 +44,14 @@ async function updateAnimalById(req, res) {
 async function deleteAnimalById(req, res) {
     try {
         const id = req.params.id;
+        const gestacoes = await gestacoesServices.getAllGestacoesByAnimalId(id);
+        const notificacoes = await notificacoesServices.getAllNotificationsByAnimalId(id);
+        if (gestacoes) {
+            await gestacoesServices.deleteGestacao(id);
+        }
+        if (notificacoes) {
+            await notificacoesServices.deleteNotificationsByAnimalId(id);
+        }
         const animal = await animalsServices.deleteAnimalById(id);
 
         if (!animal) throw new Error('Animal não encontrado');

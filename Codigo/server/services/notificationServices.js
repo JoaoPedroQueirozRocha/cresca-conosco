@@ -6,21 +6,21 @@ const router = express.Router()
 router.use(express.json())
 
 async function getNotificationById(id) {
-    const queryResult = await pool.query("SELECT * FROM notificacao WHERE id = $1", [ id ])
+    const queryResult = await pool.query("SELECT * FROM notificacao WHERE id = $1", [id])
     return queryResult.rows[0]
 }
 
 async function getNotification(animal_id, title) {
-    const queryResult = await pool.query("SELECT * FROM notificacao WHERE animal_id = $1 AND titulo = $2", [ animal_id, title ])
+    const queryResult = await pool.query("SELECT * FROM notificacao WHERE animal_id = $1 AND titulo = $2", [animal_id, title])
     return queryResult.rows[0]
 }
 
-async function getAllNotifications(){
+async function getAllNotifications() {
     const minDate = new Date();
     const maxDate = new Date();
     maxDate.setDate(maxDate.getDate() + 7);
 
-    const queryResult = await pool.query("SELECT * FROM notificacao WHERE vencimento BETWEEN $1 AND $2 ORDER BY vencimento", [ minDate, maxDate ]);
+    const queryResult = await pool.query("SELECT * FROM notificacao WHERE vencimento BETWEEN $1 AND $2 ORDER BY vencimento", [minDate, maxDate]);
     return queryResult.rows
 }
 
@@ -29,7 +29,7 @@ async function createNewNotification(body) {
     return queryResult.rows[0];
 }
 
-async function updateNotification(id, updates){
+async function updateNotification(id, updates) {
     const notication = await getNotificationById(id);
     if (!notication) throw new Error("Notificação não encontrada");
 
@@ -44,8 +44,26 @@ async function updateNotification(id, updates){
 }
 
 async function deleteNotificationById(id) {
-    const queryResult = await pool.query('DELETE FROM notificacao WHERE id = $1',[id])
+    const queryResult = await pool.query('DELETE FROM notificacao WHERE id = $1', [id])
     return queryResult
 }
 
-export {getNotification, createNewNotification, updateNotification, deleteNotificationById, getAllNotifications}
+async function getAllNotificationsByAnimalId(animal_id) {
+    const queryResult = await pool.query("SELECT * FROM notificacao WHERE animal_id = $1", [animal_id])
+    return queryResult.rows
+}
+
+async function deleteNotificationsByAnimalId(animal_id) {
+    const queryResult = await pool.query("DELETE FROM notificacao WHERE animal_id = $1", [animal_id])
+    return queryResult
+}
+
+export {
+    getNotification,
+    createNewNotification,
+    updateNotification,
+    deleteNotificationById,
+    getAllNotifications,
+    getAllNotificationsByAnimalId,
+    deleteNotificationsByAnimalId
+}
