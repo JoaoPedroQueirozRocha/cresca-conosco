@@ -1,91 +1,93 @@
 <template>
-	<Dialog v-model="model" @update:model-value="cancelar" width="100%" overflowHidden>
-		<!-- Dialog header components -->
-		<div class="flex flex-col gap-2">
-			<div class="flex flex-row justify-between my-4">
-				<h1 class="title mt-0">Mais Detalhes</h1>
-				<div class="close-dialog">
-					<Icon name="close" @click="changeModel(false)" />
-				</div>
-			</div>
-			<div class="flex flex-row justify-between mb-4">
-				<Input v-model="searchValue" type="search" placeholder="Pesquisar" class="filter-input" />
-				<div class="relative filter-holder" ref="filterCard">
-					<Button class="filter-button" rounded @click="showFilter = true">
-						<Icon name="filter_list" class="round-icon" />
-					</Button>
-					<Filter v-model="filterOptions" class="top-12 right-0 absolute z-50 filter" v-show="showFilter" />
-				</div>
-			</div>
-		</div>
-		<!-- Dialog body components -->
-		<Table
-			:items="filteredData"
-			:headers="headersDialog"
-			maxHeight="65vh"
-			class="w-full"
-			:loading="isDialogLoading"
-		>
-			<template #nome="{ item, index }">
-				<td>
-					{{ item.nome }}
-				</td>
-			</template>
-			<template #crias="{ item, index }">
-				<td class="text-center">
-					{{ item.crias || 0 }}
-					<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
-				</td>
-			</template>
-			<template #dataInsem="{ item, index }">
-				<td>
-					{{ item.data_insem ? formatDateString(item.data_insem) : '-' }}
-				</td>
-			</template>
-			<template #dpia="{ item, index }">
-				<td>
-					{{ item.data_insem ? calculateDaysInsem(item.data_insem) : '-' }}
-				</td>
-			</template>
-			<template #prevParto="{ item, index }">
-				<td>
-					{{ item.prev_parto ? formatDateString(item.prev_parto) : '-' }}
-				</td>
-			</template>
-			<template #touro="{ item, index }">
-				<td class="text-center">
-					{{ item.touro }}
-					<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
-				</td>
-			</template>
-			<template #lactante="{ item, index }">
-				<td class="text-center">
-					<Icon
-						:name="item.lactante ? 'done' : 'close'"
-						:class="item.lactante ? 'text-green-500' : 'text-red-500'"
-					/>
-					<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
-				</td>
-			</template>
-			<template #status="{ item, index }">
-				<td>
-					<div class="flex justify-center">
-						<Tag :color="getColor(item.status)" :text="item.status || 'Não inseminada'" />
+	<Dialog v-model="model" @update:model-value="cancelar" width="100%" no-overflow>
+		<div>
+			<!-- Dialog header components -->
+			<div class="flex flex-col gap-2">
+				<div class="flex flex-row gap-4 justify-between my-4">
+					<h1 class="title mt-0">Mais Detalhes</h1>
+					<div class="close-dialog">
+						<Icon name="close" @click="changeModel(false)" />
 					</div>
-				</td>
-			</template>
-			<template #secarEm="{ item, index }">
-				<td>
-					{{ item.prev_parto ? formatDateString(calculateSecar(item.prev_parto)) : '-' }}
-				</td>
-			</template>
-			<template #empty-state>
-				<div class="empty-div">
-					<Icon name="sentiment_dissatisfied" />
-					<p>Sem dados para exibir</p>
 				</div>
-			</template>
-		</Table>
+				<div class="flex flex-row flex-wrap gap-4 justify-between mb-4">
+					<Input v-model="searchValue" type="search" placeholder="Pesquisar" class="filter-input" />
+					<div class="relative filter-holder" ref="filterCard">
+						<Button class="filter-button" rounded @click="showFilter = true">
+							<Icon name="filter_list" class="round-icon" />
+						</Button>
+						<Filter v-model="filterOptions" class="top-12 md:left-auto md:right-0 left-0 absolute z-50 filter" v-show="showFilter" />
+					</div>
+				</div>
+			</div>
+			<!-- Dialog body components -->
+			<Table
+				:items="filteredData"
+				:headers="headersDialog"
+				maxHeight="50vh"
+				class="w-full"
+				:loading="isDialogLoading"
+			>
+				<template #nome="{ item, index }">
+					<td>
+						{{ item.nome }}
+					</td>
+				</template>
+				<template #crias="{ item, index }">
+					<td class="text-center">
+						{{ item.crias || 0 }}
+						<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
+					</td>
+				</template>
+				<template #dataInsem="{ item, index }">
+					<td>
+						{{ item.data_insem ? formatDateString(item.data_insem) : '-' }}
+					</td>
+				</template>
+				<template #dpia="{ item, index }">
+					<td>
+						{{ item.data_insem ? calculateDaysInsem(item.data_insem) : '-' }}
+					</td>
+				</template>
+				<template #prevParto="{ item, index }">
+					<td>
+						{{ item.prev_parto ? formatDateString(item.prev_parto) : '-' }}
+					</td>
+				</template>
+				<template #touro="{ item, index }">
+					<td class="text-center">
+						{{ item.touro }}
+						<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
+					</td>
+				</template>
+				<template #lactante="{ item, index }">
+					<td class="text-center">
+						<Icon
+							:name="item.lactante ? 'done' : 'close'"
+							:class="item.lactante ? 'text-green-500' : 'text-red-500'"
+						/>
+						<Icon name="arrow_upward" class="text-xl ml-2 opacity-0" />
+					</td>
+				</template>
+				<template #status="{ item, index }">
+					<td>
+						<div class="flex justify-center">
+							<Tag :color="getColor(item.status)" :text="item.status || 'Não inseminada'" />
+						</div>
+					</td>
+				</template>
+				<template #secarEm="{ item, index }">
+					<td>
+						{{ item.prev_parto ? formatDateString(calculateSecar(item.prev_parto)) : '-' }}
+					</td>
+				</template>
+				<template #empty-state>
+					<div class="empty-div">
+						<Icon name="sentiment_dissatisfied" />
+						<p>Sem dados para exibir</p>
+					</div>
+				</template>
+			</Table>
+		</div>
 	</Dialog>
 </template>
 
