@@ -5,7 +5,7 @@
 
 # IMPORTANTE
 
-Para desenvolvimento por favor utilizem as variaveis disponiveis no arquivo `.env.develop`
+Para desenvolvimento, por favor, utilizem as variáveis disponíveis no arquivo `.env.develop`
 
 # Documentação da rotas
 

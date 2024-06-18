@@ -24,14 +24,14 @@ As questões financiras por sua vez serão organizadas de forma que o administra
 -   Node.js
 -   Yarn
 
-1. Caso não possua o node.js, instale-o em: `https://nodejs.org/pt/blog/release/v18.12.0`
+1. Caso não possua o node.js, seu download se encontrar [nessa página](https://nodejs.org/pt/blog/release/v18.12.0)
 2. Caso não possua o yarn, instale-o em sua máquina com o comando `npm i -g yarn`
 
 ### Front-end
 
 #### Documentação dos componentes
 
-A documentação dos componentes se entrar em `Codigo/client/src/components/README.md`
+A documentação dos componentes se encontrada em `Codigo/client/src/components/README.md`
 
 #### Instruções
 
@@ -46,11 +46,11 @@ A documentação dos componentes se entrar em `Codigo/client/src/components/READ
 
 #### IMPORTANTE
 
-Para desenvolvimento por favor utilizem as variaveis disponiveis no arquivo `.env.develop`
+Para desenvolvimento, por favor, utilizem as variáveis disponíveis no arquivo `.env.develop`
 
 #### Documentação da rotas
 
-A documentação da API foi feita com o Swagger, para acessar a documentação acesse `http://localhost:3000/api-docs/`
+A documentação da API foi feita com o Swagger, para acessar a documentação acesse [`http://localhost:3000/api-docs/`](http://localhost:3000/api-docs/)
 
 #### Instruções
 
