@@ -24,7 +24,7 @@ As questões financiras por sua vez serão organizadas de forma que o administra
 -   Node.js
 -   Yarn
 
-1. Caso não possua o node.js, seu download se encontrar [nessa página](https://nodejs.org/pt/blog/release/v18.12.0)
+1. Caso não possua o node.js, seu download se encontra [nessa página](https://nodejs.org/pt/blog/release/v18.12.0)
 2. Caso não possua o yarn, instale-o em sua máquina com o comando `npm i -g yarn`
 
 ### Front-end
