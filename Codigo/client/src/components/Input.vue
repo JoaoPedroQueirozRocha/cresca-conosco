@@ -71,7 +71,7 @@ export default {
                 v-model="model"
                 :placeholder="placeholder"
                 :disabled="disabled"
-                :type="(type === 'password' && !hidePass) || type === 'email' ? 'text': type"
+                :type="(type === 'password' && !hidePass) || type === 'email' || type === 'search' ? 'text': type"
                 :value="model"
                 @focusin="onFocus = true"
                 @focusout="focusout"
@@ -164,7 +164,7 @@ export default {
 
 .input.disabled {
     @apply pointer-events-none;
-    color: $gray-300;
+    color: $gray-400;
     border-color: $gray-300;
     background: $gray-200;
 }

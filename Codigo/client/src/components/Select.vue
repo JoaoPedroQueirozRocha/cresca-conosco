@@ -59,7 +59,7 @@ export default {
 <template>
     <SelectContainer v-model="isExpanded" @update:model-value="changeExpanded" :label="label" :disabled="disabled">
         <template #status>
-            <p v-if="model[labelKey] || model" class="status-text">{{ model[labelKey] ? model[labelKey] : model }}</p>
+            <p v-if="typeof model == 'object' ? model[labelKey] : model" class="status-text">{{ typeof model == 'object' ? model[labelKey] : model }}</p>
             <slot v-else />
         </template>
         <template #item>

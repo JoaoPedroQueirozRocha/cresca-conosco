@@ -7,22 +7,28 @@ import Dialog from '@/components/Dialog.vue';
 import Button from '@/components/Button.vue';
 import Input from '@/components/Input.vue';
 import Icon from '@/components/Icon.vue';
+import { useIconLoader } from '@/store/iconLoader.js';
+import Loader from '@/components/Loader.vue';
+import axios from 'axios';
 
 export default {
 	name: 'Perfil',
-	components: { Card, Dialog, Button, Input, Icon },
+	components: { Card, Dialog, Button, Input, Icon, Loader },
 	inject: ['Auth'],
 	setup() {
+		const { iconsLoaded } = useIconLoader();
+		const loading = ref(false);
 		return {
 			editing: ref(false),
-			changingPass: ref(false),
 			defaultAlert: ref({
 				top: true,
 				right: true,
 				timeout: 3500,
 			}),
-			passObject: ref({}),
 			userData: ref({}),
+			userDataDatabase: ref({}),
+			loading,
+			iconsLoaded,
 		};
 	},
 
@@ -32,8 +38,11 @@ export default {
 		},
 	},
 
-	beforeMount() {
+	async beforeMount() {
 		this.userData = JSON.parse(window.sessionStorage.getItem('user'));
+		const { data } = await axios.get(`http://localhost:3000/user/${this.userData.email}`);
+		this.userDataDatabase = data;
+		sessionStorage.setItem('userDatabase', JSON.stringify(data));
 	},
 
 	methods: {
@@ -47,7 +56,7 @@ export default {
 				await userController.deleteUser();
 			} catch (e) {
 				this.$alert({
-					message: 'Error ao deletar o usuário. Tente novamente mais tarde',
+					message: 'Error ao deletar o usuário. Tente novamente mais tarde.',
 					...this.defaultAlert,
 				});
 			}
@@ -68,9 +77,12 @@ export default {
 				return;
 			}
 
+			this.loading = true;
 			try {
-				await userController.updateUser(this.userData.sub, this.userData);
-				window.sessionStorage.setItem('user', JSON.stringify(this.userData));
+				const data = JSON.parse(JSON.stringify(this.userDataDatabase));
+				delete data.id;
+				await userController.updateUser(this.userDataDatabase.id, data);
+				window.sessionStorage.setItem('userDatabase', JSON.stringify(this.userDataDatabase));
 
 				this.$alert({
 					message: 'Usuário alterado com sucesso',
@@ -82,53 +94,14 @@ export default {
 					message: 'Error ao alterar o usuário. Tente novamente mais tarde',
 					...this.defaultAlert,
 				});
-			}
-		},
-
-		async handleChangePass() {
-			if (!this.isValidPass()) {
-				this.$alert({
-					message: 'Preencha todos os campos para alterar sua senha',
-					...this.defaultAlert,
-				});
-				return;
-			} else if (this.passObject.newPass !== this.passObject.confirmNewPass) {
-				this.$alert({
-					message: 'Sua senha e a confirmação devem ser iguais',
-					...this.defaultAlert,
-				});
-				return;
-			}
-
-			try {
-				await authController.changeUser(this.userData.sub, {
-					...this.userData,
-					password: this.passObject.newPass,
-				});
-				this.$alert({
-					message: 'Senha alterada com sucesso',
-					type: 'success',
-					...this.defaultAlert,
-				});
-			} catch (e) {
-				this.$alert({
-					message: 'Error ao alterar a senha. Tente novamente mais tarde',
-					...this.defaultAlert,
-				});
+			} finally {
+				this.loading = false;
+				this.editing = false;
 			}
 		},
 
 		isValid() {
-			return this.userData.name && this.userData.email;
-		},
-
-		isValidPass() {
-			return this.passObject.actualPass && this.passObject.newPass && this.passObject.confirmNewPass;
-		},
-
-		resetPassForm() {
-			this.changingPass = false;
-			this.passObject = {};
+			return this.userDataDatabase.nome;
 		},
 	},
 };
@@ -148,43 +121,29 @@ export default {
 			</div>
 			<div class="photo-name">
 				<Icon name="account_circle" />
-				<input v-model="userData.name" class="name-input" :disabled="!editing" :class="{ active: editing }" />
+				<input
+					v-model="userDataDatabase.nome"
+					class="name-input"
+					:disabled="!editing"
+					:class="{ active: editing }"
+				/>
 			</div>
 			<div class="flex flex-col gap-4">
-				<Input v-model="userData.description" label="Descrição" :disabled="!editing" text-area />
+				<Input v-model="userDataDatabase.descricao" label="Descrição" :disabled="!editing" text-area />
 				<Input
-					v-model="userData.email"
+					v-model="userDataDatabase.email"
 					error-message="E-mail inválido"
 					label="E-mail"
-					:disabled="!editing"
+					disabled
 					type="email"
 				/>
-				<Button class="w-fit" @click="changingPass = true">Alterar Senha</Button>
+				<!-- <Button class="w-fit" @click="changingPass = true">Alterar Senha</Button> -->
 			</div>
 		</Card>
 		<div class="flex w-full justify-end gap-2">
-			<Button v-if="editing" @click="editing = false" only-border> Cancelar </Button>
-			<Button v-if="editing" @click="salveUser">Salvar</Button>
+			<Button v-if="editing" :disabled="loading" @click="editing = false" only-border>Cancelar</Button>
+			<Button v-if="editing" :loading="loading" @click="salveUser">Salvar</Button>
 		</div>
-		<Dialog v-model="changingPass" @update:model-value="resetPassForm">
-			<div class="flex flex-col xs:gap-6 gap-4 p-2">
-				<h1 class="xs:text-4xl text-2xl font-bold whitespace-normal break-words">Alterar Senha</h1>
-				<div class="w-full flex flex-col gap-2">
-					<Input v-model="passObject.actualPass" label="Senha Atual" type="password" class="input-pass" />
-					<Input v-model="passObject.newPass" label="Nova Senha" type="password" class="input-pass" />
-					<Input
-						v-model="passObject.confirmNewPass"
-						label="Confirme sua nova senha"
-						type="password"
-						class="input-pass"
-					/>
-				</div>
-				<div class="flex gap-2 justify-center xs:flex-row flex-col">
-					<Button only-border :size="size" @click="resetPassForm">Cancelar</Button>
-					<Button :size="size" @click="handleChangePass">Salvar</Button>
-				</div>
-			</div>
-		</Dialog>
 	</div>
 </template>
 
@@ -237,6 +196,7 @@ export default {
 		border-radius: 16px;
 		border: 0.1em transparent solid;
 		max-width: 100%;
+		background: transparent;
 
 		&:focus {
 			outline: none;
@@ -250,10 +210,6 @@ export default {
 
 h1 {
 	color: $green-dark;
-}
-
-.input-pass {
-	min-width: 60vw;
 }
 
 @media screen and (max-width: 768px) {

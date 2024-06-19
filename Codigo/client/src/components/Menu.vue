@@ -32,9 +32,9 @@ export default {
                 icon: 'payments',
             },
             {
-                text: 'Funcionários',
-                value: 'funcionarios',
-                path: '/funcionarios',
+                text: 'Mão de Obra',
+                value: 'mao-de-obra',
+                path: '/mao-de-obra',
                 icon: 'supervised_user_circle',
             },
         ]);
@@ -49,7 +49,7 @@ export default {
     computed: {
         getMenuOption() {
             if (this.$route.path.includes('financas')) return 'financas';
-            if (this.$route.path.includes('funcionario')) return 'funcionarios';
+            if (this.$route.path.includes('mao-de-obra')) return 'mao-de-obra';
             if (this.$route.path.includes('gado')) return 'gado';
             return 'perfil';
         }
@@ -63,6 +63,11 @@ export default {
     methods: {
         handleResize() {
             this.isPhone = window.innerWidth <= 768;
+            if (this.isPhone) {
+                this .menu.style.height = '0';
+            } else {
+                this .menu.style.height = '100vh';
+            }
         },
         changeExpanded(value) {
             this.isExpanded = value;
@@ -98,6 +103,7 @@ export default {
                         <img src="../assets/crescaConoscoText.svg" alt="cresça conosco" class="logo-text" v-if="isExpanded" />
                     </div>
                     <router-link
+                        @click="isPhone && changeHeight(!isExpanded)"
                         class="option"
                         :class="{'active': getMenuOption === option.value, 'justify-center': !isExpanded}"
                         v-for="option in options"
@@ -192,7 +198,7 @@ export default {
     border-radius: 16px;
     color: $green-dark;
     font-weight: 600;
-    font-size: 24px;
+    font-size: 22px;
     cursor: pointer;
     user-select: none;
 

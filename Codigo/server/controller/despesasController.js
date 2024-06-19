@@ -28,19 +28,6 @@ async function getDespesaById(req, res) {
     }
 }
 
-/**
- * 
- * @param {*} req 
- * Colunas do banco: 
- * - valor
- * - descricao
- * - tipo
- * Valores válidos para o tipo da despesa:
- * - compras,
- * - despesas trabalhistas,
- * - diverso'
- * @param {*} res 
- */
 async function createNewDespesa(req, res) {
     try {
         const body = req.body;
@@ -77,6 +64,7 @@ async function deleteDespesaById(req, res) {
         await despesasServices.deleteDespesaById(id);
         res.send("Despesa deletada com sucesso");
     } catch (e) {
+        console.error(e);
         res.status(e.status).send(e.message);
     }
 }

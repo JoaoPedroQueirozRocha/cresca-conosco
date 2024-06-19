@@ -5,7 +5,7 @@ import Checkbox from './Checkbox.vue';
 import Card from './Card.vue';
 
 export default {
-    name: 'SelectContainer',
+    name: 'Filter',
     components: { Icon, Checkbox, Card },
     props: {
         modelValue: {
@@ -27,7 +27,7 @@ export default {
 
     watch: {
         modelValue() {
-            this.model = this.modelValue
+            this.model = this.modelValue;
         },
     },
 
@@ -40,7 +40,6 @@ export default {
         selectItem(index, cIndex) {
             if (cIndex != undefined || cIndex != null) {
                 this.model[index].childs[cIndex].selected = !this.model[index].childs[cIndex].selected;
-                console.log(this.model, this.model[index].childs[cIndex])
             } else {
                 this.model[index].selected = !this.model[index].selected;
             }
@@ -81,7 +80,7 @@ export default {
 @import "../style/var.scss";
 
 .filter-holder {
-    @apply flex flex-col p-0 overflow-hidden divide-y-[.1em] divide-gray-100;
+    @apply flex flex-col p-0 overflow-hidden divide-y-[.1em] divide-gray-100 min-w-[10em];
 }
 
 .have-childs-card {
@@ -94,7 +93,7 @@ export default {
 }
 
 .text-card {
-    @apply flex py-2 px-4 justify-between items-center cursor-pointer sticky top-0 cursor-pointer;
+    @apply flex py-2 px-4 justify-between items-center cursor-pointer sticky top-0 cursor-pointer bg-white;
     color: $gray-500;
     font-size: 16px;
 

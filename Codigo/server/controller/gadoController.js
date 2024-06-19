@@ -20,20 +20,12 @@ async function getBaseData(req, res) {
         if (!gado) throw new Error('Nenhum gado encontrado');
 
         res.status(200).json(gado);
-
     } catch (e) {
+        console.log(e);
         res.status(e.status).send(e.message);
     }
 }
 
-/**
- * 
- * @param {*} req 
- * @param {*} res 
- * @returns gado
- * Método de pesquisa por mês, recebendo dois valores, mês e ano. Retorna uma lista de todos os animais com previsão de parto para
- * a data especificada
- */
 async function getByMonth(req, res) {
     try {
         const { date } = req.body;
@@ -48,19 +40,6 @@ async function getByMonth(req, res) {
     }
 }
 
-/**
- * 
- * @param {*} req 
- * Status possiveis:
- * -pendente
- * -confirmada
- * -concluida
- * -falhou
- * @param {*} res 
- * @returns gado
- * Método de pesquisa por status, recebendo um valor, status. Retorna uma lista de todos os animais com previsão de parto para
- * a data especificada
- */
 async function getByStatus(req, res) {
     try {
         const { status } = req.params;
@@ -78,7 +57,7 @@ async function getByAnimal(req, res) {
     try {
         const { animal } = req.params;
 
-        const animal_exists = await animalServices.getAnimalByName(animal);
+        const animal_exists = await animalServices.getAnimalById(animal);
         if (!animal_exists) throw new Error('Animal não encontrado');
 
         const gado = await gadoServices.getByAnimal(animal);
@@ -101,12 +80,25 @@ async function getLactantes(req, res) {
     }
 }
 
+async function createReport(req, res) {
+    try {
+        const lactatingPercentage = await gadoServices.calculateLactatingPercentage();
+        const confirmedGestation = await gadoServices.calculateConfirmedGestation();
+        res.status(200).json({ lactatingPercentage, confirmedGestation });
+    } catch (e) {
+        console.error(e);
+        res.status(e.status).send(e.message);
+    }
+}
+
+
 export {
     getAll,
     getBaseData,
     getByMonth,
     getByStatus,
     getByAnimal,
-    getLactantes
+    getLactantes,
+    createReport
 }
 
