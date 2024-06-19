@@ -163,7 +163,8 @@ export default {
 		async salvar() {
 			const importError = this.isImportaValid();
 			if ((!this.isValid() && this.tabIndex == 0) || (importError && this.tabIndex == 1)) {
-				this.callAlert(importError || `Preencha todos os dados para salvar a ${this.value}`);
+				const message = importError || `Preencha todos os dados para salvar a ${this.value}`;
+				this.callAlert(message);
 				return;
 			}
 
@@ -210,7 +211,7 @@ export default {
 					)
 						this.data[field.value] = field.default();
 
-					if (field.required && !this.data[field.value]) valid = false;
+					if (field.required && (!this.data[field.value] && this.data[field.value] != 0)) valid = false;
 				});
 
 			return valid;
