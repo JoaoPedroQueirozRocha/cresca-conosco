@@ -5,7 +5,7 @@
 			<Input class="md:w-[49%] w-full" label="Crias" type="number" v-model="partoData.crias" />
 			<div class="flex flex-row gap-4 justify-end">
 				<Button @click="cancelar" only-border :disabled="loading">Cancelar</Button>
-				<Button @click="salvarParto()" :loading="loading">Parir</Button>
+				<Button @click="salvarParto" :loading="loading">Parir</Button>
 			</div>
 		</div>
 	</Dialog>
@@ -106,7 +106,7 @@ export default {
 				animal_id: null,
 				id_gestacao: null,
 				status: '',
-				crias: null,
+				crias: 0,
 				touro: '',
 				data_insem: '',
 				prev_parto: '' || null,
