@@ -32,9 +32,9 @@ export default {
                 icon: 'payments',
             },
             {
-                text: 'Funcionários',
-                value: 'funcionarios',
-                path: '/funcionarios',
+                text: 'Mão de Obra',
+                value: 'mao-de-obra',
+                path: '/mao-de-obra',
                 icon: 'supervised_user_circle',
             },
         ]);
@@ -49,7 +49,7 @@ export default {
     computed: {
         getMenuOption() {
             if (this.$route.path.includes('financas')) return 'financas';
-            if (this.$route.path.includes('funcionario')) return 'funcionarios';
+            if (this.$route.path.includes('mao-de-obra')) return 'mao-de-obra';
             if (this.$route.path.includes('gado')) return 'gado';
             return 'perfil';
         }
@@ -198,7 +198,7 @@ export default {
     border-radius: 16px;
     color: $green-dark;
     font-weight: 600;
-    font-size: 24px;
+    font-size: 22px;
     cursor: pointer;
     user-select: none;
 

@@ -52,7 +52,7 @@ router.post("/", animalsController.createNewAnimal);
  * @swagger
  * /animals/{id}:
  *  put:
- *   summary: Atualiza as informaçes daquele animal específico
+ *   summary: Atualiza as informações daquele animal específico
  *   tags: [Animais]
  *   parameters:
  *    - in: path

@@ -1,8 +1,8 @@
 import axios from 'axios';
-const APIURL = `${import.meta.env.VITE_API_URL}/despesas`
+const APIURL = `${import.meta.env.VITE_API_URL}despesas`
 
 function listCosts(period = []) {
-    return axios.post(`${APIURL}/list`, {period});
+    return axios.post(`${APIURL}/list`, { period });
 }
 
 function getCost(id) {
@@ -21,10 +21,15 @@ function deleteCost(id) {
     return axios.delete(`${APIURL}/${id}`);
 }
 
+function importFile(data) {
+    return axios.post(`${import.meta.env.VITE_API_URL}/import/despesa`, data);
+}
+
 export default {
     getCost,
     updateCost,
     createCost,
     deleteCost,
-    listCosts
+    listCosts,
+    importFile
 }

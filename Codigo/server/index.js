@@ -13,18 +13,21 @@ import despesasRouter from './routes/despesasRoutes.js';
 import lucroRouter from './routes/lucroRoutes.js';
 import financeRoutes from './routes/financeRoutes.js';
 import NotificationRouter from './routes/notificationRoutes.js'
+import importRouter from './routes/importRoutes.js'
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT;
+
+
 app.use(
     cors({
         origin: [
             "http://localhost:5173",
             "https://cresca-conosco.queirozrocha.com",
+            "https://cresca-conosco-develop.vercel.app",
             "https://cresca-conosco-staging.onrender.com",
             "https://cresca-conosco.onrender.com",
             "http://localhost:3000",
-            "https://cresca-conosco-develop.vercel.app"
         ],
         credentials: true,
     })
@@ -34,13 +37,14 @@ app.use(
     .use("/user", userRouter)
     .use("/auth", authRouter)
     .use("/animals", animalsRouter)
-    .use("/gestacoes", gestacaoRouter)
-    .use('/worker', workerRouter)
+    .use("/gestacao", gestacaoRouter)
+    .use('/mao-de-obra', workerRouter)
     .use('/gado', gadoRouter)
     .use('/despesas', despesasRouter)
     .use('/lucro', lucroRouter)
     .use('/finance', financeRoutes)
     .use('/notification', NotificationRouter)
+    .use('/import', importRouter)
 
 app.listen(PORT, () => {
     console.log(process.env.POSTGRES_USER);

@@ -1,8 +1,21 @@
 import axios from "axios";
-const APIURL = `${import.meta.env.VITE_API_URL}/gado` || "http://localhost:3002/gado";
+import gestacaoServices from "./gestacao";
+import animalServices from "./animal";
+
+const APIURL = `${import.meta.env.VITE_API_URL}gado`;
 
 async function getAll() {
     const response = await axios.get(`${APIURL}/`);
+    return response.data;
+}
+
+async function getBase() {
+    const response = await axios.get(`${APIURL}/base`);
+    return response.data;
+}
+
+async function getReport() {
+    const response = await axios.get(`${APIURL}/report`);
     return response.data;
 }
 
@@ -14,18 +27,17 @@ function updateGado(gado) {
     return axios.put(`${APIURL}/animals/${gado.id}`, gado);
 }
 
-async function getBase() {
-    const response = await axios.get(`${APIURL}/base`);
-    return response.data;
-}
+async function deleteGado(id) {
+    const deleteGestacao = await gestacaoServices.deletarGestacao(id);
 
-function deleteGado(id) {
-    return axios.delete(`${APIURL}/animals/${id}`);
+    const deleteAnimal = animalServices.deletarAnimal(id);
+    return { deleteGestacao, deleteAnimal };
 }
 
 export default {
     getAll,
     getBase,
+    getReport,
     createGado,
     updateGado,
     deleteGado,

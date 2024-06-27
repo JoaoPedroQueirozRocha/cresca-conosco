@@ -19,6 +19,9 @@ async function getGestacaoById(req, res) {
 async function createGestacao(req, res) {
     try {
         const body = req.body;
+        const animal = await animalServices.getAnimalById(body.animal_id);
+        if (!animal) throw new Error("Animal não encontrado");
+
         const gestacao = await gestacaoServices.createGestacao(body);
         res.json(gestacao);
     } catch (e) {
@@ -30,12 +33,22 @@ async function createGestacao(req, res) {
 async function updateGestacao(req, res) {
     try {
         const body = req.body;
-        const { animal_id } = req.params
+        const { id } = req.params;
 
-        const animal = await animalServices.getAnimalById(animal_id);
-        if (!animal) throw new Error("Animal não encontrado");
+        const gestacao = await gestacaoServices.updateGestacao(id, body);
+        res.status(200).json(gestacao);
+    } catch (error) {
+        console.error(error);
+        res.status(error.status).send("Erro ao executar a query " + error.message);
+    }
+}
 
-        const gestacao = await gestacaoServices.updateGestacao(animal_id, body);
+async function parirAnimal(req, res) {
+    try {
+        const { crias, data_finalizacao } = req.body;
+        const { id } = req.params;
+
+        const gestacao = await gestacaoServices.parirAnimal(id, crias, data_finalizacao);
         res.status(200).json(gestacao);
     } catch (error) {
         console.error(error);
@@ -49,6 +62,8 @@ async function deleteGestacao(req, res) {
         const animal = await animalServices.getAnimalById(animal_id);
         if (!animal) throw new Error("Animal não encontrado");
 
+
+
         const gestacao = await gestacaoServices.deleteGestacao(animal_id);
         res.json(gestacao);
     } catch (error) {
@@ -56,4 +71,4 @@ async function deleteGestacao(req, res) {
     }
 }
 
-export { getGestacaoById, createGestacao, updateGestacao, deleteGestacao };
+export { getGestacaoById, createGestacao, updateGestacao, parirAnimal, deleteGestacao };
