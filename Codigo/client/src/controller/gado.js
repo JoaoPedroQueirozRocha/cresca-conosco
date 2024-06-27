@@ -2,7 +2,7 @@ import axios from "axios";
 import gestacaoServices from "./gestacao";
 import animalServices from "./animal";
 
-const APIURL = `${import.meta.env.VITE_API_URL}/gado` || "http://localhost:3002/gado";
+const APIURL = `${import.meta.env.VITE_API_URL}gado`;
 
 async function getAll() {
     const response = await axios.get(`${APIURL}/`);

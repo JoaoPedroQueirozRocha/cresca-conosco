@@ -1,5 +1,5 @@
 import axios from 'axios'
-const APIURL = `${import.meta.env.VITE_API_URL}/mao-de-obra`
+const APIURL = `${import.meta.env.VITE_API_URL}mao-de-obra`
 
 async function getBase() {
     const response = await axios.get(`${APIURL}/list`);

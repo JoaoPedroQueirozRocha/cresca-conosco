@@ -1,5 +1,5 @@
 import axios from "axios";
-const APIURL = `${import.meta.env.VITE_API_URL}/animals`
+const APIURL = `${import.meta.env.VITE_API_URL}animals`
 
 function createAnimal(animal) {
     return axios.post(`${APIURL}/`, animal);
