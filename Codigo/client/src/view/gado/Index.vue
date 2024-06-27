@@ -1,10 +1,10 @@
 <template>
-	<div class="flex flex-col w-full mt-[3em]">
-		<div class="w-fullflex flex-col gap-4">
+	<div class="flex flex-col w-full md:mt-[3em]">
+		<div class="w-full flex flex-col gap-4">
 			<div class="mb-6">
-				<div class="flex flex-row w-full justify-between align-middle my-4">
+				<div class="flex flex-row w-full flex-wrap justify-between align-middle my-4 gap-4">
 					<h2 class="title mt-0">Gado</h2>
-					<div class="flex flex-row items-center flex-wrap gap-2 content-center">
+					<div class="flex flex-row items-center gap-2 content-center">
 						<Button @click="createDialog">Mais detalhes</Button>
 						<router-link to="/gado/vaca">
 							<Button>Adicionar</Button>
@@ -49,29 +49,45 @@
 							tabindex="0"
 							@blur="item.expanded = false"
 						>
-							<router-link :to="`/gado/vaca/${item.id}`">
+							<router-link :to="`/gado/vaca/${item.id_animal}`">
 								<div class="action-option">
 									<Icon name="edit" />
 									Editar
 								</div>
 							</router-link>
-							<div class="action-option" @click="openInsemDialog(item.id, true)">
+							<div
+								class="action-option"
+								:class="{ disabled: !getOptions(item.status).insemAvaliable }"
+								@click="openInsemDialog(item.id_animal, null, true)"
+							>
 								<Icon name="vaccines" />
 								Inseminar
 							</div>
-							<div class="action-option" @click="openInsemDialog(item.id)">
+							<div
+								class="action-option"
+								:class="{ disabled: !getOptions(item.status).editGestacaoAvaliable }"
+								@click="openInsemDialog(item.id_animal, item.id_gestacao)"
+							>
 								<Icon name="edit" />
 								Editar Gestão Atual
 							</div>
-							<div class="action-option" @click="parirAnimal(item.id)">
+							<div
+								class="action-option"
+								:class="{ disabled: !getOptions(item.status).parirAvaliable }"
+								@click="openParirDialog(item.id_animal, item.id_gestacao, true)"
+							>
 								<Icon name="heart_check" />
 								Parir
 							</div>
-							<div class="action-option" @click="secarAnimal(item.id)">
+							<div class="action-option" @click="secarAnimal(item.id_animal)">
 								<Icon name="menstrual_health" />
 								Secar
 							</div>
-							<div class="action-option delete" @click="confirmDeletion(item.id, index)">
+							<div class="action-option" @click="openAgendarDialog(item)">
+								<Icon name="event" />
+								Agendar Fertilização
+							</div>
+							<div class="action-option delete" @click="confirmDeletion(item.id_animal, index)">
 								<Icon name="delete" />
 								Deletar
 							</div>
@@ -124,13 +140,26 @@
 				</template>
 			</Table>
 			<DialogTable v-model="moreDetails" :allData="allData" :isDialogLoading="isDialogLoading" />
+			<DialogParir
+				v-model="showParirDialog"
+				:isDialogLoading="isDialogLoading"
+				:animalData="animalData"
+				:isEdit="isEdit"
+				@change="loadBaseData"
+			/>
 			<DialogInsem
 				v-model="showInsemDialog"
 				:animalData="animalData"
 				:isDialogLoading="isDialogLoading"
 				:isEdit="isEdit"
 				@change="loadBaseData"
-			></DialogInsem>
+			/>
+			<DialogAgendarFertilizacao
+				v-model="showAgendarDialog"
+				:animalData="animalData"
+				:isDialogLoading="isDialogLoading"
+				@change="loadBaseData"
+			/>
 		</div>
 	</div>
 </template>
@@ -148,8 +177,11 @@ import Icon from '@/components/Icon.vue';
 import Filter from '@/components/Filter.vue';
 import Dialog from '@/components/Dialog.vue';
 import Tag from '@/components/Tag.vue';
-import DialogTable from './DialogTable.vue';
-import DialogInsem from './DialogInsem.vue';
+import Loader from '@/components/Loader.vue';
+import DialogTable from './components/DialogTable.vue';
+import DialogInsem from './components/DialogInsem.vue';
+import DialogParir from './components/DialogParir.vue';
+import DialogAgendarFertilizacao from './components/DialogAgendarFertilizacao.vue';
 import animalController from '@/controller/animal';
 
 export default {
@@ -161,10 +193,13 @@ export default {
 		Dialog,
 		DialogTable,
 		DialogInsem,
+		DialogParir,
+		DialogAgendarFertilizacao,
 		Card,
 		Icon,
 		Filter,
 		Tag,
+		Loader,
 	},
 	inject: ['Auth'],
 	setup() {
@@ -177,19 +212,25 @@ export default {
 			isLoading,
 			isDialogLoading,
 			filterOptions,
+			moreDetails,
+			showInsemDialog,
+			showParirDialog,
+			showAgendarDialog,
+			isEdit,
 			loadBaseData,
 			createDialog,
 			openInsemDialog,
-			moreDetails,
-			showInsemDialog,
+			openParirDialog,
+			openAgendarDialog,
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
 			confirmarGestacao,
-			isEdit,
+			getOptions,
 		} = useGado();
 
 		const searchValue = ref('');
+		const pageLoading = ref(false);
 		const { filteredData, getSelected } = useFilter(gadoData, filterOptions, searchValue);
 		const defaultAlert = ref({
 			top: true,
@@ -205,11 +246,10 @@ export default {
 			isLoading,
 			isDialogLoading,
 			filterOptions,
-			loadBaseData,
-			createDialog,
-			openInsemDialog,
 			moreDetails,
 			showInsemDialog,
+			showParirDialog,
+			showAgendarDialog,
 			filterOptions,
 			filterCard: ref(),
 			showFilter: ref(false),
@@ -217,18 +257,27 @@ export default {
 			searchValue,
 			filteredData,
 			getSelected,
+			defaultAlert,
+			isEdit,
+			loadBaseData,
+			createDialog,
+			openInsemDialog,
+			openParirDialog,
+			openAgendarDialog,
 			formatDate,
 			parirAnimal,
 			secarAnimal,
 			deletarAnimal,
 			confirmarGestacao,
-			defaultAlert,
-			isEdit,
+			getOptions,
+			pageLoading,
 		};
 	},
 
 	async beforeMount() {
+		this.pageLoading = true;
 		await this.loadBaseData();
+		this.pageLoading = false;
 	},
 
 	mounted() {
@@ -258,7 +307,7 @@ export default {
 				const windowHeight = window.innerHeight;
 				const cardHeight = card.offsetHeight;
 				const height = rect.top + 40 + cardHeight;
-				card.style.left = rect.left - 200 + 'px';
+				card.style.left = rect.left - 210 + 'px';
 				if (height > windowHeight) {
 					delete card.style.top;
 					card.style.bottom = 0;
@@ -307,7 +356,6 @@ export default {
 						...this.defaultAlert,
 					});
 				} catch (error) {
-					console.log(error);
 					this.$alert({
 						message: 'Erro ao deletar a vaca. Tente novamente mais tarde',
 						...this.defaultAlert,
@@ -336,6 +384,10 @@ export default {
 
 <style lang="scss" scoped>
 @import '../../style/var.scss';
+
+td {
+	color: $gray-500;
+}
 
 .icon-holder {
 	display: flex;
@@ -374,11 +426,11 @@ export default {
 }
 
 .action-card {
-	@apply p-3 flex flex-col gap-2;
+	@apply z-50 p-3 flex flex-col cursor-default gap-2;
 }
 
 .action-option {
-	@apply flex items-center gap-4 cursor-pointer p-2 font-bold;
+	@apply flex items-center cursor-pointer gap-4 p-2 font-bold;
 	color: $gray-500;
 	border-radius: 8px;
 
@@ -393,6 +445,12 @@ export default {
 	&:hover {
 		background: $red-light;
 	}
+}
+
+.action-option.disabled {
+	@apply pointer-events-none;
+	color: $gray-400;
+	background: $gray-200;
 }
 
 @media screen and (max-width: 768px) {

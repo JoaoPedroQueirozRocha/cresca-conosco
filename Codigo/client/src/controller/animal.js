@@ -22,12 +22,16 @@ async function deletarAnimal(id) {
     return await axios.delete(`${APIURL}/${id}`);
 }
 
+function importFile(data) {
+    return axios.post(`${import.meta.env.VITE_API_URL}/import/animal`, data);
+}
 
 export default {
     createAnimal,
     getAnimal,
     updateAnimal,
     secar,
-    deletarAnimal
+    deletarAnimal,
+    importFile
 }
 

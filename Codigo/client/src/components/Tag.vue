@@ -1,5 +1,5 @@
 <script>
-// 'red' | 'orange' | 'yellow' | 'green' | 'blue'
+// 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'gray'
 export default {
     name: 'Tag',
     props: {
@@ -23,7 +23,7 @@ export default {
 @import "../style/var.scss";
 
 .tag {
-    @apply py-2 px-4 rounded-[3em] text-base font-bold w-fit flex justify-center;
+    @apply py-2 px-4 rounded-[3em] text-base text-center font-bold w-fit flex justify-center;
 }
 
 .blue {

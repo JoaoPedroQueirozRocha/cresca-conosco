@@ -1,5 +1,6 @@
 import { ref, reactive, toRefs } from 'vue'
 import gestacaoController from '../../../controller/gestacao'
+import notificationController from '../../../controller/notification'
 
 
 export function useEditDialog() {
@@ -23,10 +24,11 @@ export function useEditDialog() {
             touro: '',
             data_insem: '',
             prev_parto: '' || null,
-        })
+        }),
+
     })
 
-    async function validateData(gestacaoData) {
+    function validateData(gestacaoData) {
         if (gestacaoData.status === "confirmada") {
             return (
                 gestacaoData.data_insem &&
@@ -43,11 +45,33 @@ export function useEditDialog() {
         }
     }
 
-    async function processarGestacao(gestacaoData, isEdit) {
+    async function processarGestacao(dataGestacao, isEdit, animalData) {
         if (isEdit) {
-            await gestacaoController.editarGestacao(gestacaoData.animal_id, gestacaoData);
+            if (dataGestacao.status === 'confirmada') {
+                const datePrevParto = new Date(dataGestacao.prev_parto);
+                const dryDate = new Date(datePrevParto);
+                dryDate.setDate(datePrevParto.getDate() - 60);
+                const oldNotification = await getOldDryNotification();
+                if (oldNotification) {
+                    await notificationController.updateNotification(oldNotification.id, dryDate);
+                } else {
+                    await notificationController.createDryNotification(dryDate, animalData);
+                }
+            }
+            delete dataGestacao.animal;
+            await gestacaoController.editarGestacao(dataGestacao.id_gestacao, dataGestacao);
         } else {
-            await gestacaoController.salvarGestacao(gestacaoData);
+
+            await gestacaoController.salvarGestacao(dataGestacao);
+        }
+    }
+
+    async function getOldDryNotification() {
+        try {
+            const { data } = await notificationController.getDryNotification(dataGestacao.animal_id);
+            return data;
+        } catch (e) {
+            return null;
         }
     }
 
@@ -75,12 +99,12 @@ export function useEditDialog() {
             state.gestacaoData.prev_parto = null;
         }
     };
-
     return {
         ...toRefs(state),
         validateData,
         processarGestacao,
-        changeDisabled
+        changeDisabled,
+        adjustPrevPartoDate,
     }
 }
 

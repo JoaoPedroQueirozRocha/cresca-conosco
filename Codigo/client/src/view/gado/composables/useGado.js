@@ -8,17 +8,20 @@ export function useGado() {
     const state = reactive({
         moreDetails: ref(false),
         showInsemDialog: ref(false),
+        showParirDialog: ref(false),
+        showAgendarDialog: ref(false),
         isEdit: ref(false),
         headersDialog: ref([
             { text: "Nome", value: "nome", sortable: true },
-            { text: "Crias", value: "crias", sortable: true },
+            { text: "Crias", value: "crias", sortable: true, align: "center", },
             {
                 text: "Data.Insem",
                 value: "dataInsem",
                 sortable: true,
             },
+            { text: "DPIA", value: "dpia", sortable: true },
             { text: "Prev.Parto", value: "prevParto", sortable: true },
-            { text: "Touro", value: "touro", sortable: true },
+            { text: "Touro", value: "touro", sortable: true, align: "center", },
             {
                 text: "Lactante",
                 value: "lactante",
@@ -26,7 +29,8 @@ export function useGado() {
                 align: "center",
             },
             // { text: "Num.Insem", value: "numInsem", sortable: true },
-            { text: "Status", value: "status", sortable: true },
+            { text: "Status", value: "status", align: "center", sortable: true },
+            { text: "Secar em", value: 'secarEm' },
         ]),
         headers: ref([
             { text: "Nome", value: "nome", sortable: true },
@@ -90,6 +94,12 @@ export function useGado() {
         allData: ref([]),
         gadoData: ref([]),
         animalData: ref([]),
+        partoData: reactive({
+            animal_id: 0 || null,
+            id_parto: 0,
+            crias: 0,
+        })
+
     })
 
     async function loadBaseData() {
@@ -115,12 +125,12 @@ export function useGado() {
         }
     }
 
-    async function openInsemDialog(id, isNew) {
+    async function openInsemDialog(id_animal, id_gestacao, isNew) {
         try {
             state.isDialogLoading = true;
             state.showInsemDialog = true;
             state.isEdit = !isNew;
-            state.animalData = isNew ? await getAnimal(id) : state.gadoData.find((item) => item.id == id);
+            state.animalData = isNew ? await getAnimal(id_animal) : state.gadoData.find((item) => item.id_gestacao == id_gestacao);
         } catch (e) {
             console.error(e);
         } finally {
@@ -128,17 +138,27 @@ export function useGado() {
         }
     }
 
-    async function parirAnimal(id) {
+
+    async function openParirDialog(id_animal, id_gestacao, isNew) {
         try {
-            await parir(id);
-            state.isLoading = true;
-            state.gadoData = await getBaseData();
+            state.isDialogLoading = true;
+            state.showParirDialog = true;
+            state.isEdit = !isNew;
+            state.animalData = state.gadoData.find((item) => item.id_gestacao == id_gestacao);
         } catch (e) {
             console.error(e);
         } finally {
-            state.isLoading = false;
+            state.isDialogLoading = false;
         }
     }
+
+
+    async function openAgendarDialog(animal) {
+        state.animalData = animal;
+        state.showAgendarDialog = true;
+    }
+
+    
     async function secarAnimal(id) {
         try {
             await secar(id);
@@ -175,6 +195,24 @@ export function useGado() {
         }
     }
 
+    function getOptions(status) {
+        const parirAvaliable = status === 'confirmada';
+        const editGestacaoAvaliable = status !== null;
+        const insemAvaliable = status === null || status === 'concluida' || status === 'falhou';
+        return { parirAvaliable, editGestacaoAvaliable, insemAvaliable }
+    }
+
+    async function parirAnimal(id, crias) {
+        try {
+            await parir(id, crias);
+            state.isLoading = true;
+            state.gadoData = await getBaseData();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            state.isLoading = false;
+        }
+    }
 
 
     return {
@@ -182,10 +220,13 @@ export function useGado() {
         createDialog,
         loadBaseData,
         openInsemDialog,
+        openParirDialog,
+        openAgendarDialog,
         parirAnimal,
         secarAnimal,
         deletarAnimal,
-        confirmarGestacao
+        confirmarGestacao,
+        getOptions
     }
 }
 

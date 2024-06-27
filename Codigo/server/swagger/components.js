@@ -9,7 +9,7 @@ const components = {
                 lactante: { type: "boolean" },
                 primeira_ia: { type: "date" }
             },
-            required: ["nome", "crias", "num_insem", "dias_parida", "lactante", "primeira_ia"],
+            required: ["nome", "crias", "num_insem", "lactante"],
             example: {
                 nome: "Mumuzinha",
                 crias: 2,
@@ -25,18 +25,18 @@ const components = {
                 animal_id: { type: "number" },
                 status: { type: "string", enum: ["pendente", "confirmada", "concluida", "falhou"] },
                 prev_parto: { type: "date" },
-                touro: { type: "string", enum: ["5/8", "gir", "boi"] },
+                touro: { type: "string", enum: ["5/8", "gir", "nelore", "touro"] },
                 data_insem: { type: "date" },
-                data_conclusao: { type: "date" }
+                data_finalizacao: { type: "date" }
             },
             required: ["animal_id", "status", "touro", "data_insem"],
             example: {
-                animal_id: 30,
+                animal_id: 2,
                 status: "pendente",
                 prev_parto: "2024-02-09",
-                semem: "5/8",
+                touro: "5/8",
                 data_insem: "2024-02-09",
-                data_conclusao: "2024-10-09"
+                data_finalizacao: "2024-10-09"
             }
         },
         Despesa: {
@@ -47,16 +47,16 @@ const components = {
                 descricao: { type: "string" },
                 tipo: {
                     type: "string",
-                    enum: ["compras", "despesas trabalhistas", "diverso"]
+                    enum: ["compra", "despesa_trabalhistas", "diverso"]
                 },
-                data_despesa: { type: "date" }
+                updated_at: { type: "date" }
             },
             required: ["valor", "descricao", "tipo"],
             example: {
                 valor: 150.0,
                 descricao: "Compra de equipamentos",
-                tipo: "compras",
-                data_despesa: "2024-02-09"
+                tipo: "compra",
+                updated_at: "2024-02-09"
             }
         },
         Receita: {
@@ -84,15 +84,25 @@ const components = {
             properties: {
                 nome: { type: "string" },
                 salario: { type: "number" },
-                descricao: { type: "string" }
+                cargo: { type: "string" },
+                clt: { type: "boolean" }
             },
-            required: ["nome", "salario"],
+            required: ["nome", "salario", "cargo"],
             example: {
                 nome: "João",
                 salario: 1500.0,
-                descricao: "Trabalha na fazenda"
+                cargo: "Vaqueiro",
+                clt: true
             }
         },
+        Imports: {
+            type: "object",
+            properties: {
+                tableName: { type: "string" },
+                headers: { type: "array", items: { type: "string" } },
+                data: { type: "array", items: { type: "object" } }
+            }
+        }
 
     },
 };

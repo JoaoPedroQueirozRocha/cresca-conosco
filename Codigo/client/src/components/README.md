@@ -160,6 +160,9 @@ O componente 'Confirm' é uma função utilizada para se obter uma resposta de s
 - no-overflow: boolean
     - default: false
     - Determinará dialog terá scroll
+- overflow-hidden: boolean
+    - default: false
+    - Determinará terá o overflow hidden
 
 ### Emits:
 - update:model-value
@@ -168,6 +171,26 @@ O componente 'Confirm' é uma função utilizada para se obter uma resposta de s
 ### Slots:
 - default
     - Será o conteúdo do dialog
+
+
+# Filter
+Será o card montado a partir do v-model propercionado
+
+### Props:
+- model-value: array
+    - Sintaxe: `v-model="sua variável"`
+    - Propriedades dos objetos dentro do array:
+        - text: string
+            - Valor que será exibido para o usuário
+        - selected: boolean
+            - Determinará se aquela opção estará selecionada
+        - childs: array
+            - Se seu texto tiver várias opções para selecionar, elas deverão ser passados na prop childs, com os mesmo atributos descritos a cima
+
+### Emits:
+- update:model-value
+    - Função executada quando o valor do v-model/model-value mudar
+
 
 # Icon
 Os ícones são tirados da biblioteca do (Material Icons)[https://fonts.google.com/icons]. Para encontrar o nome do ícone escolhe pegue o valor dentro do span na seção `Inserting the icon`.
@@ -327,3 +350,17 @@ Mudar o tamanho: `font-size: tamanho`
     - Propriedades:
         - item: item da sua lista
         - index: posição do item
+
+
+# Tag
+
+### Props:
+- text: string
+    - Será o texto dentro da tag
+- color: 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'gray'
+    - default: blue
+    - Será a cor da tag
+
+### Slots:
+- default
+    - Quando nenhum texto é informado, o slot default será exibido
